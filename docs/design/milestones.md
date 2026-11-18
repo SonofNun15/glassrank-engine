@@ -7,7 +7,7 @@ the engine, so there is a baseline to beat from the first engine commit.
 | --- | --- | --- | --- |
 | M0 | Repository skeleton | all | Done. |
 | M1 | Schemas and data contracts | schema | Done. Every seam object validates, canonicalizes, and hashes; JSON Schema is generated and checked with Ajv. See `data-model.md`. |
-| M2 | Synthetic world | sim | The same seed produces a byte-identical event log of schema-valid events. |
+| M2 | Synthetic world | sim | Done. The same seed produces a byte-identical event log of schema-valid events. See `sim-world.md`. |
 | M3 | Metrics harness and baseline | sim | One command produces a report for a plain Elo baseline behind the `rate()` signature. |
 | M4 | Evidence layer | engine | Calibration beats the baseline in the sim; golden vectors match on two platforms. |
 | M5 | Policy layer and correction dial | engine | Lower improver lag and protected decliners vs. evidence-only; drift responds to the dial. |

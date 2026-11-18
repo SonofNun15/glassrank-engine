@@ -1,0 +1,19 @@
+{
+  "scenarioHash": "sha256:94f5d9de4ee682649cf49bd960dbbbbf4867d4cee4c64ad85a94e64a5e97860e",
+  "players": 255,
+  "cohorts": {
+    "fast_improver": 40,
+    "steady": 80,
+    "slow_decliner": 30,
+    "new_player": 50,
+    "returner": 25,
+    "older_pool": 30
+  },
+  "events": 1248,
+  "games": 19791,
+  "manipulatedGames": 208,
+  "firstEvent": "2026-01-05T23:00:00Z",
+  "lastEvent": "2028-12-31T14:00:00Z",
+  "seedsHash": "sha256:242f478f80abd04d5d138e652982dd587d8904703cd49501b81446040fc750dc",
+  "eventLogHash": "sha256:dcd47b2d77aba95e9ea865f65daa20996045aae50481ab7bc83be214cf9224d5"
+}
