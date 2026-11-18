@@ -30,13 +30,18 @@ Dependency direction: sim -> engine -> schema. Never the reverse.
 ```sh
 corepack enable
 pnpm install
-pnpm build      # tsc -b
-pnpm test       # builds, then vitest
+pnpm build      # tsdown in each package (dependency order) -> dist/index.js + index.d.ts
+pnpm test       # type-checks all sources and tests, then vitest (runs from source, no build needed)
+pnpm generate   # rewrite generated files (JSON Schema, derived fixtures) from source; review the diff
 ```
 
 ## Conventions
 
-- TypeScript strict, ESM, NodeNext resolution. Import siblings with `.js` suffix.
+- TypeScript strict, ESM, `Bundler` resolution. Import siblings without a file
+  extension (`./event`, not `./event.js`). tsdown bundles each package, so the
+  published output has no relative imports.
+- Cross-package imports use the package name (`@glassrank/schema`). The root
+  tsconfig `paths` and the vitest aliases point those at source.
 - Tests next to source as `*.test.ts`.
 - Commits must be signed off (`git commit -s`), per CONTRIBUTING.md.
 - Prefer small, reviewable commits. Behavior changes to rating math need sim results.

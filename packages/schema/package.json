@@ -10,6 +10,20 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "dependencies": {}
+  "files": [
+    "dist",
+    "json-schema",
+    "fixtures"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@date-fns/utc": "2.1.1",
+    "@noble/hashes": "2.4.0",
+    "date-fns": "4.4.0"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0"
+  }
 }

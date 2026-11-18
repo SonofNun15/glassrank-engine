@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:schema:0.1.0:EventInput",
+  "title": "EventInput",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "description": "Opaque event id, unique within the ledger."
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "round_robin",
+        "ladder",
+        "league",
+        "tournament",
+        "other"
+      ],
+      "description": "Kind of rated event. Open play is deliberately absent: it is not rated. Informational for receipts; not a math input in v0."
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "Short display label, e.g. \"Saturday round robin\". Not a math input."
+    },
+    "matches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gameFormat": {
+            "type": "object",
+            "properties": {
+              "scoring": {
+                "type": "string",
+                "enum": [
+                  "side_out",
+                  "rally"
+                ]
+              },
+              "target": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50,
+                "description": "Points to win a game, e.g. 11."
+              },
+              "winBy": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              }
+            },
+            "required": [
+              "scoring",
+              "target",
+              "winBy"
+            ],
+            "additionalProperties": false,
+            "description": "Rules every game in the match was played under."
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ending": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "timed",
+                    "retired"
+                  ],
+                  "description": "How the game ended. Absent means completed."
+                },
+                "score": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "Points for teams[0] and teams[1], in that order."
+                }
+              },
+              "required": [
+                "score"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 7
+          },
+          "matchId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+            "description": "Match id, unique within its event."
+          },
+          "teams": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                  "description": "Opaque player id assigned by the registry. Never a name or email."
+                },
+                "minItems": 1,
+                "maxItems": 2,
+                "description": "One player (singles) or two (doubles).",
+                "x-glassrank-rules": [
+                  "players within a team are distinct"
+                ]
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                  "description": "Opaque player id assigned by the registry. Never a name or email."
+                },
+                "minItems": 1,
+                "maxItems": 2,
+                "description": "One player (singles) or two (doubles).",
+                "x-glassrank-rules": [
+                  "players within a team are distinct"
+                ]
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "trust": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "enum": [
+                  "dispute_upheld",
+                  "host_correction",
+                  "anomaly_review",
+                  "duplicate",
+                  "provisional_review",
+                  "other"
+                ]
+              },
+              "voided": {
+                "type": "boolean"
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "voided",
+              "weight"
+            ],
+            "additionalProperties": false,
+            "description": "weight multiplies the evidence; voided matches are recorded but ignored."
+          }
+        },
+        "required": [
+          "gameFormat",
+          "games",
+          "matchId",
+          "teams",
+          "trust"
+        ],
+        "additionalProperties": false,
+        "x-glassrank-rules": [
+          "both teams have the same size, and no player appears on both teams"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 500
+    },
+    "occurredAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC 3339 UTC instant with whole seconds, e.g. 2026-11-14T09:00:00Z.",
+      "x-glassrank-rules": [
+        "is a real calendar instant at or after 1970-01-01T00:00:00Z"
+      ]
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "x-glassrank-rules": [
+        "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "hostId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+          "description": "Opaque id of the club or organizer that vouched for the results."
+        },
+        "tier": {
+          "type": "string",
+          "enum": [
+            "verified_host",
+            "provisional_host",
+            "video_verified"
+          ],
+          "description": "Who vouched for the results. Weighted by `policy.sourceWeights`. Results reported only by players are not accepted: a host or video must vouch for every rated event."
+        }
+      },
+      "required": [
+        "hostId",
+        "tier"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "eventId",
+    "format",
+    "matches",
+    "occurredAt",
+    "schemaVersion",
+    "source"
+  ],
+  "additionalProperties": false,
+  "description": "One rated event as submitted by a host.",
+  "x-glassrank-rules": [
+    "matchId values are unique within the event"
+  ]
+}

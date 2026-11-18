@@ -56,7 +56,7 @@ Current leaning: voiding a match recomputes its event and replays later events
 for affected players. The engine should make replay cheap (pure functions over
 an ordered event log).
 
-## Milestone 1: simulation
+## First simulation (milestones 2 to 7; see milestones.md)
 
 1. Synthetic world (`sim`): players with hidden true skill over time. Cohorts:
    fast improvers, steady, slow decliners, new players, returners after a layoff,

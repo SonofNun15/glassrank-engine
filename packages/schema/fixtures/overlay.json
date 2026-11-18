@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "0.1.0",
+  "overlayId": "correction-2027q1",
+  "title": "Q1 2027 scale correction (example)",
+  "rationaleUrl": "https://example.org/glassrank/corrections/2027q1",
+  "announcedAt": "2026-12-01T00:00:00Z",
+  "effectiveFrom": "2027-01-01T00:00:00Z",
+  "expiresAt": "2027-04-01T00:00:00Z",
+  "adjust": { "lossMultiplier": 0.8 },
+  "exemptions": { "awayDays": 60 }
+}

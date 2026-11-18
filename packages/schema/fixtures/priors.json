@@ -1,0 +1,92 @@
+[
+  {
+    "kind": "state",
+    "state": {
+      "schemaVersion": "0.1.0",
+      "playerId": "p-ava",
+      "discipline": "doubles",
+      "rating": 3.42,
+      "evidence": {
+        "mu": 3.38,
+        "sigma": 0.41
+      },
+      "heldGain": 0,
+      "recentDeclines": [
+        {
+          "at": "2026-11-07T14:00:00Z",
+          "eventId": "evt-2026-11-07-oakridge-rr",
+          "amount": 0.021
+        }
+      ],
+      "counts": {
+        "events": 14,
+        "matches": 52,
+        "games": 61
+      },
+      "origin": {
+        "source": "self",
+        "rating": 3
+      },
+      "firstRatedAt": "2026-06-06T14:00:00Z",
+      "lastPlayedAt": "2026-11-07T14:00:00Z",
+      "lastUpdate": {
+        "eventId": "evt-2026-11-07-oakridge-rr",
+        "engineVersion": "0.0.0",
+        "policyId": "example-2026.0",
+        "policyHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "inputHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  },
+  {
+    "kind": "state",
+    "state": {
+      "schemaVersion": "0.1.0",
+      "playerId": "p-ben",
+      "discipline": "doubles",
+      "rating": 3.61,
+      "evidence": {
+        "mu": 3.57,
+        "sigma": 0.38
+      },
+      "heldGain": 0,
+      "recentDeclines": [],
+      "counts": {
+        "events": 22,
+        "matches": 80,
+        "games": 95
+      },
+      "origin": {
+        "source": "host",
+        "rating": 3.5
+      },
+      "firstRatedAt": "2026-03-07T14:00:00Z",
+      "lastPlayedAt": "2026-11-07T14:00:00Z",
+      "lastUpdate": {
+        "eventId": "evt-2026-11-07-oakridge-rr",
+        "engineVersion": "0.0.0",
+        "policyId": "example-2026.0",
+        "policyHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "inputHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  },
+  {
+    "kind": "seed",
+    "seed": {
+      "source": "self",
+      "playerId": "p-cam",
+      "discipline": "doubles",
+      "rating": 3.5,
+      "recordedAt": "2026-11-10T18:30:00Z"
+    }
+  },
+  {
+    "kind": "seed",
+    "seed": {
+      "source": "policy_default",
+      "playerId": "p-dee",
+      "discipline": "doubles"
+    }
+  }
+]

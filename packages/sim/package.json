@@ -10,6 +10,14 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "dependencies": { "@glassrank/engine": "workspace:*", "@glassrank/schema": "workspace:*" }
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@glassrank/engine": "workspace:*",
+    "@glassrank/schema": "workspace:*"
+  }
 }

@@ -1,0 +1,539 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:schema:0.1.0:Receipt",
+  "title": "Receipt",
+  "type": "object",
+  "properties": {
+    "after": {
+      "type": "object",
+      "properties": {
+        "mu": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 20
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "sigma": {
+          "type": "number",
+          "maximum": 10,
+          "exclusiveMinimum": 0,
+          "description": "Standard deviation in rating units."
+        }
+      },
+      "required": [
+        "mu",
+        "rating",
+        "sigma"
+      ],
+      "additionalProperties": false
+    },
+    "before": {
+      "type": "object",
+      "properties": {
+        "mu": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 20
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "sigma": {
+          "type": "number",
+          "maximum": 10,
+          "exclusiveMinimum": 0,
+          "description": "Standard deviation in rating units."
+        }
+      },
+      "required": [
+        "mu",
+        "rating",
+        "sigma"
+      ],
+      "additionalProperties": false
+    },
+    "discipline": {
+      "type": "string",
+      "enum": [
+        "singles",
+        "doubles"
+      ],
+      "description": "Rated separately. Derived from team size: 1 is singles, 2 is doubles."
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "description": "Opaque event id, unique within the ledger."
+    },
+    "headline": {
+      "type": "object",
+      "properties": {
+        "delta": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 10
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "up",
+            "down",
+            "none"
+          ]
+        },
+        "facts": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]{0,47}$"
+          },
+          "additionalProperties": {
+            "type": "number"
+          },
+          "maxProperties": 64
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "first_event",
+              "beat_higher_rated",
+              "above_expected",
+              "as_expected",
+              "below_expected",
+              "lost_to_lower_rated",
+              "returning_after_break",
+              "decline_damped",
+              "decline_capped",
+              "gain_held",
+              "gain_released",
+              "matches_voided",
+              "reduced_source_weight",
+              "correction_active",
+              "correction_exempt"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "delta",
+        "direction",
+        "facts",
+        "reasons"
+      ],
+      "additionalProperties": false,
+      "description": "Inputs for the one-line explanation. `facts` holds counts the sentence cites."
+    },
+    "occurredAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC 3339 UTC instant with whole seconds, e.g. 2026-11-14T09:00:00Z.",
+      "x-glassrank-rules": [
+        "is a real calendar instant at or after 1970-01-01T00:00:00Z"
+      ]
+    },
+    "playerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "description": "Opaque player id assigned by the registry. Never a name or email."
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "engineVersion": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "Semantic version."
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "Hash of the full RateRequest. verify() re-runs that request."
+        },
+        "overlayId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+              "description": "Correction overlay id."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policyHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "Hash of the EffectivePolicy (base plus overlay) used."
+        },
+        "policyId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+          "description": "Policy config id, e.g. `glassrank-2026.1`."
+        },
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "x-glassrank-rules": [
+            "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+          ]
+        }
+      },
+      "required": [
+        "engineVersion",
+        "inputHash",
+        "overlayId",
+        "policyHash",
+        "policyId",
+        "schemaVersion"
+      ],
+      "additionalProperties": false
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "x-glassrank-rules": [
+        "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "actualPointShare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "expectedGamesWon": {
+          "type": "number",
+          "minimum": 0
+        },
+        "expectedPointShare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "gamesPlayed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gamesWon": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "keyGames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "gameIndex": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "impact": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 10
+              },
+              "matchId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                "description": "Match id, unique within its event."
+              }
+            },
+            "required": [
+              "gameIndex",
+              "impact",
+              "matchId"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 3
+        },
+        "pointsAgainst": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointsFor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "protections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "upward_bias",
+              "decline_damping",
+              "returning_protection",
+              "correction_overlay",
+              "large_gain_hold",
+              "held_gain_release",
+              "decline_cap",
+              "scale_bounds"
+            ]
+          },
+          "description": "Rules that changed the outcome."
+        },
+        "voidedMatches": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "actualPointShare",
+        "expectedGamesWon",
+        "expectedPointShare",
+        "gamesPlayed",
+        "gamesWon",
+        "keyGames",
+        "pointsAgainst",
+        "pointsFor",
+        "protections",
+        "voidedMatches"
+      ],
+      "additionalProperties": false
+    },
+    "technical": {
+      "type": "object",
+      "properties": {
+        "evidenceDelta": {
+          "type": "object",
+          "properties": {
+            "mu": {
+              "type": "number",
+              "minimum": -10,
+              "maximum": 10
+            },
+            "sigma": {
+              "type": "number",
+              "minimum": -10,
+              "maximum": 10
+            }
+          },
+          "required": [
+            "mu",
+            "sigma"
+          ],
+          "additionalProperties": false
+        },
+        "evidenceModel": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,47}$"
+        },
+        "evidenceParams": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]{0,47}$"
+          },
+          "additionalProperties": {
+            "type": "number"
+          },
+          "maxProperties": 64
+        },
+        "games": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "actualShare": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "contribution": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 10
+              },
+              "expectedShare": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "gameIndex": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "matchId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                "description": "Match id, unique within its event."
+              },
+              "opponents": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                  "description": "Opaque player id assigned by the registry. Never a name or email."
+                },
+                "minItems": 1,
+                "maxItems": 2
+              },
+              "partners": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                  "description": "Opaque player id assigned by the registry. Never a name or email."
+                },
+                "maxItems": 1
+              },
+              "score": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  }
+                ],
+                "items": false,
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "Points for teams[0] and teams[1], in that order."
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "actualShare",
+              "contribution",
+              "expectedShare",
+              "gameIndex",
+              "matchId",
+              "opponents",
+              "partners",
+              "score",
+              "weight"
+            ],
+            "additionalProperties": false,
+            "description": "One game from this player's side. `score` is [for, against]."
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "after": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 10
+              },
+              "before": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 10
+              },
+              "fired": {
+                "type": "boolean"
+              },
+              "params": {
+                "type": "object",
+                "propertyNames": {
+                  "pattern": "^[a-z][a-z0-9_]{0,47}$"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "maxProperties": 64
+              },
+              "rule": {
+                "type": "string",
+                "enum": [
+                  "upward_bias",
+                  "decline_damping",
+                  "returning_protection",
+                  "correction_overlay",
+                  "large_gain_hold",
+                  "held_gain_release",
+                  "decline_cap",
+                  "scale_bounds"
+                ]
+              }
+            },
+            "required": [
+              "after",
+              "before",
+              "fired",
+              "params",
+              "rule"
+            ],
+            "additionalProperties": false,
+            "description": "Rating change before and after one rule, with the parameters it used."
+          },
+          "description": "Every rule evaluated, in application order."
+        },
+        "sigmaWidening": {
+          "type": "object",
+          "properties": {
+            "daysAway": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sigmaAfter": {
+              "type": "number",
+              "maximum": 10,
+              "exclusiveMinimum": 0,
+              "description": "Standard deviation in rating units."
+            },
+            "sigmaBefore": {
+              "type": "number",
+              "maximum": 10,
+              "exclusiveMinimum": 0,
+              "description": "Standard deviation in rating units."
+            }
+          },
+          "required": [
+            "daysAway",
+            "sigmaAfter",
+            "sigmaBefore"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "evidenceDelta",
+        "evidenceModel",
+        "evidenceParams",
+        "games",
+        "rules",
+        "sigmaWidening"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "after",
+    "before",
+    "discipline",
+    "eventId",
+    "headline",
+    "occurredAt",
+    "playerId",
+    "provenance",
+    "schemaVersion",
+    "summary",
+    "technical"
+  ],
+  "additionalProperties": false,
+  "description": "Explains one player's rating change from one event."
+}

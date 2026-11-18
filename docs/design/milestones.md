@@ -1,0 +1,34 @@
+# Milestones
+
+From skeleton to an engine the hosted service can adopt. Metrics come before
+the engine, so there is a baseline to beat from the first engine commit.
+
+| | Milestone | Package | Done when |
+| --- | --- | --- | --- |
+| M0 | Repository skeleton | all | Done. |
+| M1 | Schemas and data contracts | schema | Done. Every seam object validates, canonicalizes, and hashes; JSON Schema is generated and checked with Ajv. See `data-model.md`. |
+| M2 | Synthetic world | sim | The same seed produces a byte-identical event log of schema-valid events. |
+| M3 | Metrics harness and baseline | sim | One command produces a report for a plain Elo baseline behind the `rate()` signature. |
+| M4 | Evidence layer | engine | Calibration beats the baseline in the sim; golden vectors match on two platforms. |
+| M5 | Policy layer and correction dial | engine | Lower improver lag and protected decliners vs. evidence-only; drift responds to the dial. |
+| M6 | Receipts, forecast, replay, verify | engine | Every receipt from a full sim run verifies; forecast and rate agree for the outcome that happened. |
+| M7 | Tuning and published results | sim | Results and sample receipts are ready to show founding clubs and advisors. |
+| M8 | Integration release | all | The hosted service can integrate from the published contract alone. |
+
+## Scope notes
+
+- **M2:** players with hidden true skill by cohort (fast improvers, steady,
+  slow decliners, new, returners, an isolated older pool with bridge players);
+  clubs running weekly doubles round robins with rotating partners; verified
+  and provisional hosts plus one that inflates results; seeded RNG.
+- **M3:** log loss and Brier score, tracking error per cohort, improver lag,
+  convergence from bad seeds, scale drift over years, damage from the
+  inflating host.
+- **M4:** Bayesian doubles update (OpenSkill or Glicko style), score-margin
+  model, uncertainty widening after time away, deterministic math.
+- **M5:** upward bias, damped declines, decline cap, large-gain threshold,
+  policy schedule resolution, overlays with expiry and exemptions.
+- **M6:** three-tier receipts with a pure text renderer, forecast through the
+  same path as rate, replay for voids and corrections.
+- **M8:** JSON command line, conformance vectors, npm 0.1 packages, a
+  compatibility policy for schema and policy versions.

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:schema:0.1.0:PredictResponse",
+  "title": "PredictResponse",
+  "type": "object",
+  "properties": {
+    "inputHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA-256 of the canonical JSON (RFC 8785) of the referenced value."
+    },
+    "prediction": {
+      "type": "object",
+      "properties": {
+        "expectedPointShare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "expectedScore": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "number",
+              "minimum": 0
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "gameWinProbability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "expectedPointShare",
+        "expectedScore",
+        "gameWinProbability"
+      ],
+      "additionalProperties": false,
+      "description": "From the side of teams[0], for one game under gameFormat."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "x-glassrank-rules": [
+        "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+      ]
+    }
+  },
+  "required": [
+    "inputHash",
+    "prediction",
+    "schemaVersion"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:schema:0.1.0:CorrectionOverlay",
+  "title": "CorrectionOverlay",
+  "type": "object",
+  "properties": {
+    "adjust": {
+      "type": "object",
+      "properties": {
+        "defaultRating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Rating on the published scale."
+        },
+        "largeGainThreshold": {
+          "type": "number",
+          "maximum": 10,
+          "exclusiveMinimum": 0
+        },
+        "lossMultiplier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Replacement values for the base policy's levers while active."
+    },
+    "announcedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC 3339 UTC instant with whole seconds, e.g. 2026-11-14T09:00:00Z.",
+      "x-glassrank-rules": [
+        "is a real calendar instant at or after 1970-01-01T00:00:00Z"
+      ]
+    },
+    "effectiveFrom": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC 3339 UTC instant with whole seconds, e.g. 2026-11-14T09:00:00Z.",
+      "x-glassrank-rules": [
+        "is a real calendar instant at or after 1970-01-01T00:00:00Z"
+      ]
+    },
+    "exemptions": {
+      "type": "object",
+      "properties": {
+        "awayDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650,
+          "description": "Players returning after at least this many days away are exempt."
+        }
+      },
+      "required": [
+        "awayDays"
+      ],
+      "additionalProperties": false
+    },
+    "expiresAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC 3339 UTC instant with whole seconds, e.g. 2026-11-14T09:00:00Z.",
+      "x-glassrank-rules": [
+        "is a real calendar instant at or after 1970-01-01T00:00:00Z"
+      ]
+    },
+    "overlayId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "description": "Correction overlay id."
+    },
+    "rationaleUrl": {
+      "type": "string",
+      "maxLength": 500,
+      "pattern": "^https://",
+      "description": "Public evidence for the correction."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "x-glassrank-rules": [
+        "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    }
+  },
+  "required": [
+    "adjust",
+    "announcedAt",
+    "effectiveFrom",
+    "exemptions",
+    "expiresAt",
+    "overlayId",
+    "schemaVersion",
+    "title"
+  ],
+  "additionalProperties": false,
+  "x-glassrank-rules": [
+    "announcedAt <= effectiveFrom < expiresAt; adjust sets at least one lever"
+  ]
+}

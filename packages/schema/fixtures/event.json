@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.1.0",
+  "eventId": "evt-2026-11-14-oakridge-rr",
+  "occurredAt": "2026-11-14T14:00:00Z",
+  "format": "round_robin",
+  "label": "Saturday round robin",
+  "source": { "hostId": "host-oakridge", "tier": "verified_host" },
+  "matches": [
+    {
+      "matchId": "m1",
+      "teams": [["p-ava", "p-ben"], ["p-cam", "p-dee"]],
+      "gameFormat": { "target": 11, "winBy": 2, "scoring": "side_out" },
+      "games": [{ "score": [11, 7] }],
+      "trust": { "weight": 1, "voided": false }
+    },
+    {
+      "matchId": "m2",
+      "teams": [["p-ava", "p-cam"], ["p-ben", "p-dee"]],
+      "gameFormat": { "target": 11, "winBy": 2, "scoring": "side_out" },
+      "games": [{ "score": [11, 9] }],
+      "trust": { "weight": 1, "voided": false }
+    },
+    {
+      "matchId": "m3",
+      "teams": [["p-ava", "p-dee"], ["p-ben", "p-cam"]],
+      "gameFormat": { "target": 11, "winBy": 2, "scoring": "side_out" },
+      "games": [{ "score": [8, 11] }],
+      "trust": { "weight": 1, "voided": false }
+    }
+  ]
+}

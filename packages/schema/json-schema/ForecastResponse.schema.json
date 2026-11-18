@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:schema:0.1.0:ForecastResponse",
+  "title": "ForecastResponse",
+  "type": "object",
+  "properties": {
+    "inputHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA-256 of the canonical JSON (RFC 8785) of the referenced value."
+    },
+    "outcomes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "after": {
+                  "type": "object",
+                  "properties": {
+                    "mu": {
+                      "type": "number",
+                      "minimum": -10,
+                      "maximum": 20
+                    },
+                    "rating": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 10
+                    },
+                    "sigma": {
+                      "type": "number",
+                      "maximum": 10,
+                      "exclusiveMinimum": 0,
+                      "description": "Standard deviation in rating units."
+                    }
+                  },
+                  "required": [
+                    "mu",
+                    "rating",
+                    "sigma"
+                  ],
+                  "additionalProperties": false
+                },
+                "before": {
+                  "type": "object",
+                  "properties": {
+                    "mu": {
+                      "type": "number",
+                      "minimum": -10,
+                      "maximum": 20
+                    },
+                    "rating": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 10
+                    },
+                    "sigma": {
+                      "type": "number",
+                      "maximum": 10,
+                      "exclusiveMinimum": 0,
+                      "description": "Standard deviation in rating units."
+                    }
+                  },
+                  "required": [
+                    "mu",
+                    "rating",
+                    "sigma"
+                  ],
+                  "additionalProperties": false
+                },
+                "delta": {
+                  "type": "number",
+                  "minimum": -10,
+                  "maximum": 10
+                },
+                "discipline": {
+                  "type": "string",
+                  "enum": [
+                    "singles",
+                    "doubles"
+                  ],
+                  "description": "Rated separately. Derived from team size: 1 is singles, 2 is doubles."
+                },
+                "playerId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                  "description": "Opaque player id assigned by the registry. Never a name or email."
+                },
+                "rulesFired": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "upward_bias",
+                      "decline_damping",
+                      "returning_protection",
+                      "correction_overlay",
+                      "large_gain_hold",
+                      "held_gain_release",
+                      "decline_cap",
+                      "scale_bounds"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "after",
+                "before",
+                "delta",
+                "discipline",
+                "playerId",
+                "rulesFired"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ending": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "timed",
+                    "retired"
+                  ],
+                  "description": "How the game ended. Absent means completed."
+                },
+                "score": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "Points for teams[0] and teams[1], in that order."
+                }
+              },
+              "required": [
+                "score"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "probability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "changes",
+          "games",
+          "probability"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "prediction": {
+      "type": "object",
+      "properties": {
+        "expectedPointShare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "expectedScore": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "number",
+              "minimum": 0
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "gameWinProbability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "expectedPointShare",
+        "expectedScore",
+        "gameWinProbability"
+      ],
+      "additionalProperties": false,
+      "description": "From the side of teams[0], for one game under gameFormat."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "x-glassrank-rules": [
+        "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+      ]
+    }
+  },
+  "required": [
+    "inputHash",
+    "outcomes",
+    "prediction",
+    "schemaVersion"
+  ],
+  "additionalProperties": false,
+  "description": "Computed by running rate() on each outcome. Nothing is stored."
+}

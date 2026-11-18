@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:schema:0.1.0:VerifyResponse",
+  "title": "VerifyResponse",
+  "type": "object",
+  "properties": {
+    "inputHashMatches": {
+      "type": "boolean"
+    },
+    "mismatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "actual": {
+            "type": "string",
+            "description": "Canonical JSON of the value in the receipt."
+          },
+          "expected": {
+            "type": "string",
+            "description": "Canonical JSON of the recomputed value."
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "actual",
+          "expected",
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 100
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "x-glassrank-rules": [
+        "compatible with schema 0.1.0 (same major; same minor while major is 0)"
+      ]
+    }
+  },
+  "required": [
+    "inputHashMatches",
+    "mismatches",
+    "ok",
+    "schemaVersion"
+  ],
+  "additionalProperties": false
+}

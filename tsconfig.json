@@ -1,8 +1,13 @@
 {
-  "files": [],
-  "references": [
-    { "path": "packages/schema" },
-    { "path": "packages/engine" },
-    { "path": "packages/sim" }
-  ]
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@glassrank/schema": ["./packages/schema/src/index.ts"],
+      "@glassrank/engine": ["./packages/engine/src/index.ts"],
+      "@glassrank/sim": ["./packages/sim/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src", "packages/*/tsdown.config.ts", "vitest.config.ts"]
 }
