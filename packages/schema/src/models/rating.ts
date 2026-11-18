@@ -73,6 +73,11 @@ export const RatingState = s.refine(
         maximum: 10,
         description: "Gain above the large-gain threshold, held until more evidence confirms it.",
       }),
+      protectedEventsRemaining: s.integer({
+        minimum: 0,
+        maximum: 20,
+        description: "Events left under returning-player protection. Set when a player returns from a long break.",
+      }),
       recentDeclines: s.array(DeclineEntry, {
         maxItems: 400,
         description: "Declines inside the decline-cap window, oldest first. The engine prunes it.",

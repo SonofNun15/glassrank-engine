@@ -53,6 +53,53 @@
                 {
                   "type": "object",
                   "properties": {
+                    "dynamicsSigma": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Uncertainty added before every event, so active players never become hard to move."
+                    },
+                    "marginWeight": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "How much the point share counts versus the win/loss result. 0 is win/loss only."
+                    },
+                    "model": {
+                      "const": "bayes_v0"
+                    },
+                    "shareScale": {
+                      "type": "number",
+                      "maximum": 20,
+                      "exclusiveMinimum": 0,
+                      "description": "Logistic slope per rating unit for the share of points won."
+                    },
+                    "sigmaFloor": {
+                      "type": "number",
+                      "maximum": 2,
+                      "exclusiveMinimum": 0,
+                      "description": "Uncertainty never drops below this."
+                    },
+                    "winScale": {
+                      "type": "number",
+                      "maximum": 20,
+                      "exclusiveMinimum": 0,
+                      "description": "Logistic slope per rating unit for winning a game: P(win) = 1 / (1 + exp(-winScale * gap))."
+                    }
+                  },
+                  "required": [
+                    "dynamicsSigma",
+                    "marginWeight",
+                    "model",
+                    "shareScale",
+                    "sigmaFloor",
+                    "winScale"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
                     "kFactor": {
                       "type": "number",
                       "maximum": 2,
@@ -830,6 +877,12 @@
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
                     "description": "Opaque player id assigned by the registry. Never a name or email."
                   },
+                  "protectedEventsRemaining": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20,
+                    "description": "Events left under returning-player protection. Set when a player returns from a long break."
+                  },
                   "rating": {
                     "type": "number",
                     "minimum": 0,
@@ -889,6 +942,7 @@
                   "lastUpdate",
                   "origin",
                   "playerId",
+                  "protectedEventsRemaining",
                   "rating",
                   "recentDeclines",
                   "schemaVersion"

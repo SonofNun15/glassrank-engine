@@ -58,6 +58,30 @@ export const EvidenceConfig = s.tagged("model", {
     }),
     useMargin: s.boolean({ description: "Score each game by point share instead of win/loss." }),
   }),
+  bayes_v0: s.object({
+    model: s.literal("bayes_v0"),
+    winScale: s.number({
+      exclusiveMinimum: 0,
+      maximum: 20,
+      description: "Logistic slope per rating unit for winning a game: P(win) = 1 / (1 + exp(-winScale * gap)).",
+    }),
+    shareScale: s.number({
+      exclusiveMinimum: 0,
+      maximum: 20,
+      description: "Logistic slope per rating unit for the share of points won.",
+    }),
+    marginWeight: s.number({
+      minimum: 0,
+      maximum: 1,
+      description: "How much the point share counts versus the win/loss result. 0 is win/loss only.",
+    }),
+    dynamicsSigma: s.number({
+      minimum: 0,
+      maximum: 1,
+      description: "Uncertainty added before every event, so active players never become hard to move.",
+    }),
+    sigmaFloor: s.number({ exclusiveMinimum: 0, maximum: 2, description: "Uncertainty never drops below this." }),
+  }),
 });
 
 export const InactivityConfig = s.object({

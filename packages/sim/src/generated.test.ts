@@ -6,6 +6,7 @@
 import { join } from "node:path";
 import { hashCanonical } from "@glassrank/schema";
 import { expect, it } from "vitest";
+import { compareSystems } from "./compare";
 import { COHORTS, DEFAULT_SCENARIO } from "./scenario";
 import { generateWorld } from "./world";
 
@@ -28,3 +29,10 @@ it("default world matches its golden summary", async () => {
     join(import.meta.dirname, "..", "golden", "default-world.json"),
   );
 });
+
+it("default comparison matches its golden report", async () => {
+  const reports = compareSystems(DEFAULT_SCENARIO);
+  await expect(`${JSON.stringify(reports, null, 2)}\n`).toMatchFileSnapshot(
+    join(import.meta.dirname, "..", "golden", "default-comparison.json"),
+  );
+}, 120_000);

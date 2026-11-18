@@ -1,0 +1,1341 @@
+{
+  "input": {
+    "schemaVersion": "0.1.0",
+    "priors": [
+      {
+        "kind": "state",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "playerId": "p-ava",
+          "discipline": "doubles",
+          "rating": 3.42,
+          "evidence": {
+            "mu": 3.38,
+            "sigma": 0.41
+          },
+          "heldGain": 0,
+          "protectedEventsRemaining": 0,
+          "recentDeclines": [
+            {
+              "at": "2026-11-07T14:00:00Z",
+              "eventId": "evt-2026-11-07-oakridge-rr",
+              "amount": 0.021
+            }
+          ],
+          "counts": {
+            "events": 14,
+            "matches": 52,
+            "games": 61
+          },
+          "origin": {
+            "source": "self",
+            "rating": 3
+          },
+          "firstRatedAt": "2026-06-06T14:00:00Z",
+          "lastPlayedAt": "2026-11-07T14:00:00Z",
+          "lastUpdate": {
+            "eventId": "evt-2026-11-07-oakridge-rr",
+            "engineVersion": "0.0.0",
+            "policyId": "example-2026.0",
+            "policyHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "inputHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      },
+      {
+        "kind": "state",
+        "state": {
+          "schemaVersion": "0.1.0",
+          "playerId": "p-ben",
+          "discipline": "doubles",
+          "rating": 3.61,
+          "evidence": {
+            "mu": 3.57,
+            "sigma": 0.38
+          },
+          "heldGain": 0,
+          "protectedEventsRemaining": 0,
+          "recentDeclines": [],
+          "counts": {
+            "events": 22,
+            "matches": 80,
+            "games": 95
+          },
+          "origin": {
+            "source": "host",
+            "rating": 3.5
+          },
+          "firstRatedAt": "2026-03-07T14:00:00Z",
+          "lastPlayedAt": "2026-11-07T14:00:00Z",
+          "lastUpdate": {
+            "eventId": "evt-2026-11-07-oakridge-rr",
+            "engineVersion": "0.0.0",
+            "policyId": "example-2026.0",
+            "policyHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "inputHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      },
+      {
+        "kind": "seed",
+        "seed": {
+          "source": "self",
+          "playerId": "p-cam",
+          "discipline": "doubles",
+          "rating": 3.5,
+          "recordedAt": "2026-11-10T18:30:00Z"
+        }
+      },
+      {
+        "kind": "seed",
+        "seed": {
+          "source": "policy_default",
+          "playerId": "p-dee",
+          "discipline": "doubles"
+        }
+      }
+    ],
+    "event": {
+      "schemaVersion": "0.1.0",
+      "eventId": "evt-2026-11-14-oakridge-rr",
+      "occurredAt": "2026-11-14T14:00:00Z",
+      "format": "round_robin",
+      "label": "Saturday round robin",
+      "source": {
+        "hostId": "host-oakridge",
+        "tier": "verified_host"
+      },
+      "matches": [
+        {
+          "matchId": "m1",
+          "teams": [
+            [
+              "p-ava",
+              "p-ben"
+            ],
+            [
+              "p-cam",
+              "p-dee"
+            ]
+          ],
+          "gameFormat": {
+            "target": 11,
+            "winBy": 2,
+            "scoring": "side_out"
+          },
+          "games": [
+            {
+              "score": [
+                11,
+                7
+              ]
+            }
+          ],
+          "trust": {
+            "weight": 1,
+            "voided": false
+          }
+        },
+        {
+          "matchId": "m2",
+          "teams": [
+            [
+              "p-ava",
+              "p-cam"
+            ],
+            [
+              "p-ben",
+              "p-dee"
+            ]
+          ],
+          "gameFormat": {
+            "target": 11,
+            "winBy": 2,
+            "scoring": "side_out"
+          },
+          "games": [
+            {
+              "score": [
+                11,
+                9
+              ]
+            }
+          ],
+          "trust": {
+            "weight": 1,
+            "voided": false
+          }
+        },
+        {
+          "matchId": "m3",
+          "teams": [
+            [
+              "p-ava",
+              "p-dee"
+            ],
+            [
+              "p-ben",
+              "p-cam"
+            ]
+          ],
+          "gameFormat": {
+            "target": 11,
+            "winBy": 2,
+            "scoring": "side_out"
+          },
+          "games": [
+            {
+              "score": [
+                8,
+                11
+              ]
+            }
+          ],
+          "trust": {
+            "weight": 1,
+            "voided": false
+          }
+        }
+      ]
+    },
+    "policy": {
+      "base": {
+        "schemaVersion": "0.1.0",
+        "policyId": "example-2026.0",
+        "title": "Example policy for fixtures and the Elo baseline (not a proposal)",
+        "scale": {
+          "min": 2,
+          "max": 8,
+          "displayDecimals": 3
+        },
+        "seeding": {
+          "defaultRating": 3,
+          "defaultSigma": 1,
+          "sigmaBySource": {
+            "self": 0.9,
+            "host": 0.6,
+            "external_claimed": 0.7
+          }
+        },
+        "sourceWeights": {
+          "verified_host": 1,
+          "provisional_host": 0.5,
+          "video_verified": 1
+        },
+        "evidence": {
+          "model": "elo_baseline",
+          "kFactor": 0.08,
+          "spread": 1,
+          "useMargin": true
+        },
+        "inactivity": {
+          "graceDays": 30,
+          "sigmaGrowthPerDay": 0.005,
+          "sigmaMax": 1.2
+        },
+        "rules": {
+          "upwardBias": {
+            "gainMultiplier": 1.25
+          },
+          "declineDamping": {
+            "lossMultiplier": 0.6
+          },
+          "returningProtection": {
+            "awayDays": 60,
+            "events": 3,
+            "lossMultiplier": 0.5
+          },
+          "declineCap": {
+            "amount": 0.15,
+            "windowDays": 30
+          },
+          "largeGain": {
+            "perEventThreshold": 0.25,
+            "minGamesToExceed": 6
+          }
+        }
+      },
+      "overlay": null
+    }
+  },
+  "output": {
+    "schemaVersion": "0.1.0",
+    "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52",
+    "states": [
+      {
+        "schemaVersion": "0.1.0",
+        "playerId": "p-ava",
+        "discipline": "doubles",
+        "rating": 3.42,
+        "evidence": {
+          "mu": 3.384475861,
+          "sigma": 0.41
+        },
+        "heldGain": 0,
+        "protectedEventsRemaining": 0,
+        "recentDeclines": [
+          {
+            "at": "2026-11-07T14:00:00Z",
+            "eventId": "evt-2026-11-07-oakridge-rr",
+            "amount": 0.021
+          }
+        ],
+        "counts": {
+          "events": 15,
+          "matches": 55,
+          "games": 64
+        },
+        "origin": {
+          "source": "self",
+          "rating": 3
+        },
+        "firstRatedAt": "2026-06-06T14:00:00Z",
+        "lastPlayedAt": "2026-11-14T14:00:00Z",
+        "lastUpdate": {
+          "eventId": "evt-2026-11-14-oakridge-rr",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "playerId": "p-ben",
+        "discipline": "doubles",
+        "rating": 3.581818038,
+        "evidence": {
+          "mu": 3.563030064,
+          "sigma": 0.38
+        },
+        "heldGain": 0,
+        "protectedEventsRemaining": 0,
+        "recentDeclines": [
+          {
+            "at": "2026-11-14T14:00:00Z",
+            "eventId": "evt-2026-11-14-oakridge-rr",
+            "amount": 0.028181962
+          }
+        ],
+        "counts": {
+          "events": 23,
+          "matches": 83,
+          "games": 98
+        },
+        "origin": {
+          "source": "host",
+          "rating": 3.5
+        },
+        "firstRatedAt": "2026-03-07T14:00:00Z",
+        "lastPlayedAt": "2026-11-14T14:00:00Z",
+        "lastUpdate": {
+          "eventId": "evt-2026-11-14-oakridge-rr",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "playerId": "p-cam",
+        "discipline": "doubles",
+        "rating": 3.493638646,
+        "evidence": {
+          "mu": 3.489397744,
+          "sigma": 0.9
+        },
+        "heldGain": 0,
+        "protectedEventsRemaining": 0,
+        "recentDeclines": [
+          {
+            "at": "2026-11-14T14:00:00Z",
+            "eventId": "evt-2026-11-14-oakridge-rr",
+            "amount": 0.006361354
+          }
+        ],
+        "counts": {
+          "events": 1,
+          "matches": 3,
+          "games": 3
+        },
+        "origin": {
+          "source": "self",
+          "rating": 3.5
+        },
+        "firstRatedAt": "2026-11-14T14:00:00Z",
+        "lastPlayedAt": "2026-11-14T14:00:00Z",
+        "lastUpdate": {
+          "eventId": "evt-2026-11-14-oakridge-rr",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "playerId": "p-dee",
+        "discipline": "doubles",
+        "rating": 3.016370414,
+        "evidence": {
+          "mu": 3.013096331,
+          "sigma": 1
+        },
+        "heldGain": 0,
+        "protectedEventsRemaining": 0,
+        "recentDeclines": [],
+        "counts": {
+          "events": 1,
+          "matches": 3,
+          "games": 3
+        },
+        "origin": {
+          "source": "policy_default",
+          "rating": 3
+        },
+        "firstRatedAt": "2026-11-14T14:00:00Z",
+        "lastPlayedAt": "2026-11-14T14:00:00Z",
+        "lastUpdate": {
+          "eventId": "evt-2026-11-14-oakridge-rr",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      }
+    ],
+    "receipts": [
+      {
+        "schemaVersion": "0.1.0",
+        "eventId": "evt-2026-11-14-oakridge-rr",
+        "playerId": "p-ava",
+        "discipline": "doubles",
+        "occurredAt": "2026-11-14T14:00:00Z",
+        "before": {
+          "rating": 3.42,
+          "mu": 3.38,
+          "sigma": 0.41
+        },
+        "after": {
+          "rating": 3.42,
+          "mu": 3.384475861,
+          "sigma": 0.41
+        },
+        "headline": {
+          "delta": 0,
+          "direction": "none",
+          "reasons": [
+            "as_expected",
+            "decline_damped"
+          ],
+          "facts": {
+            "games_played": 3,
+            "games_won": 2,
+            "higher_rated_wins": 0,
+            "lower_rated_losses": 0,
+            "voided_matches": 0
+          }
+        },
+        "summary": {
+          "gamesPlayed": 3,
+          "gamesWon": 2,
+          "expectedGamesWon": 1.526215485,
+          "pointsFor": 30,
+          "pointsAgainst": 27,
+          "expectedPointShare": 0.508738495,
+          "actualPointShare": 0.526315789,
+          "voidedMatches": 0,
+          "keyGames": [
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "impact": 0.008786096
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "impact": -0.003063198
+            },
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "impact": -0.001247038
+            }
+          ],
+          "protections": [
+            "decline_damping"
+          ]
+        },
+        "technical": {
+          "evidenceModel": "elo_baseline",
+          "evidenceParams": {
+            "k_factor": 0.08,
+            "spread": 1,
+            "use_margin": 1
+          },
+          "sigmaWidening": {
+            "daysAway": 7,
+            "sigmaBefore": 0.41,
+            "sigmaAfter": 0.41
+          },
+          "games": [
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "partners": [
+                "p-ben"
+              ],
+              "opponents": [
+                "p-cam",
+                "p-dee"
+              ],
+              "score": [
+                11,
+                7
+              ],
+              "weight": 1,
+              "expectedShare": 0.626699082,
+              "actualShare": 0.611111111,
+              "contribution": -0.001247038
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "partners": [
+                "p-cam"
+              ],
+              "opponents": [
+                "p-ben",
+                "p-dee"
+              ],
+              "score": [
+                11,
+                9
+              ],
+              "weight": 1,
+              "expectedShare": 0.588289972,
+              "actualShare": 0.55,
+              "contribution": -0.003063198
+            },
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "partners": [
+                "p-dee"
+              ],
+              "opponents": [
+                "p-ben",
+                "p-cam"
+              ],
+              "score": [
+                8,
+                11
+              ],
+              "weight": 1,
+              "expectedShare": 0.311226431,
+              "actualShare": 0.421052632,
+              "contribution": 0.008786096
+            }
+          ],
+          "evidenceDelta": {
+            "mu": 0.004475861,
+            "sigma": 0
+          },
+          "rules": [
+            {
+              "rule": "upward_bias",
+              "fired": false,
+              "before": -0.035524139,
+              "after": -0.035524139,
+              "params": {
+                "gain_multiplier": 1.25,
+                "evidence_change": 0.004475861
+              }
+            },
+            {
+              "rule": "decline_damping",
+              "fired": true,
+              "before": -0.035524139,
+              "after": 0,
+              "params": {
+                "loss_multiplier": 0.6,
+                "evidence_change": 0.004475861
+              }
+            },
+            {
+              "rule": "returning_protection",
+              "fired": false,
+              "before": 0,
+              "after": 0,
+              "params": {
+                "loss_multiplier": 0.5,
+                "protected_events": 0,
+                "days_away": 7
+              }
+            },
+            {
+              "rule": "correction_overlay",
+              "fired": false,
+              "before": 0,
+              "after": 0,
+              "params": {
+                "active": 0,
+                "exempt": 0
+              }
+            },
+            {
+              "rule": "large_gain_hold",
+              "fired": false,
+              "before": 0,
+              "after": 0,
+              "params": {
+                "threshold": 0.25,
+                "min_games_to_exceed": 6,
+                "games": 3
+              }
+            },
+            {
+              "rule": "held_gain_release",
+              "fired": false,
+              "before": 0,
+              "after": 0,
+              "params": {
+                "held_before": 0,
+                "held_after": 0,
+                "forfeited": 0
+              }
+            },
+            {
+              "rule": "decline_cap",
+              "fired": false,
+              "before": 0,
+              "after": 0,
+              "params": {
+                "amount": 0.15,
+                "window_days": 30,
+                "used": 0.021
+              }
+            },
+            {
+              "rule": "scale_bounds",
+              "fired": false,
+              "before": 0,
+              "after": 0,
+              "params": {
+                "min": 2,
+                "max": 8
+              }
+            }
+          ]
+        },
+        "provenance": {
+          "schemaVersion": "0.1.0",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "overlayId": null,
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "eventId": "evt-2026-11-14-oakridge-rr",
+        "playerId": "p-ben",
+        "discipline": "doubles",
+        "occurredAt": "2026-11-14T14:00:00Z",
+        "before": {
+          "rating": 3.61,
+          "mu": 3.57,
+          "sigma": 0.38
+        },
+        "after": {
+          "rating": 3.581818038,
+          "mu": 3.563030064,
+          "sigma": 0.38
+        },
+        "headline": {
+          "delta": -0.028181962,
+          "direction": "down",
+          "reasons": [
+            "below_expected",
+            "decline_damped"
+          ],
+          "facts": {
+            "games_played": 3,
+            "games_won": 2,
+            "higher_rated_wins": 0,
+            "lower_rated_losses": 0,
+            "voided_matches": 0
+          }
+        },
+        "summary": {
+          "gamesPlayed": 3,
+          "gamesWon": 2,
+          "expectedGamesWon": 1.727182678,
+          "pointsFor": 31,
+          "pointsAgainst": 26,
+          "expectedPointShare": 0.575727559,
+          "actualPointShare": 0.543859649,
+          "voidedMatches": 0,
+          "keyGames": [
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "impact": -0.008786096
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "impact": 0.003063198
+            },
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "impact": -0.001247038
+            }
+          ],
+          "protections": [
+            "decline_damping"
+          ]
+        },
+        "technical": {
+          "evidenceModel": "elo_baseline",
+          "evidenceParams": {
+            "k_factor": 0.08,
+            "spread": 1,
+            "use_margin": 1
+          },
+          "sigmaWidening": {
+            "daysAway": 7,
+            "sigmaBefore": 0.38,
+            "sigmaAfter": 0.38
+          },
+          "games": [
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "partners": [
+                "p-ava"
+              ],
+              "opponents": [
+                "p-cam",
+                "p-dee"
+              ],
+              "score": [
+                11,
+                7
+              ],
+              "weight": 1,
+              "expectedShare": 0.626699082,
+              "actualShare": 0.611111111,
+              "contribution": -0.001247038
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "partners": [
+                "p-dee"
+              ],
+              "opponents": [
+                "p-ava",
+                "p-cam"
+              ],
+              "score": [
+                9,
+                11
+              ],
+              "weight": 1,
+              "expectedShare": 0.411710028,
+              "actualShare": 0.45,
+              "contribution": 0.003063198
+            },
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "partners": [
+                "p-cam"
+              ],
+              "opponents": [
+                "p-ava",
+                "p-dee"
+              ],
+              "score": [
+                11,
+                8
+              ],
+              "weight": 1,
+              "expectedShare": 0.688773569,
+              "actualShare": 0.578947368,
+              "contribution": -0.008786096
+            }
+          ],
+          "evidenceDelta": {
+            "mu": -0.006969936,
+            "sigma": 0
+          },
+          "rules": [
+            {
+              "rule": "upward_bias",
+              "fired": false,
+              "before": -0.046969936,
+              "after": -0.046969936,
+              "params": {
+                "gain_multiplier": 1.25,
+                "evidence_change": -0.006969936
+              }
+            },
+            {
+              "rule": "decline_damping",
+              "fired": true,
+              "before": -0.046969936,
+              "after": -0.028181962,
+              "params": {
+                "loss_multiplier": 0.6,
+                "evidence_change": -0.006969936
+              }
+            },
+            {
+              "rule": "returning_protection",
+              "fired": false,
+              "before": -0.028181962,
+              "after": -0.028181962,
+              "params": {
+                "loss_multiplier": 0.5,
+                "protected_events": 0,
+                "days_away": 7
+              }
+            },
+            {
+              "rule": "correction_overlay",
+              "fired": false,
+              "before": -0.028181962,
+              "after": -0.028181962,
+              "params": {
+                "active": 0,
+                "exempt": 0
+              }
+            },
+            {
+              "rule": "large_gain_hold",
+              "fired": false,
+              "before": -0.028181962,
+              "after": -0.028181962,
+              "params": {
+                "threshold": 0.25,
+                "min_games_to_exceed": 6,
+                "games": 3
+              }
+            },
+            {
+              "rule": "held_gain_release",
+              "fired": false,
+              "before": -0.028181962,
+              "after": -0.028181962,
+              "params": {
+                "held_before": 0,
+                "held_after": 0,
+                "forfeited": 0
+              }
+            },
+            {
+              "rule": "decline_cap",
+              "fired": false,
+              "before": -0.028181962,
+              "after": -0.028181962,
+              "params": {
+                "amount": 0.15,
+                "window_days": 30,
+                "used": 0
+              }
+            },
+            {
+              "rule": "scale_bounds",
+              "fired": false,
+              "before": -0.028181962,
+              "after": -0.028181962,
+              "params": {
+                "min": 2,
+                "max": 8
+              }
+            }
+          ]
+        },
+        "provenance": {
+          "schemaVersion": "0.1.0",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "overlayId": null,
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "eventId": "evt-2026-11-14-oakridge-rr",
+        "playerId": "p-cam",
+        "discipline": "doubles",
+        "occurredAt": "2026-11-14T14:00:00Z",
+        "before": {
+          "rating": 3.5,
+          "mu": 3.5,
+          "sigma": 0.9
+        },
+        "after": {
+          "rating": 3.493638646,
+          "mu": 3.489397744,
+          "sigma": 0.9
+        },
+        "headline": {
+          "delta": -0.006361354,
+          "direction": "down",
+          "reasons": [
+            "first_event",
+            "below_expected",
+            "decline_damped"
+          ],
+          "facts": {
+            "games_played": 3,
+            "games_won": 2,
+            "higher_rated_wins": 0,
+            "lower_rated_losses": 0,
+            "voided_matches": 0
+          }
+        },
+        "summary": {
+          "gamesPlayed": 3,
+          "gamesWon": 2,
+          "expectedGamesWon": 1.650364459,
+          "pointsFor": 29,
+          "pointsAgainst": 28,
+          "expectedPointShare": 0.550121486,
+          "actualPointShare": 0.50877193,
+          "voidedMatches": 0,
+          "keyGames": [
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "impact": -0.008786096
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "impact": -0.003063198
+            },
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "impact": 0.001247038
+            }
+          ],
+          "protections": [
+            "decline_damping"
+          ]
+        },
+        "technical": {
+          "evidenceModel": "elo_baseline",
+          "evidenceParams": {
+            "k_factor": 0.08,
+            "spread": 1,
+            "use_margin": 1
+          },
+          "sigmaWidening": {
+            "daysAway": 0,
+            "sigmaBefore": 0.9,
+            "sigmaAfter": 0.9
+          },
+          "games": [
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "partners": [
+                "p-dee"
+              ],
+              "opponents": [
+                "p-ava",
+                "p-ben"
+              ],
+              "score": [
+                7,
+                11
+              ],
+              "weight": 1,
+              "expectedShare": 0.373300918,
+              "actualShare": 0.388888889,
+              "contribution": 0.001247038
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "partners": [
+                "p-ava"
+              ],
+              "opponents": [
+                "p-ben",
+                "p-dee"
+              ],
+              "score": [
+                11,
+                9
+              ],
+              "weight": 1,
+              "expectedShare": 0.588289972,
+              "actualShare": 0.55,
+              "contribution": -0.003063198
+            },
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "partners": [
+                "p-ben"
+              ],
+              "opponents": [
+                "p-ava",
+                "p-dee"
+              ],
+              "score": [
+                11,
+                8
+              ],
+              "weight": 1,
+              "expectedShare": 0.688773569,
+              "actualShare": 0.578947368,
+              "contribution": -0.008786096
+            }
+          ],
+          "evidenceDelta": {
+            "mu": -0.010602256,
+            "sigma": 0
+          },
+          "rules": [
+            {
+              "rule": "upward_bias",
+              "fired": false,
+              "before": -0.010602256,
+              "after": -0.010602256,
+              "params": {
+                "gain_multiplier": 1.25,
+                "evidence_change": -0.010602256
+              }
+            },
+            {
+              "rule": "decline_damping",
+              "fired": true,
+              "before": -0.010602256,
+              "after": -0.006361354,
+              "params": {
+                "loss_multiplier": 0.6,
+                "evidence_change": -0.010602256
+              }
+            },
+            {
+              "rule": "returning_protection",
+              "fired": false,
+              "before": -0.006361354,
+              "after": -0.006361354,
+              "params": {
+                "loss_multiplier": 0.5,
+                "protected_events": 0,
+                "days_away": 0
+              }
+            },
+            {
+              "rule": "correction_overlay",
+              "fired": false,
+              "before": -0.006361354,
+              "after": -0.006361354,
+              "params": {
+                "active": 0,
+                "exempt": 0
+              }
+            },
+            {
+              "rule": "large_gain_hold",
+              "fired": false,
+              "before": -0.006361354,
+              "after": -0.006361354,
+              "params": {
+                "threshold": 0.25,
+                "min_games_to_exceed": 6,
+                "games": 3
+              }
+            },
+            {
+              "rule": "held_gain_release",
+              "fired": false,
+              "before": -0.006361354,
+              "after": -0.006361354,
+              "params": {
+                "held_before": 0,
+                "held_after": 0,
+                "forfeited": 0
+              }
+            },
+            {
+              "rule": "decline_cap",
+              "fired": false,
+              "before": -0.006361354,
+              "after": -0.006361354,
+              "params": {
+                "amount": 0.15,
+                "window_days": 30,
+                "used": 0
+              }
+            },
+            {
+              "rule": "scale_bounds",
+              "fired": false,
+              "before": -0.006361354,
+              "after": -0.006361354,
+              "params": {
+                "min": 2,
+                "max": 8
+              }
+            }
+          ]
+        },
+        "provenance": {
+          "schemaVersion": "0.1.0",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "overlayId": null,
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      },
+      {
+        "schemaVersion": "0.1.0",
+        "eventId": "evt-2026-11-14-oakridge-rr",
+        "playerId": "p-dee",
+        "discipline": "doubles",
+        "occurredAt": "2026-11-14T14:00:00Z",
+        "before": {
+          "rating": 3,
+          "mu": 3,
+          "sigma": 1
+        },
+        "after": {
+          "rating": 3.016370414,
+          "mu": 3.013096331,
+          "sigma": 1
+        },
+        "headline": {
+          "delta": 0.016370414,
+          "direction": "up",
+          "reasons": [
+            "first_event",
+            "above_expected"
+          ],
+          "facts": {
+            "games_played": 3,
+            "games_won": 0,
+            "higher_rated_wins": 0,
+            "lower_rated_losses": 0,
+            "voided_matches": 0
+          }
+        },
+        "summary": {
+          "gamesPlayed": 3,
+          "gamesWon": 0,
+          "expectedGamesWon": 1.096237378,
+          "pointsFor": 24,
+          "pointsAgainst": 33,
+          "expectedPointShare": 0.365412459,
+          "actualPointShare": 0.421052632,
+          "voidedMatches": 0,
+          "keyGames": [
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "impact": 0.008786096
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "impact": 0.003063198
+            },
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "impact": 0.001247038
+            }
+          ],
+          "protections": [
+            "upward_bias"
+          ]
+        },
+        "technical": {
+          "evidenceModel": "elo_baseline",
+          "evidenceParams": {
+            "k_factor": 0.08,
+            "spread": 1,
+            "use_margin": 1
+          },
+          "sigmaWidening": {
+            "daysAway": 0,
+            "sigmaBefore": 1,
+            "sigmaAfter": 1
+          },
+          "games": [
+            {
+              "matchId": "m1",
+              "gameIndex": 0,
+              "partners": [
+                "p-cam"
+              ],
+              "opponents": [
+                "p-ava",
+                "p-ben"
+              ],
+              "score": [
+                7,
+                11
+              ],
+              "weight": 1,
+              "expectedShare": 0.373300918,
+              "actualShare": 0.388888889,
+              "contribution": 0.001247038
+            },
+            {
+              "matchId": "m2",
+              "gameIndex": 0,
+              "partners": [
+                "p-ben"
+              ],
+              "opponents": [
+                "p-ava",
+                "p-cam"
+              ],
+              "score": [
+                9,
+                11
+              ],
+              "weight": 1,
+              "expectedShare": 0.411710028,
+              "actualShare": 0.45,
+              "contribution": 0.003063198
+            },
+            {
+              "matchId": "m3",
+              "gameIndex": 0,
+              "partners": [
+                "p-ava"
+              ],
+              "opponents": [
+                "p-ben",
+                "p-cam"
+              ],
+              "score": [
+                8,
+                11
+              ],
+              "weight": 1,
+              "expectedShare": 0.311226431,
+              "actualShare": 0.421052632,
+              "contribution": 0.008786096
+            }
+          ],
+          "evidenceDelta": {
+            "mu": 0.013096331,
+            "sigma": 0
+          },
+          "rules": [
+            {
+              "rule": "upward_bias",
+              "fired": true,
+              "before": 0.013096331,
+              "after": 0.016370414,
+              "params": {
+                "gain_multiplier": 1.25,
+                "evidence_change": 0.013096331
+              }
+            },
+            {
+              "rule": "decline_damping",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "loss_multiplier": 0.6,
+                "evidence_change": 0.013096331
+              }
+            },
+            {
+              "rule": "returning_protection",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "loss_multiplier": 0.5,
+                "protected_events": 0,
+                "days_away": 0
+              }
+            },
+            {
+              "rule": "correction_overlay",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "active": 0,
+                "exempt": 0
+              }
+            },
+            {
+              "rule": "large_gain_hold",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "threshold": 0.25,
+                "min_games_to_exceed": 6,
+                "games": 3
+              }
+            },
+            {
+              "rule": "held_gain_release",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "held_before": 0,
+                "held_after": 0,
+                "forfeited": 0
+              }
+            },
+            {
+              "rule": "decline_cap",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "amount": 0.15,
+                "window_days": 30,
+                "used": 0
+              }
+            },
+            {
+              "rule": "scale_bounds",
+              "fired": false,
+              "before": 0.016370414,
+              "after": 0.016370414,
+              "params": {
+                "min": 2,
+                "max": 8
+              }
+            }
+          ]
+        },
+        "provenance": {
+          "schemaVersion": "0.1.0",
+          "engineVersion": "0.1.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "overlayId": null,
+          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+        }
+      }
+    ],
+    "diagnostics": []
+  }
+}

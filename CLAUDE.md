@@ -32,7 +32,8 @@ corepack enable
 pnpm install
 pnpm build      # tsdown in each package (dependency order) -> dist/index.js + index.d.ts
 pnpm test       # type-checks all sources and tests, then vitest (runs from source, no build needed)
-pnpm generate   # rewrite generated files (JSON Schema, derived fixtures) from source; review the diff
+pnpm generate   # rewrite generated files (JSON Schema, fixtures, engine/sim goldens) from source; review the diff
+pnpm sim        # build, then compare rating systems on the default simulated world
 ```
 
 ## Conventions

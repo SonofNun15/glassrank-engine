@@ -89,9 +89,9 @@ defaults: the bytes that were validated are the bytes that get hashed.
 - **Privacy by construction:** ids are opaque (`^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$`,
   so an email address is rejected). There is no field for name, contact, or
   age anywhere, and unknown properties are rejected.
-- **Evidence models** are a tagged union on `model`. v0.1 defines only
-  `elo_baseline`, for the metrics baseline (M3). The Bayesian model is added as
-  a new variant in M4, which is a minor schema bump.
+- **Evidence models** are a tagged union on `model`: `elo_baseline` (the
+  metrics baseline) and `bayes_v0`. New models are added as new variants.
+  Schema 0.1.0 is unreleased, so these additions did not bump the version.
 
 ## Versioning
 

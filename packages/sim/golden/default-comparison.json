@@ -1,0 +1,350 @@
+[
+  {
+    "name": "elo baseline",
+    "calibration": {
+      "games": 19791,
+      "logLoss": 0.6685,
+      "brier": 0.2352,
+      "establishedLogLoss": 0.6619
+    },
+    "cohorts": {
+      "fast_improver": {
+        "n": 3140,
+        "bias": -0.2522,
+        "rmse": 0.3155
+      },
+      "steady": {
+        "n": 6179,
+        "bias": -0.1398,
+        "rmse": 0.2254
+      },
+      "slow_decliner": {
+        "n": 2597,
+        "bias": -0.0998,
+        "rmse": 0.182
+      },
+      "new_player": {
+        "n": 2925,
+        "bias": -0.2164,
+        "rmse": 0.2909
+      },
+      "returner": {
+        "n": 1562,
+        "bias": -0.1004,
+        "rmse": 0.1918
+      },
+      "older_pool": {
+        "n": 2153,
+        "bias": 0.0433,
+        "rmse": 0.1586
+      }
+    },
+    "overall": {
+      "n": 18556,
+      "bias": -0.1407,
+      "rmse": 0.2403
+    },
+    "seeds": {
+      "badSeeds": 51,
+      "medianEventsToConverge": 18,
+      "convergedWithin10": 10
+    },
+    "driftByQuarter": [
+      -0.001,
+      -0.0545,
+      -0.078,
+      -0.0846,
+      -0.099,
+      -0.1046,
+      -0.121,
+      -0.1349,
+      -0.1505,
+      -0.1584,
+      -0.1695,
+      -0.1766
+    ],
+    "returners": {
+      "n": 96,
+      "bias": 0.0872,
+      "rmse": 0.2351
+    },
+    "inflation": {
+      "favored": {
+        "n": 342,
+        "bias": 0.2213,
+        "rmse": 0.2828
+      },
+      "clubmates": {
+        "n": 3059,
+        "bias": -0.2372,
+        "rmse": 0.2977
+      }
+    },
+    "experience": {
+      "dropShare": 0.5031,
+      "meanDrop": 0.0409,
+      "largestDrop": 0.1673
+    }
+  },
+  {
+    "name": "evidence only",
+    "calibration": {
+      "games": 19791,
+      "logLoss": 0.6555,
+      "brier": 0.2307,
+      "establishedLogLoss": 0.6528
+    },
+    "cohorts": {
+      "fast_improver": {
+        "n": 3140,
+        "bias": -0.2097,
+        "rmse": 0.2735
+      },
+      "steady": {
+        "n": 6179,
+        "bias": -0.1135,
+        "rmse": 0.2055
+      },
+      "slow_decliner": {
+        "n": 2597,
+        "bias": -0.076,
+        "rmse": 0.1502
+      },
+      "new_player": {
+        "n": 2925,
+        "bias": -0.2584,
+        "rmse": 0.3102
+      },
+      "returner": {
+        "n": 1562,
+        "bias": -0.1357,
+        "rmse": 0.2374
+      },
+      "older_pool": {
+        "n": 2153,
+        "bias": 0.0218,
+        "rmse": 0.1356
+      }
+    },
+    "overall": {
+      "n": 18556,
+      "bias": -0.1335,
+      "rmse": 0.2279
+    },
+    "seeds": {
+      "badSeeds": 51,
+      "medianEventsToConverge": 5,
+      "convergedWithin10": 36
+    },
+    "driftByQuarter": [
+      0.018,
+      -0.0284,
+      -0.0527,
+      -0.0657,
+      -0.0886,
+      -0.0954,
+      -0.1154,
+      -0.1303,
+      -0.1445,
+      -0.1522,
+      -0.1628,
+      -0.1672
+    ],
+    "returners": {
+      "n": 96,
+      "bias": 0.0061,
+      "rmse": 0.3053
+    },
+    "inflation": {
+      "favored": {
+        "n": 342,
+        "bias": 0.2221,
+        "rmse": 0.3047
+      },
+      "clubmates": {
+        "n": 3059,
+        "bias": -0.2032,
+        "rmse": 0.2569
+      }
+    },
+    "experience": {
+      "dropShare": 0.5022,
+      "meanDrop": 0.0423,
+      "largestDrop": 0.5515
+    }
+  },
+  {
+    "name": "glassrank",
+    "calibration": {
+      "games": 19791,
+      "logLoss": 0.6555,
+      "brier": 0.2307,
+      "establishedLogLoss": 0.6528
+    },
+    "cohorts": {
+      "fast_improver": {
+        "n": 3140,
+        "bias": -0.1962,
+        "rmse": 0.2622
+      },
+      "steady": {
+        "n": 6179,
+        "bias": -0.0982,
+        "rmse": 0.1971
+      },
+      "slow_decliner": {
+        "n": 2597,
+        "bias": -0.0627,
+        "rmse": 0.1426
+      },
+      "new_player": {
+        "n": 2925,
+        "bias": -0.2346,
+        "rmse": 0.2949
+      },
+      "returner": {
+        "n": 1562,
+        "bias": -0.0979,
+        "rmse": 0.2103
+      },
+      "older_pool": {
+        "n": 2153,
+        "bias": 0.0359,
+        "rmse": 0.1369
+      }
+    },
+    "overall": {
+      "n": 18556,
+      "bias": -0.1157,
+      "rmse": 0.2168
+    },
+    "seeds": {
+      "badSeeds": 51,
+      "medianEventsToConverge": 9,
+      "convergedWithin10": 30
+    },
+    "driftByQuarter": [
+      0.0979,
+      0.0348,
+      -0.0194,
+      -0.0352,
+      -0.0623,
+      -0.0731,
+      -0.0951,
+      -0.1141,
+      -0.1289,
+      -0.1373,
+      -0.148,
+      -0.1533
+    ],
+    "returners": {
+      "n": 96,
+      "bias": 0.1606,
+      "rmse": 0.3053
+    },
+    "inflation": {
+      "favored": {
+        "n": 342,
+        "bias": 0.2384,
+        "rmse": 0.3137
+      },
+      "clubmates": {
+        "n": 3059,
+        "bias": -0.1897,
+        "rmse": 0.2472
+      }
+    },
+    "experience": {
+      "dropShare": 0.4874,
+      "meanDrop": 0.0342,
+      "largestDrop": 0.2
+    }
+  },
+  {
+    "name": "glassrank + dial (yr 2)",
+    "calibration": {
+      "games": 19791,
+      "logLoss": 0.6555,
+      "brier": 0.2307,
+      "establishedLogLoss": 0.6528
+    },
+    "cohorts": {
+      "fast_improver": {
+        "n": 3140,
+        "bias": -0.1994,
+        "rmse": 0.265
+      },
+      "steady": {
+        "n": 6179,
+        "bias": -0.1021,
+        "rmse": 0.1988
+      },
+      "slow_decliner": {
+        "n": 2597,
+        "bias": -0.0667,
+        "rmse": 0.1445
+      },
+      "new_player": {
+        "n": 2925,
+        "bias": -0.2375,
+        "rmse": 0.2972
+      },
+      "returner": {
+        "n": 1562,
+        "bias": -0.1016,
+        "rmse": 0.2125
+      },
+      "older_pool": {
+        "n": 2153,
+        "bias": 0.0318,
+        "rmse": 0.1368
+      }
+    },
+    "overall": {
+      "n": 18556,
+      "bias": -0.1194,
+      "rmse": 0.2188
+    },
+    "seeds": {
+      "badSeeds": 51,
+      "medianEventsToConverge": 9,
+      "convergedWithin10": 30
+    },
+    "driftByQuarter": [
+      0.0979,
+      0.0348,
+      -0.0194,
+      -0.0352,
+      -0.07,
+      -0.0802,
+      -0.1028,
+      -0.1218,
+      -0.1292,
+      -0.1373,
+      -0.148,
+      -0.1533
+    ],
+    "returners": {
+      "n": 96,
+      "bias": 0.1605,
+      "rmse": 0.3053
+    },
+    "inflation": {
+      "favored": {
+        "n": 342,
+        "bias": 0.2347,
+        "rmse": 0.311
+      },
+      "clubmates": {
+        "n": 3059,
+        "bias": -0.1929,
+        "rmse": 0.2495
+      }
+    },
+    "experience": {
+      "dropShare": 0.4857,
+      "meanDrop": 0.0364,
+      "largestDrop": 0.2
+    }
+  }
+]

@@ -13,6 +13,7 @@
           "sigma": 0.41
         },
         "heldGain": 0,
+        "protectedEventsRemaining": 0,
         "recentDeclines": [
           {
             "at": "2026-11-07T14:00:00Z",
@@ -52,6 +53,7 @@
           "sigma": 0.38
         },
         "heldGain": 0,
+        "protectedEventsRemaining": 0,
         "recentDeclines": [],
         "counts": {
           "events": 22,

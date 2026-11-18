@@ -17,6 +17,9 @@
     "build": "tsdown"
   },
   "dependencies": {
-    "@glassrank/schema": "workspace:*"
+    "@glassrank/schema": "workspace:*",
+    "@stdlib/math-base-special-exp": "0.2.5",
+    "@stdlib/math-base-special-expit": "0.2.4",
+    "@stdlib/math-base-special-ln": "0.2.5"
   }
 }
