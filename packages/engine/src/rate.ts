@@ -170,6 +170,7 @@ export function rateUnchecked(request: RateRequest): RateResponse {
           protectedEvents,
           daysAway: w.daysAway,
           gamesPlayed: playerGames.length,
+          priorEvents: s.counts.events,
         })
       : null;
 

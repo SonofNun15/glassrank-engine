@@ -28,6 +28,7 @@ import {
 
 /** Policy rules, in the order the engine applies them. */
 export const RuleName = s.enumOf([
+  "provisional_period",
   "upward_bias",
   "decline_damping",
   "returning_protection",
@@ -41,6 +42,7 @@ export const RuleName = s.enumOf([
 /** Why the rating moved, most important first. The renderer turns these into a sentence. */
 export const ReasonCode = s.enumOf([
   "first_event",
+  "provisional_rating",
   "beat_higher_rated",
   "above_expected",
   "as_expected",

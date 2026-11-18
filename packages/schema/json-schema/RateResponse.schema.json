@@ -147,6 +147,7 @@
                   "type": "string",
                   "enum": [
                     "first_event",
+                    "provisional_rating",
                     "beat_higher_rated",
                     "above_expected",
                     "as_expected",
@@ -316,6 +317,7 @@
                 "items": {
                   "type": "string",
                   "enum": [
+                    "provisional_period",
                     "upward_bias",
                     "decline_damping",
                     "returning_protection",
@@ -503,6 +505,7 @@
                     "rule": {
                       "type": "string",
                       "enum": [
+                        "provisional_period",
                         "upward_bias",
                         "decline_damping",
                         "returning_protection",

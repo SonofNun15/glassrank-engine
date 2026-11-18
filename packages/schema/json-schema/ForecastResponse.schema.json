@@ -96,6 +96,7 @@
                   "items": {
                     "type": "string",
                     "enum": [
+                      "provisional_period",
                       "upward_bias",
                       "decline_damping",
                       "returning_protection",

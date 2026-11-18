@@ -189,8 +189,8 @@
       },
       "steady": {
         "n": 6179,
-        "bias": -0.0982,
-        "rmse": 0.1971
+        "bias": -0.0995,
+        "rmse": 0.1966
       },
       "slow_decliner": {
         "n": 2597,
@@ -199,13 +199,13 @@
       },
       "new_player": {
         "n": 2925,
-        "bias": -0.2346,
-        "rmse": 0.2949
+        "bias": -0.2446,
+        "rmse": 0.2984
       },
       "returner": {
         "n": 1562,
-        "bias": -0.0979,
-        "rmse": 0.2103
+        "bias": -0.0988,
+        "rmse": 0.2105
       },
       "older_pool": {
         "n": 2153,
@@ -215,32 +215,32 @@
     },
     "overall": {
       "n": 18556,
-      "bias": -0.1157,
-      "rmse": 0.2168
+      "bias": -0.1178,
+      "rmse": 0.2175
     },
     "seeds": {
       "badSeeds": 51,
-      "medianEventsToConverge": 9,
-      "convergedWithin10": 30
+      "medianEventsToConverge": 5,
+      "convergedWithin10": 35
     },
     "driftByQuarter": [
-      0.0979,
-      0.0348,
-      -0.0194,
-      -0.0352,
-      -0.0623,
-      -0.0731,
-      -0.0951,
-      -0.1141,
-      -0.1289,
-      -0.1373,
-      -0.148,
-      -0.1533
+      0.0291,
+      0.0049,
+      -0.0304,
+      -0.0471,
+      -0.0695,
+      -0.0763,
+      -0.0973,
+      -0.1146,
+      -0.1309,
+      -0.1383,
+      -0.1491,
+      -0.1534
     ],
     "returners": {
       "n": 96,
-      "bias": 0.1606,
-      "rmse": 0.3053
+      "bias": 0.1409,
+      "rmse": 0.2861
     },
     "inflation": {
       "favored": {
@@ -250,14 +250,14 @@
       },
       "clubmates": {
         "n": 3059,
-        "bias": -0.1897,
-        "rmse": 0.2472
+        "bias": -0.1911,
+        "rmse": 0.2471
       }
     },
     "experience": {
-      "dropShare": 0.4874,
-      "meanDrop": 0.0342,
-      "largestDrop": 0.2
+      "dropShare": 0.4948,
+      "meanDrop": 0.0364,
+      "largestDrop": 0.5515
     }
   },
   {
@@ -276,8 +276,8 @@
       },
       "steady": {
         "n": 6179,
-        "bias": -0.1021,
-        "rmse": 0.1988
+        "bias": -0.1034,
+        "rmse": 0.1984
       },
       "slow_decliner": {
         "n": 2597,
@@ -286,13 +286,13 @@
       },
       "new_player": {
         "n": 2925,
-        "bias": -0.2375,
-        "rmse": 0.2972
+        "bias": -0.247,
+        "rmse": 0.3005
       },
       "returner": {
         "n": 1562,
-        "bias": -0.1016,
-        "rmse": 0.2125
+        "bias": -0.1025,
+        "rmse": 0.2127
       },
       "older_pool": {
         "n": 2153,
@@ -302,32 +302,32 @@
     },
     "overall": {
       "n": 18556,
-      "bias": -0.1194,
-      "rmse": 0.2188
+      "bias": -0.1214,
+      "rmse": 0.2194
     },
     "seeds": {
       "badSeeds": 51,
-      "medianEventsToConverge": 9,
-      "convergedWithin10": 30
+      "medianEventsToConverge": 5,
+      "convergedWithin10": 35
     },
     "driftByQuarter": [
-      0.0979,
-      0.0348,
-      -0.0194,
-      -0.0352,
-      -0.07,
-      -0.0802,
-      -0.1028,
-      -0.1218,
-      -0.1292,
-      -0.1373,
-      -0.148,
-      -0.1533
+      0.0291,
+      0.0049,
+      -0.0304,
+      -0.0471,
+      -0.0771,
+      -0.0833,
+      -0.1048,
+      -0.1222,
+      -0.1312,
+      -0.1383,
+      -0.1491,
+      -0.1534
     ],
     "returners": {
       "n": 96,
-      "bias": 0.1605,
-      "rmse": 0.3053
+      "bias": 0.1409,
+      "rmse": 0.2862
     },
     "inflation": {
       "favored": {
@@ -337,14 +337,14 @@
       },
       "clubmates": {
         "n": 3059,
-        "bias": -0.1929,
-        "rmse": 0.2495
+        "bias": -0.1944,
+        "rmse": 0.2494
       }
     },
     "experience": {
-      "dropShare": 0.4857,
-      "meanDrop": 0.0364,
-      "largestDrop": 0.2
+      "dropShare": 0.4934,
+      "meanDrop": 0.0386,
+      "largestDrop": 0.5515
     }
   }
 ]

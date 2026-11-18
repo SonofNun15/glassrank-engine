@@ -182,6 +182,21 @@
           ],
           "additionalProperties": false
         },
+        "provisionalPeriod": {
+          "type": "object",
+          "properties": {
+            "events": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50,
+              "description": "A player's first N events are provisional: the rating follows the evidence directly, with no damping, cap, hold, or bias, so a wrong starting rating corrects at full speed. 0 turns it off."
+            }
+          },
+          "required": [
+            "events"
+          ],
+          "additionalProperties": false
+        },
         "returningProtection": {
           "type": "object",
           "properties": {
@@ -231,6 +246,7 @@
         "declineCap",
         "declineDamping",
         "largeGain",
+        "provisionalPeriod",
         "returningProtection",
         "upwardBias"
       ],

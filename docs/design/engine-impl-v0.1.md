@@ -54,6 +54,10 @@ The displayed rating follows the evidence estimate, asymmetrically. Let `gap`
 be the new estimate minus the current rating, and `change` this event's
 change in the estimate.
 
+0. **provisional_period**: for a player's first `events` events, the rating
+   simply follows the evidence (no damping, cap, hold, or bias), so a wrong
+   starting rating corrects at full speed. The cost is that early drops can be
+   large; UIs should label these ratings provisional.
 1. **upward_bias**: when `gap > 0`, catch up fully and add
    `(gainMultiplier - 1) * change` if `change > 0`.
 2. **decline_damping**: when the result would be a drop, there is no drop if

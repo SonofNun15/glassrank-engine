@@ -26,6 +26,7 @@ const bayesPolicy: PolicyConfig = {
   evidence: { model: "bayes_v0", winScale: 3.2, shareScale: 1.0, marginWeight: 0.5, dynamicsSigma: 0.05, sigmaFloor: 0.08 },
 };
 const NEUTRAL_RULES: PolicyConfig["rules"] = {
+  provisionalPeriod: { events: 0 },
   upwardBias: { gainMultiplier: 1 },
   declineDamping: { lossMultiplier: 1 },
   returningProtection: { awayDays: 3650, events: 1, lossMultiplier: 1 },
@@ -109,6 +110,7 @@ describe("rate()", () => {
     const res = rate(withPolicy(baseRequest, bayesPolicy));
     for (const r of res.receipts) {
       expect(r.technical.rules.map((a) => a.rule)).toEqual([
+        "provisional_period",
         "upward_bias",
         "decline_damping",
         "returning_protection",

@@ -91,6 +91,15 @@ export const InactivityConfig = s.object({
 }, { description: "No rating decay for inactivity. Uncertainty widens instead." });
 
 export const RulesConfig = s.object({
+  provisionalPeriod: s.object({
+    events: s.integer({
+      minimum: 0,
+      maximum: 50,
+      description:
+        "A player's first N events are provisional: the rating follows the evidence directly, with no " +
+        "damping, cap, hold, or bias, so a wrong starting rating corrects at full speed. 0 turns it off.",
+    }),
+  }),
   upwardBias: s.object({
     gainMultiplier: s.number({ minimum: 1, maximum: 3, description: "Applied to evidence gains." }),
   }),

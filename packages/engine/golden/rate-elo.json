@@ -234,6 +234,9 @@
           "sigmaMax": 1.2
         },
         "rules": {
+          "provisionalPeriod": {
+            "events": 0
+          },
           "upwardBias": {
             "gainMultiplier": 1.25
           },
@@ -260,7 +263,7 @@
   },
   "output": {
     "schemaVersion": "0.1.0",
-    "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52",
+    "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a",
     "states": [
       {
         "schemaVersion": "0.1.0",
@@ -295,8 +298,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       },
       {
@@ -332,8 +335,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       },
       {
@@ -369,8 +372,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       },
       {
@@ -400,8 +403,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       }
     ],
@@ -544,6 +547,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": -0.035524139,
+              "after": -0.035524139,
+              "params": {
+                "events": 0,
+                "event_number": 15
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": false,
               "before": -0.035524139,
@@ -633,9 +646,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
           "overlayId": null,
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       },
       {
@@ -776,6 +789,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": -0.046969936,
+              "after": -0.046969936,
+              "params": {
+                "events": 0,
+                "event_number": 23
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": false,
               "before": -0.046969936,
@@ -865,9 +888,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
           "overlayId": null,
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       },
       {
@@ -1009,6 +1032,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": -0.010602256,
+              "after": -0.010602256,
+              "params": {
+                "events": 0,
+                "event_number": 1
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": false,
               "before": -0.010602256,
@@ -1098,9 +1131,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
           "overlayId": null,
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       },
       {
@@ -1241,6 +1274,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": 0.013096331,
+              "after": 0.013096331,
+              "params": {
+                "events": 0,
+                "event_number": 1
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": true,
               "before": 0.013096331,
@@ -1330,9 +1373,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "example-2026.0",
-          "policyHash": "sha256:65f51226faa4ae0c5fb26b5c84920870c7fb5979669694c8dd7dc3bf7b4b27c8",
+          "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
           "overlayId": null,
-          "inputHash": "sha256:8e6987b0e2d185572dee63ec3fc508e765d22176eaf3a71b80cf17355ad77b52"
+          "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
         }
       }
     ],

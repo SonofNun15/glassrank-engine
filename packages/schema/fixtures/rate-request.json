@@ -233,6 +233,9 @@
         "sigmaMax": 1.2
       },
       "rules": {
+        "provisionalPeriod": {
+          "events": 0
+        },
         "upwardBias": {
           "gainMultiplier": 1.25
         },

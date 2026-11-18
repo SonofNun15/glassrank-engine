@@ -32,9 +32,9 @@ describe("runWorld", () => {
     expect(report.driftByQuarter).toHaveLength(2);
   });
 
-  it("never drops a rating by more than the decline cap within a window", () => {
+  it("after the provisional period, never drops a rating by more than the decline cap", () => {
     const capped = runWorld("glassrank", world, scheduleOf(GLASSRANK, from));
-    for (const r of capped.playerEvents) {
+    for (const r of capped.playerEvents.filter((x) => x.eventNumber > GLASSRANK.rules.provisionalPeriod.events)) {
       expect(r.ratingBefore - r.ratingAfter).toBeLessThanOrEqual(GLASSRANK.rules.declineCap.amount + 1e-9);
     }
     const elo = runWorld("elo", world, scheduleOf(ELO_BASELINE, from));

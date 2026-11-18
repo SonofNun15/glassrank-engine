@@ -30,6 +30,8 @@ export interface RuleInput {
   readonly protectedEvents: number;
   readonly daysAway: number;
   readonly gamesPlayed: number;
+  /** Events the player had completed before this one. */
+  readonly priorEvents: number;
 }
 
 export interface RuleOutput {
@@ -53,6 +55,30 @@ export function applyRules(input: RuleInput): RuleOutput {
   let delta = gap;
   let held = input.heldGain;
   const protectedNow = input.protectedEvents > 0;
+
+  // 0. Provisional period: early on, the rating simply follows the evidence.
+  const provisionalEvents = rules.provisionalPeriod.events;
+  const provisional = input.priorEvents < provisionalEvents;
+  record("provisional_period", gap, gap, { events: provisionalEvents, event_number: input.priorEvents + 1 }, provisional);
+  if (provisional) {
+    const scale = policy.base.scale;
+    const rating = clamp(muAfter, scale.min, scale.max);
+    for (const rule of ["upward_bias", "decline_damping", "returning_protection", "correction_overlay", "large_gain_hold", "held_gain_release", "decline_cap"] as const) {
+      record(rule, gap, gap, {}, false);
+    }
+    record("scale_bounds", gap, rating - ratingBefore, { min: scale.min, max: scale.max }, Math.abs(rating - ratingBefore - gap) > 1e-12);
+    const delta0 = rating - ratingBefore;
+    const windowStart0 = parseTimestamp(input.occurredAt) - rules.declineCap.windowDays * MS_PER_DAY;
+    const kept = input.recentDeclines.filter((d) => parseTimestamp(d.at) > windowStart0);
+    return {
+      rating,
+      heldGain: held,
+      recentDeclines: delta0 < 0 ? [...kept, { at: input.occurredAt, eventId: input.eventId, amount: -delta0 }] : kept,
+      applications,
+      fired: applications.filter((a) => a.fired).map((a) => a.rule),
+      exemptFromOverlay: false,
+    };
+  }
 
   // 1. Upward bias: full catch-up, plus a bonus on this event's evidence gain.
   {

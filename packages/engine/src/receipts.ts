@@ -83,6 +83,7 @@ export function buildReceipt(input: ReceiptInput): Receipt {
     if (when && reasons.length < 4) reasons.push(r);
   };
   add("first_event", pre.isNew);
+  add("provisional_rating", fired.has("provisional_period") && !pre.isNew);
   add("beat_higher_rated", higherRatedWins > 0 && evidenceChange > 0);
   add("lost_to_lower_rated", lowerRatedLosses > 0 && evidenceChange < 0);
   add(

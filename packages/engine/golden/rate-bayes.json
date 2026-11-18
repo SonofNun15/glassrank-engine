@@ -236,6 +236,9 @@
           "sigmaMax": 1.2
         },
         "rules": {
+          "provisionalPeriod": {
+            "events": 0
+          },
           "upwardBias": {
             "gainMultiplier": 1.25
           },
@@ -262,7 +265,7 @@
   },
   "output": {
     "schemaVersion": "0.1.0",
-    "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7",
+    "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520",
     "states": [
       {
         "schemaVersion": "0.1.0",
@@ -297,8 +300,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       },
       {
@@ -328,8 +331,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       },
       {
@@ -359,8 +362,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       },
       {
@@ -396,8 +399,8 @@
           "eventId": "evt-2026-11-14-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       }
     ],
@@ -541,6 +544,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": 0.00097515,
+              "after": 0.00097515,
+              "params": {
+                "events": 0,
+                "event_number": 15
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": true,
               "before": 0.00097515,
@@ -630,9 +643,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
           "overlayId": null,
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       },
       {
@@ -775,6 +788,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": -0.01781697,
+              "after": -0.01781697,
+              "params": {
+                "events": 0,
+                "event_number": 23
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": false,
               "before": -0.01781697,
@@ -864,9 +887,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
           "overlayId": null,
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       },
       {
@@ -1009,6 +1032,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": 0.106765455,
+              "after": 0.106765455,
+              "params": {
+                "events": 0,
+                "event_number": 1
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": true,
               "before": 0.106765455,
@@ -1098,9 +1131,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
           "overlayId": null,
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       },
       {
@@ -1246,6 +1279,16 @@
           },
           "rules": [
             {
+              "rule": "provisional_period",
+              "fired": false,
+              "before": -0.420698341,
+              "after": -0.420698341,
+              "params": {
+                "events": 0,
+                "event_number": 1
+              }
+            },
+            {
               "rule": "upward_bias",
               "fired": false,
               "before": -0.420698341,
@@ -1335,9 +1378,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:41eca4590ecd361fd7c16317b7a003617e1553f7c59c54d5445f362e4a4c6795",
+          "policyHash": "sha256:413efa2fcf934a8264a133f8648248addb2a7c6a56287f71e04aea13bad6dbb6",
           "overlayId": null,
-          "inputHash": "sha256:16d164d6f148d1323c31ceec8c9a0e85e205403761418f572facc78c2b7bb0e7"
+          "inputHash": "sha256:634ffa51545c39f2bbfc51288c66e29170ef97b60e6642b8fea4ab4424fdb520"
         }
       }
     ],

@@ -2,24 +2,58 @@
   "schemaVersion": "0.1.0",
   "policyId": "example-2026.0",
   "title": "Example policy for fixtures and the Elo baseline (not a proposal)",
-  "scale": { "min": 2.0, "max": 8.0, "displayDecimals": 3 },
+  "scale": {
+    "min": 2.0,
+    "max": 8.0,
+    "displayDecimals": 3
+  },
   "seeding": {
     "defaultRating": 3.0,
     "defaultSigma": 1.0,
-    "sigmaBySource": { "self": 0.9, "host": 0.6, "external_claimed": 0.7 }
+    "sigmaBySource": {
+      "self": 0.9,
+      "host": 0.6,
+      "external_claimed": 0.7
+    }
   },
   "sourceWeights": {
     "verified_host": 1.0,
     "provisional_host": 0.5,
     "video_verified": 1.0
   },
-  "evidence": { "model": "elo_baseline", "kFactor": 0.08, "spread": 1.0, "useMargin": true },
-  "inactivity": { "graceDays": 30, "sigmaGrowthPerDay": 0.005, "sigmaMax": 1.2 },
+  "evidence": {
+    "model": "elo_baseline",
+    "kFactor": 0.08,
+    "spread": 1.0,
+    "useMargin": true
+  },
+  "inactivity": {
+    "graceDays": 30,
+    "sigmaGrowthPerDay": 0.005,
+    "sigmaMax": 1.2
+  },
   "rules": {
-    "upwardBias": { "gainMultiplier": 1.25 },
-    "declineDamping": { "lossMultiplier": 0.6 },
-    "returningProtection": { "awayDays": 60, "events": 3, "lossMultiplier": 0.5 },
-    "declineCap": { "amount": 0.15, "windowDays": 30 },
-    "largeGain": { "perEventThreshold": 0.25, "minGamesToExceed": 6 }
+    "provisionalPeriod": {
+      "events": 0
+    },
+    "upwardBias": {
+      "gainMultiplier": 1.25
+    },
+    "declineDamping": {
+      "lossMultiplier": 0.6
+    },
+    "returningProtection": {
+      "awayDays": 60,
+      "events": 3,
+      "lossMultiplier": 0.5
+    },
+    "declineCap": {
+      "amount": 0.15,
+      "windowDays": 30
+    },
+    "largeGain": {
+      "perEventThreshold": 0.25,
+      "minGamesToExceed": 6
+    }
   }
 }

@@ -24,6 +24,7 @@ function run(overrides: Partial<RuleInput>) {
     protectedEvents: 0,
     daysAway: 7,
     gamesPlayed: 3,
+    priorEvents: 20,
     ...overrides,
   });
 }
@@ -95,6 +96,16 @@ describe("policy rules", () => {
     expect(exempt.exemptFromOverlay).toBe(true);
   });
 
+  it("provisional period: early events follow the evidence at face value", () => {
+    const provisional: EffectivePolicy = { base: { ...base, rules: { ...base.rules, provisionalPeriod: { events: 8 } } }, overlay: null };
+    const drop = applyRules({ ...baseInput(), policy: provisional, muAfter: 3.0, priorEvents: 2 });
+    expect(drop.rating).toBeCloseTo(3.0, 12); // no damping, no cap
+    expect(drop.fired).toEqual(["provisional_period"]);
+    const later = applyRules({ ...baseInput(), policy: provisional, muAfter: 3.0, priorEvents: 8 });
+    expect(later.rating).toBeGreaterThan(3.0);
+    expect(later.fired).not.toContain("provisional_period");
+  });
+
   it("keeps the rating inside the scale", () => {
     const r = run({ ratingBefore: 7.95, muBefore: 7.95, muAfter: 8.1, gamesPlayed: 6 });
     expect(r.rating).toBe(8);
@@ -115,5 +126,6 @@ function baseInput(): RuleInput {
     protectedEvents: 0,
     daysAway: 7,
     gamesPlayed: 3,
+    priorEvents: 20,
   };
 }
