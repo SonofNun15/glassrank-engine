@@ -1,0 +1,15 @@
+{
+  "name": "@glassrank/schema",
+  "version": "0.0.0",
+  "description": "Versioned types for events, matches, rating state, receipts, and policy config.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "dependencies": {}
+}
