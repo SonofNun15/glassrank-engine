@@ -32,3 +32,10 @@ the engine, so there is a baseline to beat from the first engine commit.
   same path as rate, replay for voids and corrections.
 - **M8:** JSON command line, conformance vectors, npm 0.1 packages, a
   compatibility policy for schema and policy versions.
+
+## Later: ideas to explore
+
+- **Community drift** (`community-drift.md`): detect when a local community's
+  ratings drift apart from others and speed up the flow of rating points
+  through play between and within them. Starts with a "shark pool" simulator
+  experiment.
