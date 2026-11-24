@@ -25,3 +25,8 @@ export type { ErrorStats, Report } from "./metrics";
 export { formatReports } from "./report";
 export { compareSystems } from "./compare";
 export { ELO_BASELINE, EVIDENCE_ONLY, GLASSRANK, GLASSRANK_RULES, NEUTRAL_RULES, correctionOverlay, scheduleOf } from "./policies";
+export { COMMUNITY_MIXES } from "./mixes";
+export { keyMetrics, runSeeds, summarize } from "./sweep";
+export type { KeyMetrics, Summary } from "./sweep";
+export { EVIDENCE_KNOBS, RULE_KNOBS, predictionObjective, trackingObjective, tune } from "./tune";
+export type { Knob, Objective, TuneStep } from "./tune";

@@ -38,6 +38,8 @@ export interface Report {
   };
   /** Mean (rating - true) across all appearances, per 13-week quarter. */
   readonly driftByQuarter: readonly number[];
+  /** Mean (rating - true) per cohort, per 13-week quarter (0 when a cohort has no appearances). */
+  readonly cohortBiasByQuarter: { readonly [C in Cohort]: readonly number[] };
   readonly returners: ErrorStats;
   readonly inflation: { readonly favored: ErrorStats; readonly clubmates: ErrorStats };
   readonly experience: {
@@ -149,6 +151,15 @@ export function computeReport(run: RunResult, totalDays: number): Report {
       convergedWithin10: toConverge.filter((n) => n <= 10).length,
     },
     driftByQuarter,
+    cohortBiasByQuarter: Object.fromEntries(
+      COHORTS.map((c) => [
+        c,
+        Array.from({ length: quarters }, (_, q) => {
+          const rows = pe.filter((r) => r.cohort === c && Math.floor(r.day / 91) === q);
+          return rows.length === 0 ? 0 : round(rows.reduce((s, r) => s + r.ratingAfter - r.trueSkill, 0) / rows.length);
+        }),
+      ]),
+    ) as unknown as Report["cohortBiasByQuarter"],
     returners: errorStats(returnerRows),
     inflation,
     experience: {

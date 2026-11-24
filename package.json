@@ -12,6 +12,7 @@
     "build": "pnpm -r build",
     "generate": "vitest run generated.test --update",
     "sim": "pnpm build && node packages/sim/dist/cli.js",
+    "sim:tune": "pnpm build && node packages/sim/dist/tune-cli.js",
     "typecheck": "tsc -p tsconfig.json",
     "test": "tsc -p tsconfig.json && vitest run",
     "test:watch": "vitest",
