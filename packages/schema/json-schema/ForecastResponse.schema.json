@@ -164,7 +164,8 @@
           "probability": {
             "type": "number",
             "minimum": 0,
-            "maximum": 1
+            "maximum": 1,
+            "description": "Probability of this outcome's win/loss pattern for teams[0]. Exact scores are not modeled."
           }
         },
         "required": [

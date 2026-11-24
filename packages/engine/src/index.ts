@@ -14,3 +14,7 @@ export { rate, rateUnchecked } from "./rate";
 export { predict, predictUnchecked } from "./predict";
 export { replay, replayUnchecked } from "./replay";
 export { resolvePolicy } from "./policy";
+export { forecast, forecastUnchecked, standardOutcomes } from "./forecast";
+export { verify, verifyUnchecked } from "./verify";
+export { explainReceipt } from "./explain";
+export type { ExplainOptions, Explanation } from "./explain";

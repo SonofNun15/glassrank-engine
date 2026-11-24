@@ -185,7 +185,11 @@ export const ForecastChange = s.object({
 
 export const ForecastOutcome = s.object({
   games: s.array(Game, { minItems: 1 }),
-  probability: Probability,
+  probability: s.number({
+    minimum: 0,
+    maximum: 1,
+    description: "Probability of this outcome's win/loss pattern for teams[0]. Exact scores are not modeled.",
+  }),
   changes: s.array(ForecastChange),
 });
 

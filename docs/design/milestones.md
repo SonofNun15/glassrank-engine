@@ -11,7 +11,7 @@ the engine, so there is a baseline to beat from the first engine commit.
 | M3 | Metrics harness and baseline | sim | Done. `pnpm sim` compares Elo, evidence only, GlassRank, and GlassRank with the dial. See `sim-results-v0.md`. |
 | M4 | Evidence layer | engine | Done on one platform: `bayes_v0` beats Elo on calibration; golden vectors in `packages/engine/golden/`. Second-platform check pending (needs CI). |
 | M5 | Policy layer and correction dial | engine | Done, with caveats: improver lag and decliner bias improve slightly vs. evidence only; the dial moves drift, but the sim shows deflation, not inflation. See `engine-impl-v0.1.md`. |
-| M6 | Receipts, forecast, replay, verify | engine | Every receipt from a full sim run verifies; forecast and rate agree for the outcome that happened. |
+| M6 | Receipts, forecast, replay, verify | engine | Done. Every receipt from a simulated year verifies and renders to text; forecast agrees exactly with rate for the outcome that happened. |
 | M7 | Tuning and published results | sim | Results and sample receipts are ready to show founding clubs and advisors. |
 | M8 | Integration release | all | The hosted service can integrate from the published contract alone. |
 

@@ -11,6 +11,9 @@ below is a policy parameter, not a constant in code.
 | `predict(request)` | Win probability, expected point share, and expected score for one planned game. Uses the evidence model's forward function. |
 | `replay(request)` | Folds `rate()` over an ordered event log, resolving the policy per event. Players without a prior start from a `policy_default` seed. |
 | `resolvePolicy(schedule, at)` | Base config plus the active overlay at an instant. |
+| `forecast(request)` | Rating changes for possible results of a planned match (by default 11-3, 11-7, 11-9 and the reverse). Each outcome runs through `rateUnchecked` as a hypothetical event, so a forecast always agrees with `rate()`. Outcome probabilities cover the win/loss pattern, not exact scores. |
+| `verify(request)` | Re-runs the stored `RateRequest` a receipt came from and compares field by field. Reports whether the input hash matches and the JSON pointer of every difference. |
+| `explainReceipt(receipt, options)` | Pure text renderer: headline, summary, and detail sentences from a structured receipt. Wording can change without changing any rating or hash. |
 
 ## Pipeline for one event
 
