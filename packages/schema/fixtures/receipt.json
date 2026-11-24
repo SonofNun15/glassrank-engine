@@ -23,7 +23,8 @@
     "facts": {
       "games_played": 3,
       "games_won": 2
-    }
+    },
+    "provisional": null
   },
   "summary": {
     "gamesPlayed": 3,
@@ -213,8 +214,8 @@
     "schemaVersion": "0.1.0",
     "engineVersion": "0.0.0",
     "policyId": "example-2026.0",
-    "policyHash": "sha256:3838256b1d07fa3708fc33c1b0fecb278fca8c4389d86313d4f6a676a24859ec",
+    "policyHash": "sha256:ad718ff5517eb3956b7826d870a129d920be8e4b95f1930fa90b7c8d331c8394",
     "overlayId": null,
-    "inputHash": "sha256:a1a0cec4ccd34b29f220247808fade08f4fa25072eb94a86c699d0fb59ad353a"
+    "inputHash": "sha256:7c7f203077806faa0ac07f8fd00e04be9447a63b123444bb0201bd9cd4274e39"
   }
 }

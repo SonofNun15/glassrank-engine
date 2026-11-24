@@ -591,6 +591,46 @@
                     "maximum": 20,
                     "description": "Events left under returning-player protection. Set when a player returns from a long break."
                   },
+                  "provisional": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "eventsRemaining": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 50,
+                            "description": "Events until the rating is established."
+                          },
+                          "high": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 10,
+                            "description": "Rating on the published scale."
+                          },
+                          "low": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 10,
+                            "description": "Rating on the published scale."
+                          }
+                        },
+                        "required": [
+                          "eventsRemaining",
+                          "high",
+                          "low"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Likely range for the player's level: the evidence estimate plus or minus policy.rules.provisionalPeriod.rangeSd standard deviations.",
+                        "x-glassrank-rules": [
+                          "low <= high"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "rating": {
                     "type": "number",
                     "minimum": 0,
@@ -651,6 +691,7 @@
                   "origin",
                   "playerId",
                   "protectedEventsRemaining",
+                  "provisional",
                   "rating",
                   "recentDeclines",
                   "schemaVersion"
@@ -990,10 +1031,17 @@
                             "minimum": 0,
                             "maximum": 50,
                             "description": "A player's first N events are provisional: the rating follows the evidence directly, with no damping, cap, hold, or bias, so a wrong starting rating corrects at full speed. 0 turns it off."
+                          },
+                          "rangeSd": {
+                            "type": "number",
+                            "minimum": 0.5,
+                            "maximum": 3,
+                            "description": "While provisional, ratings are shown as a range: the evidence estimate plus or minus this many standard deviations of its uncertainty."
                           }
                         },
                         "required": [
-                          "events"
+                          "events",
+                          "rangeSd"
                         ],
                         "additionalProperties": false
                       },

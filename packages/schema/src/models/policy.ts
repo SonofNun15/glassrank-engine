@@ -99,6 +99,13 @@ export const RulesConfig = s.object({
         "A player's first N events are provisional: the rating follows the evidence directly, with no " +
         "damping, cap, hold, or bias, so a wrong starting rating corrects at full speed. 0 turns it off.",
     }),
+    rangeSd: s.number({
+      minimum: 0.5,
+      maximum: 3,
+      description:
+        "While provisional, ratings are shown as a range: the evidence estimate plus or minus this many " +
+        "standard deviations of its uncertainty.",
+    }),
   }),
   upwardBias: s.object({
     gainMultiplier: s.number({ minimum: 1, maximum: 3, description: "Applied to evidence gains." }),

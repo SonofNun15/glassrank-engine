@@ -26,7 +26,7 @@ const bayesPolicy: PolicyConfig = {
   evidence: { model: "bayes_v0", winScale: 3.2, shareScale: 1.0, marginWeight: 0.5, dynamicsSigma: 0.05, sigmaFloor: 0.08 },
 };
 const NEUTRAL_RULES: PolicyConfig["rules"] = {
-  provisionalPeriod: { events: 0 },
+  provisionalPeriod: { events: 0, rangeSd: 1 },
   upwardBias: { gainMultiplier: 1 },
   declineDamping: { lossMultiplier: 1 },
   returningProtection: { awayDays: 3650, events: 1, lossMultiplier: 1 },
@@ -124,6 +124,36 @@ describe("rate()", () => {
       expect(sum).toBeCloseTo(r.technical.evidenceDelta.mu, 6);
       expect(r.technical.rules.at(-1)!.after).toBeCloseTo(r.headline.delta, 8);
     }
+  });
+});
+
+describe("provisional status", () => {
+  it("shows a narrowing range for new players and clears after the provisional period", () => {
+    const base = { ...bayesPolicy, rules: { ...bayesPolicy.rules, provisionalPeriod: { events: 3, rangeSd: 1 } } };
+    let priors: readonly unknown[] = baseRequest.priors;
+    const widths: number[] = [];
+    for (let i = 0; i < 3; i++) {
+      const event = { ...clone(baseRequest.event), eventId: `evt-${i}`, occurredAt: `2026-11-${14 + 7 * i}T14:00:00Z` };
+      const res = rate({ schemaVersion: "0.1.0", priors, event, policy: { base, overlay: null } });
+      const dee = res.states.find((s) => s.playerId === "p-dee")!;
+      const receipt = res.receipts.find((r) => r.playerId === "p-dee")!;
+      expect(receipt.headline.provisional).toEqual(dee.provisional);
+      // Established players (14 and 22 prior events) are never provisional.
+      expect(res.states.find((s) => s.playerId === "p-ava")!.provisional).toBeNull();
+      if (i < 2) {
+        expect(dee.provisional).toEqual({ eventsRemaining: 2 - i, low: expect.any(Number), high: expect.any(Number) });
+        expect(dee.provisional!.low).toBeLessThan(dee.evidence.mu);
+        expect(dee.provisional!.high).toBeGreaterThan(dee.evidence.mu);
+        // Plus or minus one sd, clamped to the 2.0-8.0 scale (this player sits near the bottom).
+        expect(dee.provisional!.high).toBeCloseTo(dee.evidence.mu + dee.evidence.sigma, 8);
+        expect(dee.provisional!.low).toBeCloseTo(Math.max(2, dee.evidence.mu - dee.evidence.sigma), 8);
+        widths.push(dee.provisional!.high - dee.provisional!.low);
+      } else {
+        expect(dee.provisional).toBeNull();
+      }
+      priors = res.states.map((state) => ({ kind: "state", state }));
+    }
+    expect(widths[1]).toBeLessThan(widths[0]!);
   });
 });
 

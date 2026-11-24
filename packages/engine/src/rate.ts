@@ -14,6 +14,7 @@ import {
   type EffectivePolicy,
   type EventInput,
   type Prior,
+  type ProvisionalStatus,
   type RateResponse,
   type RatingState,
   type Receipt,
@@ -72,6 +73,23 @@ export function preState(prior: Prior, policy: EffectivePolicy): PreState {
     firstRatedAt: null,
     lastPlayedAt: null,
     isNew: true,
+  };
+}
+
+/**
+ * Provisional status after an event: a likely range instead of a single
+ * number, until the player has completed the policy's provisional period.
+ */
+export function provisionalStatus(state: RatingState, policy: EffectivePolicy): ProvisionalStatus {
+  const period = policy.base.rules.provisionalPeriod;
+  const remaining = period.events - state.counts.events;
+  if (remaining <= 0) return null;
+  const { mu, sigma } = state.evidence;
+  const { min, max } = policy.base.scale;
+  return {
+    eventsRemaining: remaining,
+    low: quantize(clamp(mu - period.rangeSd * sigma, min, max)),
+    high: quantize(clamp(mu + period.rangeSd * sigma, min, max)),
   };
 }
 
@@ -184,6 +202,7 @@ export function rateUnchecked(request: RateRequest): RateResponse {
         ? { mu: quantize(evidence.mu), sigma: quantize(evidence.sigma) }
         : { mu: quantize(s.mu), sigma: quantize(s.sigma) },
       heldGain: quantize(rules?.heldGain ?? s.heldGain),
+      provisional: null,
       protectedEventsRemaining: played ? Math.max(0, protectedEvents - 1) : s.protectedEventsRemaining,
       recentDeclines: (rules?.recentDeclines ?? s.recentDeclines).map((d) => ({ ...d, amount: quantize(d.amount) })),
       counts: {
@@ -196,13 +215,15 @@ export function rateUnchecked(request: RateRequest): RateResponse {
       lastPlayedAt: played ? event.occurredAt : (s.lastPlayedAt ?? event.occurredAt),
       lastUpdate: { eventId: event.eventId, engineVersion: ENGINE_VERSION, policyId: policy.base.policyId, policyHash, inputHash },
     };
-    states.push(state);
+    const provisional = provisionalStatus(state, policy);
+    const finalState: RatingState = { ...state, provisional };
+    states.push(finalState);
     receipts.push(
       buildReceipt({
         event,
         policy,
         pre: s,
-        state,
+        state: finalState,
         daysAway: w.daysAway,
         sigmaWidened: w.sigma,
         evidence,

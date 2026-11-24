@@ -34,7 +34,8 @@
   },
   "rules": {
     "provisionalPeriod": {
-      "events": 0
+      "events": 0,
+      "rangeSd": 1.0
     },
     "upwardBias": {
       "gainMultiplier": 1.25

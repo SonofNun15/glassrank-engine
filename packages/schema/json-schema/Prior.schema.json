@@ -339,6 +339,46 @@
               "maximum": 20,
               "description": "Events left under returning-player protection. Set when a player returns from a long break."
             },
+            "provisional": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "eventsRemaining": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 50,
+                      "description": "Events until the rating is established."
+                    },
+                    "high": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 10,
+                      "description": "Rating on the published scale."
+                    },
+                    "low": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 10,
+                      "description": "Rating on the published scale."
+                    }
+                  },
+                  "required": [
+                    "eventsRemaining",
+                    "high",
+                    "low"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Likely range for the player's level: the evidence estimate plus or minus policy.rules.provisionalPeriod.rangeSd standard deviations.",
+                  "x-glassrank-rules": [
+                    "low <= high"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "rating": {
               "type": "number",
               "minimum": 0,
@@ -399,6 +439,7 @@
             "origin",
             "playerId",
             "protectedEventsRemaining",
+            "provisional",
             "rating",
             "recentDeclines",
             "schemaVersion"

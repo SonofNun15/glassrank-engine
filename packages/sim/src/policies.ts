@@ -18,7 +18,7 @@ const SHARED = {
 
 /** Rules that leave the evidence untouched: displayed rating = evidence estimate. */
 export const NEUTRAL_RULES: PolicyConfig["rules"] = {
-  provisionalPeriod: { events: 0 },
+  provisionalPeriod: { events: 0, rangeSd: 1 },
   upwardBias: { gainMultiplier: 1 },
   declineDamping: { lossMultiplier: 1 },
   returningProtection: { awayDays: 3650, events: 1, lossMultiplier: 1 },
@@ -27,7 +27,7 @@ export const NEUTRAL_RULES: PolicyConfig["rules"] = {
 };
 
 export const GLASSRANK_RULES: PolicyConfig["rules"] = {
-  provisionalPeriod: { events: 8 },
+  provisionalPeriod: { events: 8, rangeSd: 1 },
   upwardBias: { gainMultiplier: 1.2 },
   declineDamping: { lossMultiplier: 0.6 },
   returningProtection: { awayDays: 60, events: 3, lossMultiplier: 0.5 },

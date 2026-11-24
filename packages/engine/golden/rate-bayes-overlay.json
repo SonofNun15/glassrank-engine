@@ -14,6 +14,7 @@
             "sigma": 0.41
           },
           "heldGain": 0,
+          "provisional": null,
           "protectedEventsRemaining": 0,
           "recentDeclines": [
             {
@@ -54,6 +55,7 @@
             "sigma": 0.38
           },
           "heldGain": 0,
+          "provisional": null,
           "protectedEventsRemaining": 0,
           "recentDeclines": [],
           "counts": {
@@ -237,7 +239,8 @@
         },
         "rules": {
           "provisionalPeriod": {
-            "events": 0
+            "events": 0,
+            "rangeSd": 1
           },
           "upwardBias": {
             "gainMultiplier": 1.25
@@ -279,7 +282,7 @@
   },
   "output": {
     "schemaVersion": "0.1.0",
-    "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818",
+    "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4",
     "states": [
       {
         "schemaVersion": "0.1.0",
@@ -291,6 +294,7 @@
           "sigma": 0.540442344
         },
         "heldGain": 0,
+        "provisional": null,
         "protectedEventsRemaining": 2,
         "recentDeclines": [],
         "counts": {
@@ -308,8 +312,8 @@
           "eventId": "evt-2027-01-09-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       },
       {
@@ -322,6 +326,7 @@
           "sigma": 0.515905753
         },
         "heldGain": 0,
+        "provisional": null,
         "protectedEventsRemaining": 2,
         "recentDeclines": [],
         "counts": {
@@ -339,8 +344,8 @@
           "eventId": "evt-2027-01-09-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       },
       {
@@ -353,6 +358,7 @@
           "sigma": 0.765249424
         },
         "heldGain": 0,
+        "provisional": null,
         "protectedEventsRemaining": 0,
         "recentDeclines": [],
         "counts": {
@@ -370,8 +376,8 @@
           "eventId": "evt-2027-01-09-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       },
       {
@@ -384,6 +390,7 @@
           "sigma": 0.816239597
         },
         "heldGain": 0,
+        "provisional": null,
         "protectedEventsRemaining": 0,
         "recentDeclines": [
           {
@@ -407,8 +414,8 @@
           "eventId": "evt-2027-01-09-oakridge-rr",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       }
     ],
@@ -442,7 +449,8 @@
             "higher_rated_wins": 0,
             "lower_rated_losses": 0,
             "voided_matches": 0
-          }
+          },
+          "provisional": null
         },
         "summary": {
           "gamesPlayed": 3,
@@ -653,9 +661,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
           "overlayId": "correction-2027q1",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       },
       {
@@ -687,7 +695,8 @@
             "higher_rated_wins": 0,
             "lower_rated_losses": 0,
             "voided_matches": 0
-          }
+          },
+          "provisional": null
         },
         "summary": {
           "gamesPlayed": 3,
@@ -898,9 +907,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
           "overlayId": "correction-2027q1",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       },
       {
@@ -932,7 +941,8 @@
             "higher_rated_wins": 0,
             "lower_rated_losses": 0,
             "voided_matches": 0
-          }
+          },
+          "provisional": null
         },
         "summary": {
           "gamesPlayed": 3,
@@ -1143,9 +1153,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
           "overlayId": "correction-2027q1",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       },
       {
@@ -1179,7 +1189,8 @@
             "higher_rated_wins": 0,
             "lower_rated_losses": 0,
             "voided_matches": 0
-          }
+          },
+          "provisional": null
         },
         "summary": {
           "gamesPlayed": 3,
@@ -1392,9 +1403,9 @@
           "schemaVersion": "0.1.0",
           "engineVersion": "0.1.0",
           "policyId": "golden-bayes",
-          "policyHash": "sha256:efce0bf89e594dad21885ad3251cee30f5c8d260d70d045f5408f0357eedd1b2",
+          "policyHash": "sha256:ce8d127ce24715b252c781431843ec4335bd05a54e593be2a5d243eeb61ed984",
           "overlayId": "correction-2027q1",
-          "inputHash": "sha256:850e618a3126eea8cd3ec95a90d4df0f99954ae1dff19f6b8850de1d80776818"
+          "inputHash": "sha256:914e258d63c73c723dc5a4f37b3e952cd4683314eac3971f92df38b63c2be0c4"
         }
       }
     ],

@@ -9,6 +9,7 @@
  */
 import * as s from "../tooling/builder";
 import { GameScore } from "./event";
+import { ProvisionalStatus } from "./rating";
 import {
   Discipline,
   EventId,
@@ -71,6 +72,7 @@ export const ReceiptHeadline = s.object({
   direction: s.enumOf(["up", "down", "none"]),
   reasons: s.array(ReasonCode, { minItems: 1, maxItems: 4 }),
   facts: NumberMap,
+  provisional: ProvisionalStatus,
 }, { description: "Inputs for the one-line explanation. `facts` holds counts the sentence cites." });
 
 export const KeyGame = s.object({

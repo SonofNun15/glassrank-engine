@@ -54,6 +54,27 @@ export const EvidenceEstimate = s.object({
   sigma: Sigma,
 }, { description: "What the results alone say, before community policy is applied." });
 
+/**
+ * Shown instead of a single number while a player is provisional. Null once
+ * the player has completed the policy's provisional period.
+ */
+export const ProvisionalStatus = s.nullable(
+  s.refine(
+    s.object(
+      {
+        eventsRemaining: s.integer({ minimum: 1, maximum: 50, description: "Events until the rating is established." }),
+        low: Rating,
+        high: Rating,
+      },
+      { description: "Likely range for the player's level: the evidence estimate plus or minus policy.rules.provisionalPeriod.rangeSd standard deviations." },
+    ),
+    "low <= high",
+    (p, path, issues) => {
+      if (p.low > p.high) issues.push({ path: `${path}/low`, message: "must not exceed high" });
+    },
+  ),
+);
+
 export const DeclineEntry = s.object({
   at: Timestamp,
   eventId: EventId,
@@ -73,6 +94,7 @@ export const RatingState = s.refine(
         maximum: 10,
         description: "Gain above the large-gain threshold, held until more evidence confirms it.",
       }),
+      provisional: ProvisionalStatus,
       protectedEventsRemaining: s.integer({
         minimum: 0,
         maximum: 20,
@@ -132,6 +154,7 @@ export type SeedSource = s.Infer<typeof SeedSource>;
 export type Seed = s.Infer<typeof Seed>;
 export type EvidenceEstimate = s.Infer<typeof EvidenceEstimate>;
 export type DeclineEntry = s.Infer<typeof DeclineEntry>;
+export type ProvisionalStatus = s.Infer<typeof ProvisionalStatus>;
 export type RatingState = s.Infer<typeof RatingState>;
 export type Prior = s.Infer<typeof Prior>;
 

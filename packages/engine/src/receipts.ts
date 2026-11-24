@@ -129,6 +129,7 @@ export function buildReceipt(input: ReceiptInput): Receipt {
         lower_rated_losses: lowerRatedLosses,
         voided_matches: input.voidedMatches,
       },
+      provisional: state.provisional,
     },
     summary: {
       gamesPlayed: games.length,

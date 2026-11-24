@@ -58,6 +58,12 @@ change in the estimate.
    simply follows the evidence (no damping, cap, hold, or bias), so a wrong
    starting rating corrects at full speed. The cost is that early drops can be
    large; UIs should label these ratings provisional.
+
+   While provisional, `RatingState.provisional` and the receipt headline carry
+   `{ eventsRemaining, low, high }`: a likely range (the evidence estimate plus
+   or minus `rangeSd` standard deviations, clamped to the scale) for apps to
+   show instead of a single number. It is null once the player is
+   established. The engine computes it so every client shows the same thing.
 1. **upward_bias**: when `gap > 0`, catch up fully and add
    `(gainMultiplier - 1) * change` if `change > 0`.
 2. **decline_damping**: when the result would be a drop, there is no drop if

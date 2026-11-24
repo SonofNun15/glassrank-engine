@@ -97,7 +97,7 @@ describe("policy rules", () => {
   });
 
   it("provisional period: early events follow the evidence at face value", () => {
-    const provisional: EffectivePolicy = { base: { ...base, rules: { ...base.rules, provisionalPeriod: { events: 8 } } }, overlay: null };
+    const provisional: EffectivePolicy = { base: { ...base, rules: { ...base.rules, provisionalPeriod: { events: 8, rangeSd: 1 } } }, overlay: null };
     const drop = applyRules({ ...baseInput(), policy: provisional, muAfter: 3.0, priorEvents: 2 });
     expect(drop.rating).toBeCloseTo(3.0, 12); // no damping, no cap
     expect(drop.fired).toEqual(["provisional_period"]);

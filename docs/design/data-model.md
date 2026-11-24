@@ -75,6 +75,11 @@ defaults: the bytes that were validated are the bytes that get hashed.
   explicit fields (`heldGain`, `recentDeclines`) rather than an untyped bag.
 - **Decline cap uses a rolling window** (`declineCap.windowDays`), so there is
   no time zone question. A calendar-month cap remains an open question.
+- **Provisional ratings are a range.** While a player is inside the policy's
+  provisional period, state and receipts carry `provisional: { eventsRemaining,
+  low, high }`, and apps show the range instead of one number. This removes
+  most of the reason to overclaim a starting rating, and an honest newcomer
+  who guessed high sees a range settle rather than a number fall.
 - **Overlays can adjust only** `lossMultiplier`, `largeGainThreshold`, and
   `defaultRating`. The decline cap and returning-player protection are not
   adjustable by an overlay, and the schema enforces this.
