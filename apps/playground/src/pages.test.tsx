@@ -56,6 +56,14 @@ describe("pages render", () => {
     expect(html).toContain("Nothing is collected on this site yet");
   });
 
+  it("test court has explore and design modes", () => {
+    const html = renderToString(<TestCourt />);
+    expect(html).toContain("Explore results");
+    expect(html).toContain("Design the simulation");
+    expect(html).toContain("Run simulation");
+    expect(html).toContain("Featured players (made up)");
+  });
+
   it("offers the waitlist in the header and footer on every page", () => {
     const html = renderToString(<App />);
     expect(html.match(/href="\/waitlist"/g)?.length).toBeGreaterThanOrEqual(2);

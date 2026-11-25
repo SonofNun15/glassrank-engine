@@ -48,6 +48,7 @@
   "groups": [
     {
       "id": "north-steady",
+      "label": "Steady players",
       "count": 30,
       "skill": {
         "preset": "steady",
@@ -80,6 +81,7 @@
     },
     {
       "id": "north-improvers",
+      "label": "Improvers",
       "count": 12,
       "skill": {
         "preset": "gradual_improver",
@@ -120,6 +122,7 @@
     },
     {
       "id": "north-newcomers",
+      "label": "Newcomers",
       "count": 10,
       "skill": {
         "preset": "fast_improver",
@@ -160,6 +163,7 @@
     },
     {
       "id": "north-decliners",
+      "label": "Slow decliners",
       "count": 8,
       "skill": {
         "preset": "slow_decline",
@@ -196,6 +200,7 @@
     },
     {
       "id": "north-returners",
+      "label": "Back from a break",
       "count": 6,
       "skill": {
         "preset": "break_and_return",
@@ -244,6 +249,7 @@
     },
     {
       "id": "south-steady",
+      "label": "Steady players",
       "count": 21,
       "skill": {
         "preset": "steady",
@@ -276,6 +282,7 @@
     },
     {
       "id": "south-improvers",
+      "label": "Improvers",
       "count": 8,
       "skill": {
         "preset": "gradual_improver",
@@ -316,6 +323,7 @@
     },
     {
       "id": "south-newcomers",
+      "label": "Newcomers",
       "count": 7,
       "skill": {
         "preset": "fast_improver",
@@ -356,6 +364,7 @@
     },
     {
       "id": "south-decliners",
+      "label": "Slow decliners",
       "count": 6,
       "skill": {
         "preset": "slow_decline",
@@ -392,6 +401,7 @@
     },
     {
       "id": "south-returners",
+      "label": "Back from a break",
       "count": 4,
       "skill": {
         "preset": "break_and_return",
@@ -440,6 +450,7 @@
     },
     {
       "id": "east-steady",
+      "label": "Steady players",
       "count": 15,
       "skill": {
         "preset": "steady",
@@ -472,6 +483,7 @@
     },
     {
       "id": "east-improvers",
+      "label": "Improvers",
       "count": 6,
       "skill": {
         "preset": "gradual_improver",
@@ -512,6 +524,7 @@
     },
     {
       "id": "east-newcomers",
+      "label": "Newcomers",
       "count": 5,
       "skill": {
         "preset": "fast_improver",
@@ -552,6 +565,7 @@
     },
     {
       "id": "east-decliners",
+      "label": "Slow decliners",
       "count": 4,
       "skill": {
         "preset": "slow_decline",
@@ -588,6 +602,7 @@
     },
     {
       "id": "east-returners",
+      "label": "Back from a break",
       "count": 3,
       "skill": {
         "preset": "break_and_return",

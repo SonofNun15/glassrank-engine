@@ -59,7 +59,7 @@ export function simulateRecipeV2Unchecked(recipe: SimulationRecipeV2, policy: Po
         ratingBefore: r6(pt.ratingBefore),
         rating: r6(pt.rating),
         trueSkill: r6(pt.trueSkill),
-        provisional: pt.provisional === null ? null : { low: r6(pt.provisional.low), high: r6(pt.provisional.high) },
+        provisional: pt.provisional === null ? null : { ...pt.provisional, low: r6(pt.provisional.low), high: r6(pt.provisional.high) },
       })),
     })),
   };

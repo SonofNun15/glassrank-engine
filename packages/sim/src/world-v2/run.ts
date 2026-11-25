@@ -47,7 +47,7 @@ export interface RatingPoint {
   readonly rating: number;
   readonly trueSkill: number;
   /** Likely range while provisional, else null. */
-  readonly provisional: { readonly low: number; readonly high: number } | null;
+  readonly provisional: { readonly low: number; readonly high: number; readonly eventsRemaining: number } | null;
 }
 
 export interface Occurrence {
@@ -229,7 +229,7 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule)
           ratingBefore: before.get(st.playerId) as number,
           rating: st.rating,
           trueSkill: trueSkillOf(byPlayer.get(st.playerId) as WorldPlayer, slot.day),
-          provisional: st.provisional === null ? null : { low: st.provisional.low, high: st.provisional.high },
+          provisional: st.provisional === null ? null : { low: st.provisional.low, high: st.provisional.high, eventsRemaining: st.provisional.eventsRemaining },
         });
       }
     }

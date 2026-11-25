@@ -17,19 +17,20 @@ function groups(home: string, scale: number): PlayerGroup[] {
     appetite: [-0.5, 0.5] as const,
     attendance: [0.4, 0.9] as const,
   };
-  const g = (id: string, count: number, skill: Skill, joinDay: readonly [number, number] = [0, 0]): PlayerGroup => ({
+  const g = (id: string, label: string, count: number, skill: Skill, joinDay: readonly [number, number] = [0, 0]): PlayerGroup => ({
     id: `${home}-${id}`,
+    label,
     count: Math.max(1, Math.round(count * scale)),
     skill,
     joinDay,
     ...common,
   });
   return [
-    g("steady", 30, { preset: "steady", level: [2.8, 4.6] }),
-    g("improvers", 12, { preset: "gradual_improver", start: [2.6, 3.6], gain: [0.6, 1.4], halfDays: [120, 400] }),
-    g("newcomers", 10, { preset: "fast_improver", start: [2.2, 3.0], gain: [0.5, 1.2], halfDays: [60, 200] }, [0, 300]),
-    g("decliners", 8, { preset: "slow_decline", start: [3.0, 4.4], perYear: [0.05, 0.15] }),
-    g("returners", 6, {
+    g("steady", "Steady players", 30, { preset: "steady", level: [2.8, 4.6] }),
+    g("improvers", "Improvers", 12, { preset: "gradual_improver", start: [2.6, 3.6], gain: [0.6, 1.4], halfDays: [120, 400] }),
+    g("newcomers", "Newcomers", 10, { preset: "fast_improver", start: [2.2, 3.0], gain: [0.5, 1.2], halfDays: [60, 200] }, [0, 300]),
+    g("decliners", "Slow decliners", 8, { preset: "slow_decline", start: [3.0, 4.4], perYear: [0.05, 0.15] }),
+    g("returners", "Back from a break", 6, {
       preset: "break_and_return",
       start: [2.8, 4.2],
       breakDay: [30, 150],

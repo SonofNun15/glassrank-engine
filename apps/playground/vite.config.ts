@@ -20,6 +20,8 @@ export default defineConfig({
       },
     },
   ],
+  // Module workers, so the simulation worker shares the app's imports.
+  worker: { format: "es" },
   resolve: {
     // Build straight from workspace sources; no package build step needed.
     alias: {

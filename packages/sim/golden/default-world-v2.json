@@ -1,5 +1,5 @@
 {
-  "recipeHash": "sha256:048ca74703380d7eaa45f950fb86f3ce8d774431c12c629ec702a2026b3cbb94",
+  "recipeHash": "sha256:0f2b1dcc48587fed0df29134d44fbda81b6484d4da25daabbd39c3cff57da1d8",
   "policyId": "sim-glassrank-v1-proposal",
   "world": {
     "players": 147,
@@ -8,7 +8,7 @@
     "games": 3797
   },
   "eventLogHash": "sha256:9185d08f5770909ea4d9a7dc4b24072c8a2748f0d67d1020abff5e9074258ab2",
-  "resultHash": "sha256:8f8b446c9e9893396a0e2659ef69d1e0e4599862bf142153d26a7c886f7d81fb",
+  "resultHash": "sha256:e6027fc8f1b866e039960e6dc54375645fd4b9722129be136af0f16ebda72151",
   "handMadePlayers": [
     {
       "id": "p.rosa",
