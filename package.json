@@ -10,11 +10,12 @@
   },
   "scripts": {
     "build": "pnpm -r build",
+    "dev": "pnpm --filter @glassrank/playground dev",
     "generate": "vitest run generated.test --update",
     "sim": "pnpm build && node packages/sim/dist/cli.js",
     "sim:tune": "pnpm build && node packages/sim/dist/tune-cli.js",
-    "typecheck": "tsc -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && vitest run",
+    "typecheck": "tsc -p tsconfig.json && tsc -p packages/design/tsconfig.json --noEmit && tsc -p apps/playground/tsconfig.json",
+    "test": "tsc -p tsconfig.json && tsc -p packages/design/tsconfig.json --noEmit && tsc -p apps/playground/tsconfig.json && vitest run",
     "test:watch": "vitest",
     "clean": "pnpm -r exec rm -rf dist"
   },

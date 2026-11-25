@@ -1,0 +1,31 @@
+{
+  "name": "@glassrank/design",
+  "version": "0.1.0",
+  "description": "GlassRank design system: tokens as CSS variables, component styles, and React components.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./src/tokens.css",
+    "./components.css": "./src/components.css"
+  },
+  "files": [
+    "dist",
+    "src/tokens.css",
+    "src/components.css",
+    "tokens.json"
+  ],
+  "scripts": {
+    "build": "tsdown"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "react": "19.3.1"
+  }
+}

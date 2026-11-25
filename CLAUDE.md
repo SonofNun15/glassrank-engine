@@ -2,7 +2,8 @@
 
 GlassRank is an open-source (Apache-2.0) pickleball rating engine. This repo holds
 only the open parts: the data model, the engine, and the simulator. The hosted
-service, API, and apps are proprietary and live elsewhere (run by a nonprofit).
+service, API, and apps are proprietary and live elsewhere (to be run by a nonprofit
+we plan to form once there is community support; it does not exist yet).
 
 Read `docs/design/engine-v0.md` before working on the engine or simulator.
 
@@ -11,8 +12,15 @@ Read `docs/design/engine-v0.md` before working on the engine or simulator.
 - `packages/schema`: versioned types (events, matches, scores, rating state, receipts, policy config).
 - `packages/engine`: `rate(priorStates, event, policy) -> { states, receipts }`.
 - `packages/sim`: synthetic world plus metrics that score the engine.
+- `packages/cli`: `glassrank` JSON command line.
+- `packages/design`: GlassRank design system in code (tokens.css generated from
+  tokens.json, component CSS, React components). The reference is the GlassRank
+  Design System artifact; keep tokens.json in sync with it.
+- `apps/playground`: the public site (Vite + React): landing page, example
+  simulation, sandbox. Builds straight from workspace sources via Vite aliases.
 
-Dependency direction: sim -> engine -> schema. Never the reverse.
+Dependency direction: playground -> sim -> engine -> schema; playground and
+design are browser code (DOM, JSX); the engine packages never get DOM types.
 
 ## Hard rules for the engine
 
@@ -34,6 +42,7 @@ pnpm build      # tsdown in each package (dependency order) -> dist/index.js + i
 pnpm test       # type-checks all sources and tests, then vitest (runs from source, no build needed)
 pnpm generate   # rewrite generated files (JSON Schema, fixtures, engine/sim goldens) from source; review the diff
 pnpm sim        # build, then compare rating systems on the default simulated world
+pnpm dev        # run the public site locally (apps/playground)
 ```
 
 ## Conventions

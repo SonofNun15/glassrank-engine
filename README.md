@@ -25,6 +25,7 @@ audit it, and propose improvements.
 | `@glassrank/schema` | Versioned types: events, matches, rating state, receipts, policy config |
 | `@glassrank/engine` | Pure, deterministic `rate(priorStates, event, policy)`: evidence layer + policy layer |
 | `@glassrank/cli` | `glassrank` command: JSON in, JSON out, for services in any language |
+| `@glassrank/design` | GlassRank design system: tokens as CSS variables, component styles, React components |
 | `@glassrank/sim` | Simulated communities, reproducible simulation recipes, and metrics for scoring rating policies |
 
 ## Using it
@@ -42,6 +43,9 @@ From any language, with the command-line tool:
 glassrank rate < request.json > response.json
 glassrank verify < verify-request.json
 ```
+
+The public site (`apps/playground`) explains GlassRank and runs simulations in
+the browser: `pnpm dev` to work on it locally.
 
 See [docs/integration.md](docs/integration.md) for how a service stores
 ratings and calls the engine, [docs/compatibility.md](docs/compatibility.md)

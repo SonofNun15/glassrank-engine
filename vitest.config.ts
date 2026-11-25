@@ -11,10 +11,11 @@ export default defineConfig({
       "@glassrank/engine": src("engine"),
       "@glassrank/sim": src("sim"),
       "@glassrank/cli": src("cli"),
+      "@glassrank/design": src("design"),
     },
   },
   test: {
-    include: ["packages/*/src/**/*.test.ts"],
+    include: ["packages/*/src/**/*.test.ts", "apps/*/src/**/*.test.ts", "apps/*/src/**/*.test.tsx"],
     // A zone with daylight saving, so any accidental local-time math fails loudly.
     env: { TZ: "America/New_York" },
   },

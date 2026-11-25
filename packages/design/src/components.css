@@ -1,0 +1,63 @@
+/* GlassRank component styles (mirrors the design system's bundle.css). Load after tokens.css. */
+.gr-root { font-family: var(--font-sans); color: var(--ink); background: var(--ground); }
+.gr-focus:focus-visible, .gr-btn:focus-visible, .gr-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Icons (Lucide): inherit text color; 20px default, 16px in tags and dense rows. */
+.gr-icon { width: 20px; height: 20px; flex: none; stroke: currentColor; }
+.gr-tag .gr-icon { width: 16px; height: 16px; }
+
+/* Button */
+.gr-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 44px; padding: 0 var(--space-4);
+  border-radius: var(--radius-md); border: 1px solid transparent; font: 600 16px/1 var(--font-sans); cursor: pointer; text-decoration: none; }
+.gr-btn--primary { background: var(--forest); color: var(--on-forest); }
+.gr-btn--primary:hover { background: var(--forest-strong); }
+.gr-btn--secondary { background: var(--surface); color: var(--forest); border-color: var(--line-strong); }
+.gr-btn--secondary:hover { background: var(--glass); }
+.gr-btn--ghost { background: transparent; color: var(--forest); }
+.gr-btn--ghost:hover { background: var(--glass); }
+.gr-btn--sm { min-height: 36px; padding: 0 var(--space-3); font-size: 14px; }
+.gr-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* GlassPanel */
+.gr-pane { background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-6); display: grid; gap: var(--space-3); }
+
+/* RatingBadge */
+.gr-rating { display: inline-grid; gap: 2px; }
+.gr-rating__value { font-family: var(--font-mono); font-weight: 500; font-size: 20px; line-height: 28px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.gr-rating--xl .gr-rating__value { font-size: 48px; line-height: 52px; }
+.gr-rating__meta { font-size: 12px; line-height: 16px; color: var(--muted); }
+.gr-rating--provisional .gr-rating__value { color: var(--ink-2); }
+.gr-rating--provisional { padding: 2px var(--space-2); border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); }
+
+/* DeltaChip */
+.gr-delta { display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px var(--space-2); border-radius: var(--radius-pill);
+  font-family: var(--font-mono); font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; border: 1px solid currentColor; }
+.gr-delta--up { color: var(--gain); }
+.gr-delta--down { color: var(--loss); }
+.gr-delta--none { color: var(--muted); }
+
+/* ReceiptCard */
+.gr-receipt { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-6); display: grid; gap: var(--space-3); max-width: 560px; }
+.gr-receipt__eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.gr-receipt__head { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.gr-receipt__headline { font-size: 16px; line-height: 24px; color: var(--ink); margin: 0; }
+.gr-receipt__summary { margin: 0; padding-left: 18px; display: grid; gap: var(--space-1); font-size: 14px; line-height: 20px; color: var(--ink-2); }
+.gr-receipt details { font-size: 14px; line-height: 20px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: var(--space-3); }
+.gr-receipt summary { cursor: pointer; color: var(--forest); font-weight: 500; }
+
+/* Field */
+.gr-field { display: grid; gap: var(--space-1); max-width: 360px; }
+.gr-field__label { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink); }
+.gr-input { min-height: 44px; padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); color: var(--ink); font: 400 16px/24px var(--font-sans); }
+.gr-field__help { font-size: 14px; line-height: 20px; color: var(--muted); }
+.gr-field__error { font-size: 14px; line-height: 20px; color: var(--loss); }
+.gr-field--invalid .gr-input { border-color: var(--loss); }
+
+/* Tag */
+.gr-tag { display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px var(--space-2); border-radius: var(--radius-sm); font-size: 12px; line-height: 16px; font-weight: 600; border: 1px solid var(--line-strong); color: var(--ink-2); background: var(--surface); }
+.gr-tag--brand { background: var(--forest-tint); border-color: var(--forest); color: var(--ink); }
+.gr-tag--highlight { background: var(--ball); border-color: var(--ball); color: var(--ball-ink); }
+
+/* Logo */
+.gr-logo { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--ink); text-decoration: none; }
+.gr-logo__word { font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 1; letter-spacing: -0.01em; }
