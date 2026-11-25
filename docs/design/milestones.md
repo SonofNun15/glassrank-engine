@@ -13,7 +13,7 @@ the engine, so there is a baseline to beat from the first engine commit.
 | M5 | Policy layer and correction dial | engine | Done, with caveats: improver lag and decliner bias improve slightly vs. evidence only; the dial moves drift, but the sim shows deflation, not inflation. See `engine-impl-v0.1.md`. |
 | M6 | Receipts, forecast, replay, verify | engine | Done. Every receipt from a simulated year verifies and renders to text; forecast agrees exactly with rate for the outcome that happened. |
 | M7 | Tuning and published results | sim | Results and sample receipts are ready to show founding clubs and advisors. |
-| M8 | Integration release | all | The hosted service can integrate from the published contract alone. |
+| M8 | Integration release | all | Done (not yet published to npm): `glassrank` CLI, conformance cases with a checker, 0.1.0 package metadata, `docs/integration.md`, `docs/compatibility.md`, `CHANGELOG.md`. |
 
 ## Scope notes
 

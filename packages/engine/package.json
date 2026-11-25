@@ -1,8 +1,20 @@
 {
   "name": "@glassrank/engine",
-  "version": "0.0.0",
-  "description": "Pure, deterministic rating engine: evidence layer + policy layer.",
+  "version": "0.1.0",
+  "description": "Pure, deterministic GlassRank rating engine: evidence layer, community rules, and explainable receipts.",
   "license": "Apache-2.0",
+  "keywords": [
+    "pickleball",
+    "rating",
+    "elo",
+    "glicko"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SonofNun15/glassrank.git",
+    "directory": "packages/engine"
+  },
+  "homepage": "https://github.com/SonofNun15/glassrank#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -13,6 +25,12 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsdown"
   },

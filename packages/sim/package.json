@@ -1,8 +1,20 @@
 {
   "name": "@glassrank/sim",
-  "version": "0.0.0",
-  "description": "Simulation harness and benchmarks for evaluating the engine.",
+  "version": "0.1.0",
+  "description": "Simulated pickleball communities and metrics for evaluating GlassRank rating policies.",
   "license": "Apache-2.0",
+  "private": true,
+  "keywords": [
+    "pickleball",
+    "rating",
+    "simulation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SonofNun15/glassrank.git",
+    "directory": "packages/sim"
+  },
+  "homepage": "https://github.com/SonofNun15/glassrank#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -13,6 +25,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsdown"
   },

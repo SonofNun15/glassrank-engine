@@ -1,8 +1,19 @@
 {
   "name": "@glassrank/schema",
-  "version": "0.0.0",
-  "description": "Versioned types for events, matches, rating state, receipts, and policy config.",
+  "version": "0.1.0",
+  "description": "Versioned data model for GlassRank: types, runtime validators, JSON Schema, canonical JSON, and hashing.",
   "license": "Apache-2.0",
+  "keywords": [
+    "pickleball",
+    "rating",
+    "json-schema"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SonofNun15/glassrank.git",
+    "directory": "packages/schema"
+  },
+  "homepage": "https://github.com/SonofNun15/glassrank#readme",
   "type": "module",
   "exports": {
     ".": {
@@ -15,6 +26,12 @@
     "json-schema",
     "fixtures"
   ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsdown"
   },
