@@ -62,6 +62,7 @@ describe("pages render", () => {
     expect(html).toContain("Design the simulation");
     expect(html).toContain("Run simulation");
     expect(html).toContain("Featured players (made up)");
+    expect(html).toContain("Share link");
   });
 
   it("offers the waitlist in the header and footer on every page", () => {

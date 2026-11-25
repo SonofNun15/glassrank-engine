@@ -311,3 +311,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 /* Inputs and selects fit their field: a select is otherwise as wide as its longest option. */
 .gr-field { min-width: 0; }
 .gr-field > .gr-input, .court__picker .gr-input { width: 100%; min-width: 0; max-width: 100%; }
+
+/* Share links */
+.court__share-status:empty { display: none; }
+.court__share-status p { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-2); }
+.court__share-manual { max-width: none; }
+.court__notice { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.court__notice p { flex: 1 1 240px; margin: 0; color: var(--ink-2); }
+.court__notice[role="alert"] { border-color: var(--loss); color: var(--ink); }

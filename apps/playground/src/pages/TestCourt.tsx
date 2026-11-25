@@ -1,11 +1,12 @@
 import { Button, GlassPanel, RatingBadge, Tag, formatRating } from "@glassrank/design";
 import { DEFAULT_RECIPE_V2, type PlayerHistory, type SimulationRecipeV2, type SimulationResultV2 } from "@glassrank/sim";
-import { ChartLine, Download, LoaderCircle, MessageSquareText, Play, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Check, ChartLine, Download, Link2, LoaderCircle, MessageSquareText, Play, SlidersHorizontal } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Design } from "../court/design/Design";
 import { DriftSection } from "../court/DriftSection";
 import { EventDetail, WhyPanel, type Namer } from "../court/PlayerWhy";
 import { RatingChart, weekOf } from "../court/RatingChart";
+import { decodeShare, encodeShare, hasShare } from "../sim/share";
 import { useFollow, useSimulation } from "../sim/useSimulation";
 
 const icon = { className: "gr-icon", strokeWidth: 1.75, "aria-hidden": true } as const;
@@ -75,11 +76,81 @@ function downloadRecipe(recipe: SimulationRecipeV2) {
 
 type Mode = "explore" | "design";
 
+type ShareState =
+  | { readonly kind: "idle" }
+  /** Design has changes that haven't been run: ask which simulation to share. */
+  | { readonly kind: "choose" }
+  | { readonly kind: "copied"; readonly ranChanges: boolean }
+  | { readonly kind: "manual"; readonly url: string; readonly ranChanges: boolean };
+
+const pageHash = () => (typeof window === "undefined" ? "" : window.location.hash);
+/** The address without its fragment: the page a share link points at. */
+const pageAddress = () => `${window.location.origin}${window.location.pathname}`;
+
 export function TestCourt() {
   const [mode, setMode] = useState<Mode>("explore");
-  const [ran, setRan] = useState<SimulationRecipeV2>(DEFAULT_RECIPE_V2);
+  // A share link in the address replaces the example; until it's read, nothing runs.
+  const [ran, setRan] = useState<SimulationRecipeV2 | null>(() => (hasShare(pageHash()) ? null : DEFAULT_RECIPE_V2));
   const [draft, setDraft] = useState<SimulationRecipeV2>(DEFAULT_RECIPE_V2);
-  const changed = draft !== ran;
+  const [player, setPlayer] = useState<string | null>(null);
+  const [shared, setShared] = useState<{ readonly otherVersion: boolean } | null>(null);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [share, setShare] = useState<ShareState>({ kind: "idle" });
+  const changed = ran !== null && draft !== ran;
+
+  useEffect(() => {
+    let current = true;
+    const load = async () => {
+      if (!hasShare(window.location.hash)) return;
+      const r = await decodeShare(window.location.hash);
+      if (!current) return;
+      if (r.ok) {
+        setRan(r.recipe);
+        setDraft(r.recipe);
+        setPlayer(r.player);
+        setShared({ otherVersion: r.otherVersion });
+        setLinkError(null);
+        setMode("explore");
+      } else {
+        setLinkError(r.message);
+        setShared(null);
+        setRan((x) => x ?? DEFAULT_RECIPE_V2);
+      }
+    };
+    void load();
+    window.addEventListener("hashchange", load);
+    return () => {
+      current = false;
+      window.removeEventListener("hashchange", load);
+    };
+  }, []);
+
+  /** Run a new recipe: the address no longer describes what's on screen, so it drops the old link. */
+  const runRecipe = (recipe: SimulationRecipeV2) => {
+    setRan(recipe);
+    setShared(null);
+    setShare({ kind: "idle" });
+    if (hasShare(window.location.hash)) window.history.replaceState(null, "", window.location.pathname);
+  };
+
+  /** Share `recipe`, which is what Explore shows (the last run, or changes just run for this). */
+  const shareLink = async (recipe: SimulationRecipeV2, ranChanges: boolean) => {
+    const fragment = await encodeShare(recipe, player);
+    const url = `${pageAddress()}#${fragment}`;
+    window.history.replaceState(null, "", `#${fragment}`);
+    try {
+      await navigator.clipboard.writeText(url);
+      setShare({ kind: "copied", ranChanges });
+    } catch {
+      setShare({ kind: "manual", url, ranChanges });
+    }
+  };
+  const onShare = () => {
+    if (ran === null) return;
+    // A link reproduces what Explore shows. With unrun changes in Design, ask which to share.
+    if (changed) setShare({ kind: "choose" });
+    else void shareLink(ran, false);
+  };
 
   return (
     <div className="page page-body stack">
@@ -107,13 +178,90 @@ export function TestCourt() {
               </button>
             </div>
             <div className="actions">
-              <Button variant="ghost" size="sm" onClick={() => downloadRecipe(ran)} icon={<Download {...small} />}>
+              <Button variant="secondary" size="sm" disabled={ran === null} onClick={onShare} icon={<Link2 {...small} />}>
+                Share link
+              </Button>
+              <Button variant="ghost" size="sm" disabled={ran === null} onClick={() => ran !== null && downloadRecipe(ran)} icon={<Download {...small} />}>
                 Download recipe
               </Button>
             </div>
           </div>
+          <div role="status" className="court__share-status">
+            {share.kind === "choose" ? (
+              <div className="court__notice">
+                <p className="t-small">
+                  You have changes in Design that haven't been run yet. A share link shows a simulation exactly as it ran, so pick which
+                  one to share.
+                </p>
+                <div className="actions">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      runRecipe(draft);
+                      setMode("explore");
+                      void shareLink(draft, true);
+                    }}
+                    icon={<Play {...small} />}
+                  >
+                    Run my changes and share
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => ran !== null && void shareLink(ran, false)}>
+                    Share the last run
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setShare({ kind: "idle" })}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : share.kind === "copied" ? (
+              <p className="t-small">
+                <Check {...small} /> Link copied: {share.ranChanges ? "your changes, just run" : "the simulation shown in Explore"}. Anyone who
+                opens it sees this exact simulation{player !== null ? ", following the same player" : ""}.
+                {!share.ranChanges && changed ? " Your unrun Design changes aren't in it." : ""}
+              </p>
+            ) : share.kind === "manual" ? (
+              <label className="gr-field court__share-manual">
+                <span className="gr-field__label">
+                  Copy this link ({share.ranChanges ? "your changes, just run" : "the simulation shown in Explore"})
+                </span>
+                <input className="gr-input" readOnly value={share.url} onFocus={(e) => e.currentTarget.select()} />
+              </label>
+            ) : null}
+          </div>
+          {linkError !== null ? (
+            <p className="court__notice" role="alert">
+              Couldn't open that link. {linkError} Showing the example instead.
+            </p>
+          ) : null}
+          {shared !== null ? (
+            <div className="court__notice">
+              <Tag tone="brand">Shared simulation</Tag>
+              <p className="t-small">
+                You're viewing a simulation someone shared with you, exactly as they saw it. Change anything you like.
+                {shared.otherVersion ? " It was made with a different version of GlassRank, so the results may differ from what they saw." : ""}
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  runRecipe(DEFAULT_RECIPE_V2);
+                  setDraft(DEFAULT_RECIPE_V2);
+                  setPlayer(null);
+                }}
+              >
+                Back to the example
+              </Button>
+            </div>
+          ) : null}
           <div role="tabpanel" id="panel-explore" aria-labelledby="tab-explore" hidden={mode !== "explore"}>
-            <Simulation recipe={ran} />
+            {ran === null ? (
+              <p className="court__status" role="status">
+                <LoaderCircle {...icon} className="gr-icon spin" />
+                Opening the shared simulation…
+              </p>
+            ) : (
+              <Simulation recipe={ran} player={player} onPlayer={setPlayer} />
+            )}
           </div>
           <div role="tabpanel" id="panel-design" aria-labelledby="tab-design" hidden={mode !== "design"}>
             <Design
@@ -122,7 +270,7 @@ export function TestCourt() {
               changed={changed}
               onReset={() => setDraft(DEFAULT_RECIPE_V2)}
               onRun={() => {
-                setRan(draft);
+                runRecipe(draft);
                 setMode("explore");
               }}
             />
@@ -164,7 +312,8 @@ export function TestCourt() {
   );
 }
 
-function Simulation({ recipe }: { readonly recipe: SimulationRecipeV2 }) {
+function Simulation(props: { readonly recipe: SimulationRecipeV2; readonly player: string | null; readonly onPlayer: (id: string) => void }) {
+  const { recipe } = props;
   const state = useSimulation(recipe);
   if (state.status === "running") {
     return (
@@ -181,10 +330,17 @@ function Simulation({ recipe }: { readonly recipe: SimulationRecipeV2 }) {
       </p>
     );
   }
-  return <Results recipe={recipe} result={state.result} computeMs={state.computeMs} />;
+  return <Results recipe={recipe} result={state.result} computeMs={state.computeMs} player={props.player} onPlayer={props.onPlayer} />;
 }
 
-function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: SimulationResultV2; readonly computeMs: number }) {
+function Results(props: {
+  readonly recipe: SimulationRecipeV2;
+  readonly result: SimulationResultV2;
+  readonly computeMs: number;
+  /** The followed player, kept by the page so share links can include it. */
+  readonly player: string | null;
+  readonly onPlayer: (id: string) => void;
+}) {
   const { recipe, result, computeMs } = props;
   const labels = useMemo(() => labelsFor(recipe), [recipe]);
   const eventLabels = useMemo(() => Object.fromEntries(recipe.events.map((e) => [e.id, labels.event(e.id)])), [recipe, labels]);
@@ -193,7 +349,9 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
     return { player: (id) => names.get(id) ?? id, event: labels.event };
   }, [result, labels]);
   const followed = result.players.filter((p) => p.group === null);
-  const [selected, setSelected] = useState(followed[0]?.id ?? result.players[0]?.id ?? "");
+  const fallback = followed[0]?.id ?? result.players[0]?.id ?? "";
+  const selected = props.player !== null && result.players.some((p) => p.id === props.player) ? props.player : fallback;
+  const setSelected = props.onPlayer;
   const player = result.players.find((p) => p.id === selected) ?? null;
 
   const byClub = useMemo(() => {
