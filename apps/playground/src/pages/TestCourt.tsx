@@ -29,11 +29,6 @@ function labelsFor(recipe: SimulationRecipeV2): Labels {
 }
 
 const COMING: readonly { readonly title: string; readonly body: string; readonly now?: boolean }[] = [
-  {
-    title: "Tournaments",
-    body: "Partners who sign up together and sometimes split up, pools, brackets, and double elimination, drawing players from many clubs.",
-    now: true,
-  },
   { title: "Start from scratch", body: "Begin with an empty world and build your own clubs, events, and players." },
   { title: "Share a link", body: "Share a simulation as a link. It's rebuilt exactly, down to every rating change, on anyone's screen." },
 ];
@@ -153,7 +148,7 @@ export function TestCourt() {
         <h2 id="coming-title" className="t-title">
           Coming next
         </h2>
-        <ul className="grid-3">
+        <ul className="grid-2">
           {COMING.map((c) => (
             <li key={c.title} className="stack-xs">
               <h3 className="t-title court__coming-title">
