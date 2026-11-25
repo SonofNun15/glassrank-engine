@@ -1,0 +1,799 @@
+{
+  "recipeVersion": "0.2.0",
+  "name": "Three made-up clubs, one year",
+  "seed": 1,
+  "durationDays": 364,
+  "world": {
+    "nightShare": 0.5,
+    "appetiteSpread": 0.25,
+    "rallyK": 0.32,
+    "startingRatings": {
+      "mix": {
+        "self": 0.5,
+        "club": 0.2,
+        "external": 0.1,
+        "default": 0.2
+      },
+      "self": {
+        "bias": 0.2,
+        "sd": 0.4
+      },
+      "club": {
+        "bias": 0,
+        "sd": 0.25
+      },
+      "external": {
+        "bias": 0.1,
+        "sd": 0.3
+      }
+    }
+  },
+  "clubs": [
+    {
+      "id": "north",
+      "label": "Northside Rec (made up)",
+      "tier": "verified_host"
+    },
+    {
+      "id": "south",
+      "label": "Southgate Courts (made up)",
+      "tier": "verified_host"
+    },
+    {
+      "id": "east",
+      "label": "East End Pickleball (made up)",
+      "tier": "provisional_host"
+    }
+  ],
+  "groups": [
+    {
+      "id": "north-steady",
+      "count": 30,
+      "skill": {
+        "preset": "steady",
+        "level": [
+          2.8,
+          4.6
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "north",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "north-improvers",
+      "count": 12,
+      "skill": {
+        "preset": "gradual_improver",
+        "start": [
+          2.6,
+          3.6
+        ],
+        "gain": [
+          0.6,
+          1.4
+        ],
+        "halfDays": [
+          120,
+          400
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "north",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "north-newcomers",
+      "count": 10,
+      "skill": {
+        "preset": "fast_improver",
+        "start": [
+          2.2,
+          3
+        ],
+        "gain": [
+          0.5,
+          1.2
+        ],
+        "halfDays": [
+          60,
+          200
+        ]
+      },
+      "joinDay": [
+        0,
+        300
+      ],
+      "home": "north",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "north-decliners",
+      "count": 8,
+      "skill": {
+        "preset": "slow_decline",
+        "start": [
+          3,
+          4.4
+        ],
+        "perYear": [
+          0.05,
+          0.15
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "north",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "north-returners",
+      "count": 6,
+      "skill": {
+        "preset": "break_and_return",
+        "start": [
+          2.8,
+          4.2
+        ],
+        "breakDay": [
+          30,
+          150
+        ],
+        "breakDays": [
+          60,
+          150
+        ],
+        "rust": [
+          0.1,
+          0.4
+        ],
+        "recoveryDays": [
+          40,
+          80
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "north",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "south-steady",
+      "count": 21,
+      "skill": {
+        "preset": "steady",
+        "level": [
+          2.8,
+          4.6
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "south",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "south-improvers",
+      "count": 8,
+      "skill": {
+        "preset": "gradual_improver",
+        "start": [
+          2.6,
+          3.6
+        ],
+        "gain": [
+          0.6,
+          1.4
+        ],
+        "halfDays": [
+          120,
+          400
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "south",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "south-newcomers",
+      "count": 7,
+      "skill": {
+        "preset": "fast_improver",
+        "start": [
+          2.2,
+          3
+        ],
+        "gain": [
+          0.5,
+          1.2
+        ],
+        "halfDays": [
+          60,
+          200
+        ]
+      },
+      "joinDay": [
+        0,
+        300
+      ],
+      "home": "south",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "south-decliners",
+      "count": 6,
+      "skill": {
+        "preset": "slow_decline",
+        "start": [
+          3,
+          4.4
+        ],
+        "perYear": [
+          0.05,
+          0.15
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "south",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "south-returners",
+      "count": 4,
+      "skill": {
+        "preset": "break_and_return",
+        "start": [
+          2.8,
+          4.2
+        ],
+        "breakDay": [
+          30,
+          150
+        ],
+        "breakDays": [
+          60,
+          150
+        ],
+        "rust": [
+          0.1,
+          0.4
+        ],
+        "recoveryDays": [
+          40,
+          80
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "south",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "east-steady",
+      "count": 15,
+      "skill": {
+        "preset": "steady",
+        "level": [
+          2.8,
+          4.6
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "east",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "east-improvers",
+      "count": 6,
+      "skill": {
+        "preset": "gradual_improver",
+        "start": [
+          2.6,
+          3.6
+        ],
+        "gain": [
+          0.6,
+          1.4
+        ],
+        "halfDays": [
+          120,
+          400
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "east",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "east-newcomers",
+      "count": 5,
+      "skill": {
+        "preset": "fast_improver",
+        "start": [
+          2.2,
+          3
+        ],
+        "gain": [
+          0.5,
+          1.2
+        ],
+        "halfDays": [
+          60,
+          200
+        ]
+      },
+      "joinDay": [
+        0,
+        300
+      ],
+      "home": "east",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "east-decliners",
+      "count": 4,
+      "skill": {
+        "preset": "slow_decline",
+        "start": [
+          3,
+          4.4
+        ],
+        "perYear": [
+          0.05,
+          0.15
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "east",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    },
+    {
+      "id": "east-returners",
+      "count": 3,
+      "skill": {
+        "preset": "break_and_return",
+        "start": [
+          2.8,
+          4.2
+        ],
+        "breakDay": [
+          30,
+          150
+        ],
+        "breakDays": [
+          60,
+          150
+        ],
+        "rust": [
+          0.1,
+          0.4
+        ],
+        "recoveryDays": [
+          40,
+          80
+        ]
+      },
+      "joinDay": [
+        0,
+        0
+      ],
+      "home": "east",
+      "volatility": [
+        0.05,
+        0.25
+      ],
+      "travel": [
+        0,
+        0.15
+      ],
+      "appetite": [
+        -0.5,
+        0.5
+      ],
+      "attendance": [
+        0.4,
+        0.9
+      ]
+    }
+  ],
+  "players": [
+    {
+      "id": "rosa",
+      "label": "Rosa (made up)",
+      "home": "north",
+      "skill": {
+        "preset": "fast_improver",
+        "start": 3,
+        "gain": 1,
+        "halfDays": 120
+      },
+      "volatility": 0.15,
+      "travel": 0.1,
+      "appetite": 0.5,
+      "attendance": 0.85,
+      "joinDay": 0,
+      "startingRating": {
+        "source": "self",
+        "rating": 3.5
+      }
+    },
+    {
+      "id": "sam",
+      "label": "Sam (made up)",
+      "home": "south",
+      "skill": {
+        "preset": "steady",
+        "level": 3.9
+      },
+      "volatility": 0.1,
+      "travel": 0,
+      "appetite": -1,
+      "attendance": 0.9,
+      "joinDay": 0,
+      "startingRating": {
+        "source": "self",
+        "rating": 3.2
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "north-30",
+      "label": "3.0 and under",
+      "club": "north",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 0
+      },
+      "range": {
+        "max": 3
+      },
+      "capacity": 24,
+      "format": {
+        "type": "league"
+      }
+    },
+    {
+      "id": "north-35",
+      "label": "3.0–3.5 league",
+      "club": "north",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 1
+      },
+      "range": {
+        "min": 3,
+        "max": 3.5
+      },
+      "capacity": 24,
+      "format": {
+        "type": "league",
+        "season": {
+          "weeks": 10
+        }
+      }
+    },
+    {
+      "id": "north-40",
+      "label": "3.5–4.0",
+      "club": "north",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 2
+      },
+      "range": {
+        "min": 3.5,
+        "max": 4
+      },
+      "capacity": 20,
+      "format": {
+        "type": "league"
+      }
+    },
+    {
+      "id": "north-open",
+      "label": "4.0 and up",
+      "club": "north",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 3
+      },
+      "range": {
+        "min": 4
+      },
+      "capacity": 16,
+      "format": {
+        "type": "league"
+      }
+    },
+    {
+      "id": "south-35",
+      "label": "3.5 and under",
+      "club": "south",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 1
+      },
+      "range": {
+        "max": 3.5
+      },
+      "capacity": 24,
+      "format": {
+        "type": "league"
+      }
+    },
+    {
+      "id": "south-up",
+      "label": "3.5 and up",
+      "club": "south",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 3
+      },
+      "range": {
+        "min": 3.5
+      },
+      "capacity": 20,
+      "format": {
+        "type": "league"
+      }
+    },
+    {
+      "id": "east-all",
+      "label": "All levels",
+      "club": "east",
+      "invites": [
+        "north",
+        "south"
+      ],
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 5,
+        "hour": 10
+      },
+      "capacity": 32,
+      "format": {
+        "type": "league"
+      }
+    }
+  ]
+}

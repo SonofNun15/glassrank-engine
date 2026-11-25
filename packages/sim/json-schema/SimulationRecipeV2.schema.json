@@ -1,0 +1,1648 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:glassrank:sim:0.2.0:SimulationRecipeV2",
+  "type": "object",
+  "properties": {
+    "clubs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Display name. User content: made up, never a real person."
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "verified_host",
+              "provisional_host",
+              "video_verified"
+            ],
+            "description": "Who vouched for the results. Weighted by `policy.sourceWeights`. Results reported only by players are not accepted: a host or video must vouch for every rated event."
+          }
+        },
+        "required": [
+          "id",
+          "tier"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "createdWith": {
+      "type": "object",
+      "properties": {
+        "engineVersion": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+        },
+        "policyId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+          "description": "Policy config id, e.g. `glassrank-2026.1`."
+        },
+        "simVersion": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+        }
+      },
+      "required": [
+        "engineVersion",
+        "simVersion"
+      ],
+      "additionalProperties": false
+    },
+    "durationDays": {
+      "type": "integer",
+      "minimum": 7,
+      "maximum": 1825
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "capacity": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 500
+          },
+          "club": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "format": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "movesPerCourt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2,
+                    "description": "Players who move up or down a court each week. Default 1."
+                  },
+                  "season": {
+                    "type": "object",
+                    "properties": {
+                      "weeks": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 52
+                      }
+                    },
+                    "required": [
+                      "weeks"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Register for this many occurrences; eligibility is checked at registration."
+                  },
+                  "type": {
+                    "const": "league"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "invites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+              "description": "Lowercase letters, digits, and dashes."
+            },
+            "maxItems": 12,
+            "description": "Other clubs whose players may enter."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Display name. User content: made up, never a real person."
+          },
+          "playUp": {
+            "type": "string",
+            "enum": [
+              "open",
+              "margin",
+              "strict"
+            ],
+            "description": "Below `min`: open (default), within `playUpMargin`, or not at all."
+          },
+          "playUpMargin": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "provisional": {
+            "type": "string",
+            "enum": [
+              "rating",
+              "high"
+            ],
+            "description": "Which provisional value meets `max`: the rating (default) or the top of the range."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "max": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10,
+                "description": "Rating on the published scale."
+              },
+              "min": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10,
+                "description": "Rating on the published scale."
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "rated": {
+            "type": "boolean",
+            "description": "Submitted to GlassRank. Default true."
+          },
+          "schedule": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "day": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1825
+                  },
+                  "hour": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 23
+                  },
+                  "kind": {
+                    "const": "once"
+                  }
+                },
+                "required": [
+                  "day",
+                  "kind"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "everyWeeks": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 52
+                  },
+                  "firstWeek": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 260
+                  },
+                  "hour": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 23
+                  },
+                  "kind": {
+                    "const": "weekly"
+                  },
+                  "lastWeek": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 260
+                  },
+                  "weekday": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 6,
+                    "description": "0 = Monday ... 6 = Sunday."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "weekday"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "scoring": {
+            "type": "object",
+            "properties": {
+              "games": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5,
+                "description": "Games per match: 1, 3, or 5 (best of)."
+              },
+              "to": {
+                "type": "integer",
+                "minimum": 5,
+                "maximum": 25
+              },
+              "winBy": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              }
+            },
+            "required": [
+              "games",
+              "to",
+              "winBy"
+            ],
+            "additionalProperties": false,
+            "x-glassrank-rules": [
+              "games is odd"
+            ]
+          }
+        },
+        "required": [
+          "capacity",
+          "club",
+          "format",
+          "id",
+          "schedule"
+        ],
+        "additionalProperties": false,
+        "x-glassrank-rules": [
+          "range min <= max; playUp margin needs playUpMargin"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 40
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "appetite": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "-1 plays down, 0 at their level, +1 plays up.",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          },
+          "attendance": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Chance of playing in a given week.",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "home": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "joinDay": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1825
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1825
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Display name. User content: made up, never a real person."
+          },
+          "skill": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "breakDay": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1825
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1825
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Days after joining that the break starts.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "breakDays": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 1825
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 1825
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Length of the break.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "preset": {
+                    "const": "break_and_return"
+                  },
+                  "recoveryDays": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Days to recover the rust.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "rust": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 3
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 3
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Skill lost on return.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "start": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "True skill when the player joins.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  }
+                },
+                "required": [
+                  "breakDay",
+                  "breakDays",
+                  "preset",
+                  "recoveryDays",
+                  "rust",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "gain": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 4
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 4
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Total eventual gain.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "halfDays": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Days to reach half of the gain.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "preset": {
+                    "const": "fast_improver"
+                  },
+                  "start": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "True skill when the player joins.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  }
+                },
+                "required": [
+                  "gain",
+                  "halfDays",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "gain": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 4
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 4
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Total eventual gain.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "halfDays": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Days to reach half of the gain.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "preset": {
+                    "const": "gradual_improver"
+                  },
+                  "start": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "True skill when the player joins.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  }
+                },
+                "required": [
+                  "gain",
+                  "halfDays",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "keyframes": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1825
+                        },
+                        {
+                          "type": "number",
+                          "minimum": 2,
+                          "maximum": 8
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "minItems": 1,
+                    "maxItems": 24,
+                    "description": "[day, skill] points, joined by straight lines and held flat before the first and after the last."
+                  },
+                  "preset": {
+                    "const": "keyframes"
+                  }
+                },
+                "required": [
+                  "keyframes",
+                  "preset"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "jump": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": -3,
+                        "maximum": 3
+                      },
+                      {
+                        "type": "number",
+                        "minimum": -3,
+                        "maximum": 3
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Size of the jump.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "jumpDay": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1825
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1825
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Days after joining that the jump starts.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "jumpDays": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "How long the jump takes.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "preset": {
+                    "const": "plateau_then_jump"
+                  },
+                  "start": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "True skill when the player joins.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  }
+                },
+                "required": [
+                  "jump",
+                  "jumpDay",
+                  "jumpDays",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "perYear": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 2
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 2
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Skill lost per year.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "preset": {
+                    "const": "slow_decline"
+                  },
+                  "start": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "True skill when the player joins.",
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  }
+                },
+                "required": [
+                  "perYear",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      },
+                      {
+                        "type": "number",
+                        "minimum": 2,
+                        "maximum": 8
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "x-glassrank-rules": [
+                      "low <= high"
+                    ]
+                  },
+                  "preset": {
+                    "const": "steady"
+                  }
+                },
+                "required": [
+                  "level",
+                  "preset"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "description": "True skill over time: a preset curve, or keyframes."
+          },
+          "startingRatings": {
+            "type": "object",
+            "properties": {
+              "club": {
+                "type": "object",
+                "properties": {
+                  "bias": {
+                    "type": "number",
+                    "minimum": -3,
+                    "maximum": 3
+                  },
+                  "sd": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 3
+                  }
+                },
+                "required": [
+                  "bias",
+                  "sd"
+                ],
+                "additionalProperties": false
+              },
+              "external": {
+                "type": "object",
+                "properties": {
+                  "bias": {
+                    "type": "number",
+                    "minimum": -3,
+                    "maximum": 3
+                  },
+                  "sd": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 3
+                  }
+                },
+                "required": [
+                  "bias",
+                  "sd"
+                ],
+                "additionalProperties": false
+              },
+              "mix": {
+                "type": "object",
+                "properties": {
+                  "club": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "default": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "external": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "self": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "club",
+                  "default",
+                  "external",
+                  "self"
+                ],
+                "additionalProperties": false
+              },
+              "self": {
+                "type": "object",
+                "properties": {
+                  "bias": {
+                    "type": "number",
+                    "minimum": -3,
+                    "maximum": 3
+                  },
+                  "sd": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 3
+                  }
+                },
+                "required": [
+                  "bias",
+                  "sd"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "club",
+              "external",
+              "mix",
+              "self"
+            ],
+            "additionalProperties": false,
+            "description": "Share of players starting from each source, and how far each source's claims miss true skill.",
+            "x-glassrank-rules": [
+              "mix sums to 1"
+            ]
+          },
+          "travel": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Chance, each week, of considering events at other clubs.",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          },
+          "volatility": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "How far, typically, a player plays above or below true skill (standard deviation).",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          }
+        },
+        "required": [
+          "appetite",
+          "attendance",
+          "count",
+          "home",
+          "id",
+          "joinDay",
+          "skill",
+          "travel",
+          "volatility"
+        ],
+        "additionalProperties": false,
+        "description": "Many players drawn from ranges. Player ids are `<group id>.<n>`."
+      },
+      "maxItems": 20
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "players": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "appetite": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "attendance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "home": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Lowercase letters, digits, and dashes."
+          },
+          "inactive": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1825
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1825
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "maxItems": 8,
+            "description": "[start, end) day ranges away from play."
+          },
+          "joinDay": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1825
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Display name. User content: made up, never a real person."
+          },
+          "skill": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "breakDay": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1825,
+                    "description": "Days after joining that the break starts."
+                  },
+                  "breakDays": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 1825,
+                    "description": "Length of the break."
+                  },
+                  "preset": {
+                    "const": "break_and_return"
+                  },
+                  "recoveryDays": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 3650,
+                    "description": "Days to recover the rust."
+                  },
+                  "rust": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 3,
+                    "description": "Skill lost on return."
+                  },
+                  "start": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 8,
+                    "description": "True skill when the player joins."
+                  }
+                },
+                "required": [
+                  "breakDay",
+                  "breakDays",
+                  "preset",
+                  "recoveryDays",
+                  "rust",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "gain": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 4,
+                    "description": "Total eventual gain."
+                  },
+                  "halfDays": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 3650,
+                    "description": "Days to reach half of the gain."
+                  },
+                  "preset": {
+                    "const": "fast_improver"
+                  },
+                  "start": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 8,
+                    "description": "True skill when the player joins."
+                  }
+                },
+                "required": [
+                  "gain",
+                  "halfDays",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "gain": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 4,
+                    "description": "Total eventual gain."
+                  },
+                  "halfDays": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 3650,
+                    "description": "Days to reach half of the gain."
+                  },
+                  "preset": {
+                    "const": "gradual_improver"
+                  },
+                  "start": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 8,
+                    "description": "True skill when the player joins."
+                  }
+                },
+                "required": [
+                  "gain",
+                  "halfDays",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "keyframes": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1825
+                        },
+                        {
+                          "type": "number",
+                          "minimum": 2,
+                          "maximum": 8
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "minItems": 1,
+                    "maxItems": 24,
+                    "description": "[day, skill] points, joined by straight lines and held flat before the first and after the last."
+                  },
+                  "preset": {
+                    "const": "keyframes"
+                  }
+                },
+                "required": [
+                  "keyframes",
+                  "preset"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "jump": {
+                    "type": "number",
+                    "minimum": -3,
+                    "maximum": 3,
+                    "description": "Size of the jump."
+                  },
+                  "jumpDay": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1825,
+                    "description": "Days after joining that the jump starts."
+                  },
+                  "jumpDays": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 3650,
+                    "description": "How long the jump takes."
+                  },
+                  "preset": {
+                    "const": "plateau_then_jump"
+                  },
+                  "start": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 8,
+                    "description": "True skill when the player joins."
+                  }
+                },
+                "required": [
+                  "jump",
+                  "jumpDay",
+                  "jumpDays",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "perYear": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 2,
+                    "description": "Skill lost per year."
+                  },
+                  "preset": {
+                    "const": "slow_decline"
+                  },
+                  "start": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 8,
+                    "description": "True skill when the player joins."
+                  }
+                },
+                "required": [
+                  "perYear",
+                  "preset",
+                  "start"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 8
+                  },
+                  "preset": {
+                    "const": "steady"
+                  }
+                },
+                "required": [
+                  "level",
+                  "preset"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "description": "True skill over time: a preset curve, or keyframes."
+          },
+          "startingRating": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 10,
+                    "description": "Rating on the published scale."
+                  },
+                  "source": {
+                    "const": "club"
+                  }
+                },
+                "required": [
+                  "rating",
+                  "source"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "const": "default"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 10,
+                    "description": "Rating on the published scale."
+                  },
+                  "source": {
+                    "const": "external"
+                  }
+                },
+                "required": [
+                  "rating",
+                  "source"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 10,
+                    "description": "Rating on the published scale."
+                  },
+                  "source": {
+                    "const": "self"
+                  }
+                },
+                "required": [
+                  "rating",
+                  "source"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "travel": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "volatility": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "appetite",
+          "attendance",
+          "home",
+          "id",
+          "joinDay",
+          "skill",
+          "startingRating",
+          "travel",
+          "volatility"
+        ],
+        "additionalProperties": false,
+        "description": "A hand-made player, followed by name in results. Player id is `p.<id>`."
+      },
+      "maxItems": 20
+    },
+    "recipeVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "world": {
+      "type": "object",
+      "properties": {
+        "appetiteSpread": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Week-to-week randomness in the level a player aims for."
+        },
+        "nightShare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Share of volatility drawn once per event (a good or bad night); the rest is per match."
+        },
+        "rallyK": {
+          "type": "number",
+          "maximum": 5,
+          "exclusiveMinimum": 0,
+          "description": "Rally-win curve steepness: 0.5 + 0.5*k*d/(1+k*|d|)."
+        },
+        "startingRatings": {
+          "type": "object",
+          "properties": {
+            "club": {
+              "type": "object",
+              "properties": {
+                "bias": {
+                  "type": "number",
+                  "minimum": -3,
+                  "maximum": 3
+                },
+                "sd": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 3
+                }
+              },
+              "required": [
+                "bias",
+                "sd"
+              ],
+              "additionalProperties": false
+            },
+            "external": {
+              "type": "object",
+              "properties": {
+                "bias": {
+                  "type": "number",
+                  "minimum": -3,
+                  "maximum": 3
+                },
+                "sd": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 3
+                }
+              },
+              "required": [
+                "bias",
+                "sd"
+              ],
+              "additionalProperties": false
+            },
+            "mix": {
+              "type": "object",
+              "properties": {
+                "club": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "default": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "external": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "self": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "club",
+                "default",
+                "external",
+                "self"
+              ],
+              "additionalProperties": false
+            },
+            "self": {
+              "type": "object",
+              "properties": {
+                "bias": {
+                  "type": "number",
+                  "minimum": -3,
+                  "maximum": 3
+                },
+                "sd": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 3
+                }
+              },
+              "required": [
+                "bias",
+                "sd"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "club",
+            "external",
+            "mix",
+            "self"
+          ],
+          "additionalProperties": false,
+          "description": "Share of players starting from each source, and how far each source's claims miss true skill.",
+          "x-glassrank-rules": [
+            "mix sums to 1"
+          ]
+        }
+      },
+      "required": [
+        "appetiteSpread",
+        "nightShare",
+        "rallyK",
+        "startingRatings"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "clubs",
+    "durationDays",
+    "events",
+    "groups",
+    "players",
+    "recipeVersion",
+    "seed",
+    "world"
+  ],
+  "additionalProperties": false,
+  "title": "SimulationRecipeV2",
+  "description": "A simulated world of clubs, players, and events, reproducible exactly.",
+  "x-glassrank-rules": [
+    "recipeVersion is compatible with 0.2.0; ids are unique within clubs, groups, players, and events; every home, club, and invite names a club; at most 500 players; keyframes are in day order within the run; inactive ranges have start < end"
+  ]
+}

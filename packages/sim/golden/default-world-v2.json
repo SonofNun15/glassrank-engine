@@ -1,0 +1,40 @@
+{
+  "recipeHash": "sha256:048ca74703380d7eaa45f950fb86f3ce8d774431c12c629ec702a2026b3cbb94",
+  "policyId": "sim-glassrank-v1-proposal",
+  "world": {
+    "players": 147,
+    "events": 362,
+    "ratedEvents": 362,
+    "games": 3797
+  },
+  "eventLogHash": "sha256:9185d08f5770909ea4d9a7dc4b24072c8a2748f0d67d1020abff5e9074258ab2",
+  "resultHash": "sha256:8f8b446c9e9893396a0e2659ef69d1e0e4599862bf142153d26a7c886f7d81fb",
+  "handMadePlayers": [
+    {
+      "id": "p.rosa",
+      "events": 48,
+      "last": {
+        "eventId": "north-35.52",
+        "series": "north-35",
+        "day": 358,
+        "ratingBefore": 3.44898,
+        "rating": 3.505819,
+        "trueSkill": 3.748954,
+        "provisional": null
+      }
+    },
+    {
+      "id": "p.sam",
+      "events": 47,
+      "last": {
+        "eventId": "south-up.52",
+        "series": "south-up",
+        "day": 360,
+        "ratingBefore": 3.931005,
+        "rating": 3.931005,
+        "trueSkill": 3.9,
+        "provisional": null
+      }
+    }
+  ]
+}

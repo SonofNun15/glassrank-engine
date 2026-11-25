@@ -1,7 +1,10 @@
 # Simulated world v2: clubs, events, and eligibility
 
-Status: proposal for review. Replaces the club model in `sim-world.md` once
-built.
+Status: step 1 built (`packages/sim/src/world-v2/`): recipe v0.2, true
+skill presets and keyframes, keyed random streams, the weekly loop with
+eligibility and appetite, and league round robins. Not yet built: inflating
+clubs, tournaments and partnerships, ladders, and the new metrics. Replaces
+the club model in `sim-world.md` once complete.
 
 ## Purpose
 
@@ -465,3 +468,17 @@ available for research runs until v2 has its own goldens.
 3. `double_elimination`.
 4. Ladder.
 5. Measure the default world in a browser worker and size it to fit.
+
+## Implementation notes (step 1)
+
+- Player ids are `<group id>.<n>` for generated players and `p.<id>` for
+  hand-made ones, so the two can never collide.
+- Lengthening a run leaves every *full* earlier week identical. The last,
+  partial week of a shorter run can differ, because events past the end are
+  dropped and players then choose differently that week.
+- League courts of five sit at the bottom. When extra players can't all
+  join a court (6, 7, or 11 players), the last to sign up sit out.
+- Players sign up at the start of each week, using their rating at that
+  moment, and play at most one event per week.
+- `runWorldV2(recipe, schedule)` takes any policy schedule, so research
+  tooling can run the same recipe under other rating systems.

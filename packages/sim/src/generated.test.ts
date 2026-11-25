@@ -63,3 +63,27 @@ it("SimulationRecipe JSON Schema and example recipe match their sources", async 
   );
   await expect(`${JSON.stringify(example, null, 2)}\n`).toMatchFileSnapshot(join(import.meta.dirname, "..", "fixtures", "example-recipe.json"));
 });
+
+it("v2 default world matches its golden summary", async () => {
+  const { DEFAULT_RECIPE_V2, simulateRecipeV2 } = await import("./world-v2");
+  const { GLASSRANK } = await import("./policies");
+  const result = simulateRecipeV2(DEFAULT_RECIPE_V2, GLASSRANK);
+  const summary = {
+    recipeHash: result.recipeHash,
+    policyId: result.policyId,
+    world: result.world,
+    eventLogHash: result.eventLogHash,
+    resultHash: result.resultHash,
+    handMadePlayers: result.players
+      .filter((p) => p.group === null)
+      .map((p) => ({ id: p.id, events: p.points.length, last: p.points.at(-1) ?? null })),
+  };
+  await expect(`${JSON.stringify(summary, null, 2)}\n`).toMatchFileSnapshot(join(import.meta.dirname, "..", "golden", "default-world-v2.json"));
+});
+
+it("SimulationRecipeV2 JSON Schema and example recipe match their sources", async () => {
+  const { DEFAULT_RECIPE_V2, SimulationRecipeV2, RECIPE_V2_VERSION } = await import("./world-v2");
+  const schema = { $schema: "https://json-schema.org/draft/2020-12/schema", $id: `urn:glassrank:sim:${RECIPE_V2_VERSION}:SimulationRecipeV2`, ...SimulationRecipeV2.json };
+  await expect(`${JSON.stringify(schema, null, 2)}\n`).toMatchFileSnapshot(join(import.meta.dirname, "..", "json-schema", "SimulationRecipeV2.schema.json"));
+  await expect(`${JSON.stringify(DEFAULT_RECIPE_V2, null, 2)}\n`).toMatchFileSnapshot(join(import.meta.dirname, "..", "fixtures", "example-recipe-v2.json"));
+});

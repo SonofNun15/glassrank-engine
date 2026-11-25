@@ -35,3 +35,4 @@ export { simulateRecipe, simulateRecipeUnchecked } from "./simulate";
 export type { CustomPlayerResult, PlayerPoint, SimulationResult, SystemResult } from "./simulate";
 export type { CohortName } from "./scenario";
 export type { ExtraPlayers } from "./world";
+export * from "./world-v2";
