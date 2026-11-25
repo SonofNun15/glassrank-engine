@@ -1,0 +1,59 @@
+import { parse } from "@glassrank/schema";
+import { DEFAULT_RECIPE_V2, SimulationRecipeV2, type SimulationRecipeV2 as Recipe } from "@glassrank/sim";
+import { describe, expect, it } from "vitest";
+import { draftProblems } from "./Design";
+import { GROUP_TEMPLATES, PRESETS, addClub, newGroup, newPlayer, presetGroupSkill, presetSkill, removeClub, totalPlayers, uniqueId } from "./defaults";
+
+const valid = (r: Recipe) => parse(SimulationRecipeV2, r).ok;
+
+describe("design edits", () => {
+  it("makes unique, valid ids", () => {
+    expect(uniqueId("North Side!", [])).toBe("north-side");
+    expect(uniqueId("club-1", ["club-1", "club-1-2"])).toBe("club-1-3");
+  });
+
+  it("adds a valid featured player with a unique id", () => {
+    const one = { ...DEFAULT_RECIPE_V2, players: [...DEFAULT_RECIPE_V2.players, newPlayer(DEFAULT_RECIPE_V2)] };
+    const two = { ...one, players: [...one.players, newPlayer(one)] };
+    expect(valid(two)).toBe(true);
+    expect(new Set(two.players.map((p) => p.id)).size).toBe(two.players.length);
+  });
+
+  it("every preset is valid for players and groups", () => {
+    for (const { value } of PRESETS) {
+      const player = { ...newPlayer(DEFAULT_RECIPE_V2), skill: presetSkill(value, 3.4, DEFAULT_RECIPE_V2.durationDays) };
+      expect(valid({ ...DEFAULT_RECIPE_V2, players: [player] }), value).toBe(true);
+      if (value === "keyframes") continue;
+      const group = { ...newGroup(DEFAULT_RECIPE_V2, "north"), skill: presetGroupSkill(value, 3, 3.5) };
+      expect(valid({ ...DEFAULT_RECIPE_V2, groups: [...DEFAULT_RECIPE_V2.groups, group] }), value).toBe(true);
+    }
+  });
+
+  it("adds a club with an event and players, and every group template is valid", () => {
+    const r = addClub(DEFAULT_RECIPE_V2);
+    expect(r.clubs).toHaveLength(4);
+    const id = r.clubs[3]!.id;
+    expect(r.events.some((e) => e.club === id)).toBe(true);
+    expect(totalPlayers(r)).toBe(totalPlayers(DEFAULT_RECIPE_V2) + 20);
+    let withGroups = r;
+    for (const t of GROUP_TEMPLATES) withGroups = { ...withGroups, groups: [...withGroups.groups, newGroup(withGroups, id, t)] };
+    expect(valid(withGroups)).toBe(true);
+  });
+
+  it("removes a club with its events and groups, rehoming featured players and dropping invites", () => {
+    const r = removeClub(DEFAULT_RECIPE_V2, "north");
+    expect(valid(r)).toBe(true);
+    expect(r.clubs.map((c) => c.id)).toEqual(["south", "east"]);
+    expect(r.events.some((e) => e.club === "north" || e.invites?.includes("north"))).toBe(false);
+    expect(r.groups.some((g) => g.home === "north")).toBe(false);
+    expect(r.players.find((p) => p.id === "rosa")?.home).toBe("south");
+    expect(removeClub({ ...r, clubs: [r.clubs[0]!] }, r.clubs[0]!.id).clubs).toHaveLength(1);
+  });
+
+  it("explains problems in plain words", () => {
+    expect(draftProblems(DEFAULT_RECIPE_V2)).toEqual([]);
+    const late = { ...DEFAULT_RECIPE_V2, players: [{ ...DEFAULT_RECIPE_V2.players[0]!, skill: { preset: "keyframes" as const, keyframes: [[0, 3], [400, 3.5]] as [number, number][] } }] };
+    expect(draftProblems(late)[0]).toMatch(/^Rosa \(made up\): a true-skill point is after the end of the run/);
+    expect(draftProblems({ ...DEFAULT_RECIPE_V2, events: [] })[0]).toMatch(/at least one event/);
+  });
+});

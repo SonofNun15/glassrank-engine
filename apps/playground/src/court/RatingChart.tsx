@@ -13,7 +13,7 @@ const M = { top: 12, right: 16, bottom: 32, left: 48 };
 
 export const weekOf = (day: number) => Math.floor(day / 7) + 1;
 
-function useWidth<T extends HTMLElement>(fallback: number) {
+export function useWidth<T extends HTMLElement>(fallback: number) {
   const ref = useRef<T>(null);
   const [width, setWidth] = useState(fallback);
   useEffect(() => {
@@ -33,8 +33,10 @@ export function RatingChart(props: {
   readonly durationDays: number;
   readonly eventLabel: (seriesId: string) => string;
   readonly title: string;
+  /** Whose chart this is, for screen readers. */
+  readonly subject: string;
 }) {
-  const { points, durationDays, eventLabel, title } = props;
+  const { points, durationDays, eventLabel, title, subject } = props;
   const [wrapRef, width] = useWidth<HTMLDivElement>(720);
   const [active, setActive] = useState<number | null>(null);
 
@@ -116,7 +118,7 @@ export function RatingChart(props: {
           width={width}
           height={HEIGHT}
           role="img"
-          aria-label={`${title}: GlassRank rating and true skill by week. Use the left and right arrow keys to step through events.`}
+          aria-label={`${subject}: GlassRank rating and true skill by week. Use the left and right arrow keys to step through events.`}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}

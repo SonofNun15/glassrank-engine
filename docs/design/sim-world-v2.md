@@ -425,7 +425,7 @@ Research tooling may pass a different policy when it runs a recipe, without
 changing the recipe.
 
 **Limits** (proposed): 5 years, 500 players, 12 clubs, 40 event series,
-20 groups, 20 hand-made players, 24 keyframes per player.
+48 groups, 20 hand-made players, 24 keyframes per player.
 
 **Migration from v0.1:** each club keeps its tier and inflation flag and gets one
 weekly open event; cohorts become groups from the matching templates; custom

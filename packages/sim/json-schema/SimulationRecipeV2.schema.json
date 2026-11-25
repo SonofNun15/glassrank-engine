@@ -1078,7 +1078,7 @@
         "additionalProperties": false,
         "description": "Many players drawn from ranges. Player ids are `<group id>.<n>`."
       },
-      "maxItems": 20
+      "maxItems": 48
     },
     "name": {
       "type": "string",

@@ -17,7 +17,7 @@ export const RECIPE_V2_LIMITS = {
   maxPlayers: 500,
   maxClubs: 12,
   maxEvents: 40,
-  maxGroups: 20,
+  maxGroups: 48,
   maxHandMadePlayers: 20,
   maxKeyframes: 24,
 } as const;

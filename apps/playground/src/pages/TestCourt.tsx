@@ -1,8 +1,8 @@
 import { Button, GlassPanel, RatingBadge, Tag, formatRating } from "@glassrank/design";
 import { DEFAULT_RECIPE_V2, type PlayerHistory, type SimulationRecipeV2, type SimulationResultV2 } from "@glassrank/sim";
-import { ChartLine, Download, LoaderCircle, MessageSquareText, Play, Share2, SlidersHorizontal } from "lucide-react";
+import { ChartLine, Download, LoaderCircle, MessageSquareText, Play, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Design } from "../court/Design";
+import { Design } from "../court/design/Design";
 import { RatingChart, weekOf } from "../court/RatingChart";
 import { useSimulation } from "../sim/useSimulation";
 
@@ -27,7 +27,7 @@ function labelsFor(recipe: SimulationRecipeV2): Labels {
 }
 
 const COMING = [
-  { title: "Change anything", body: "Edit clubs, events, and groups of players, add a player like you, and draw a true-skill curve." },
+  { title: "Edit events", body: "Add and change league nights and tournaments: their rating ranges, days, and which clubs they invite." },
   { title: "Start over", body: "Start from an empty world and build your own." },
   { title: "Share", body: "Share a simulation as a link. It's rebuilt exactly, down to every rating change, on anyone's screen." },
 ];
@@ -36,6 +36,16 @@ function playerName(p: PlayerHistory, labels: Labels): string {
   if (p.label !== null) return p.label;
   const n = Number(p.id.slice(p.id.lastIndexOf(".") + 1));
   return `${labels.group(p.group)} · #${n}`;
+}
+
+const NUMBER_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+
+function summarySentence(recipe: SimulationRecipeV2, weeks: number): string {
+  const clubs = recipe.clubs.length;
+  const count = NUMBER_WORDS[clubs] ?? String(clubs);
+  const leagues = recipe.events.length;
+  const leagueCount = NUMBER_WORDS[leagues] ?? String(leagues);
+  return `${count[0]?.toUpperCase()}${count.slice(1)} club${clubs === 1 ? "" : "s"} run${clubs === 1 ? "s" : ""} ${leagueCount} weekly league${leagues === 1 ? "" : "s"} for ${weeks} weeks.`;
 }
 
 function downloadRecipe(recipe: SimulationRecipeV2) {
@@ -84,9 +94,6 @@ export function TestCourt() {
             <div className="actions">
               <Button variant="ghost" size="sm" onClick={() => downloadRecipe(ran)} icon={<Download {...small} />}>
                 Download recipe
-              </Button>
-              <Button variant="ghost" size="sm" disabled icon={<Share2 {...small} />}>
-                Share link
               </Button>
             </div>
           </div>
@@ -172,23 +179,45 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
     return out;
   }, [result]);
 
-  return (
-    <div className="stack-sm court__results">
-      <p className="t-small muted court__note">
-        <Play {...small} />
-        Ran in {(computeMs / 1000).toFixed(1)} s in your browser, using the proposed GlassRank v1 rules (not yet adopted). The
-        clubs, players, and games are made up.
-      </p>
-      <ul className="court__facts">
-        <li><span className="mono">{recipe.clubs.length}</span> clubs</li>
-        <li><span className="mono">{result.world.players}</span> players</li>
-        <li><span className="mono">{result.world.events}</span> league nights</li>
-        <li><span className="mono">{result.world.games.toLocaleString("en-US")}</span> games</li>
-        <li><span className="mono">{weekOf(recipe.durationDays - 1)}</span> weeks</li>
-      </ul>
+  const weeks = weekOf(recipe.durationDays - 1);
+  const stats = [
+    { value: recipe.clubs.length, label: "clubs" },
+    { value: result.world.players, label: "players" },
+    { value: weeks, label: "weeks" },
+    { value: result.world.events, label: "league nights" },
+    { value: result.world.games, label: "games" },
+  ];
 
+  return (
+    <div className="court__results">
+      <section className="court__summary" aria-labelledby="summary-title">
+        <div className="stack-xs">
+          <h2 id="summary-title" className="t-title">
+            In this simulation <span className="muted court__madeup">(all made up)</span>
+          </h2>
+          <p className="muted-2">
+            {summarySentence(recipe, weeks)} Players choose which league night to play each week based on their GlassRank rating.
+          </p>
+        </div>
+        <ul className="court__stats">
+          {stats.map((s) => (
+            <li key={s.label} className="court__stat">
+              <span className="court__stat-value">{s.value.toLocaleString("en-US")}</span>
+              <span className="court__stat-label">{s.label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="court__follow stack-sm" aria-labelledby="follow-title">
+        <div className="stack-xs">
+          <h2 id="follow-title" className="t-title">
+            Follow a player
+          </h2>
+          <p className="muted-2">See how their GlassRank rating moved, event by event, against the true skill only a simulation can know.</p>
+        </div>
       <label className="gr-field court__picker" htmlFor="player">
-        <span className="gr-field__label">Follow a player</span>
+        <span className="gr-field__label">Player</span>
         <select id="player" className="gr-input" value={selected} onChange={(e) => setSelected(e.target.value)}>
           {followed.length > 0 ? (
             <optgroup label="Featured players (made up)">
@@ -212,6 +241,12 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
       </label>
 
       {player !== null ? <PlayerView player={player} recipe={recipe} labels={labels} /> : null}
+      </section>
+
+      <p className="t-small muted court__note">
+        <Play {...small} />
+        Ran in {(computeMs / 1000).toFixed(1)} s in your browser, using the proposed GlassRank v1 rules (not yet adopted).
+      </p>
     </div>
   );
 }
@@ -244,7 +279,7 @@ function PlayerView(props: { readonly player: PlayerHistory; readonly recipe: Si
         ) : null}
       </div>
       {last !== null ? (
-        <RatingChart points={player.points} durationDays={recipe.durationDays} eventLabel={labels.event} title={`${name}: rating and true skill`} />
+        <RatingChart points={player.points} durationDays={recipe.durationDays} eventLabel={labels.event} title="Rating and true skill" subject={name} />
       ) : (
         <p className="muted-2">This player didn't play a rated event in this simulation.</p>
       )}

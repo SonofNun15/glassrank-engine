@@ -56,3 +56,17 @@ export function positionOf(stops: readonly Stop[], value: number): number {
 export function nearestStop(stops: readonly Stop[], position: number): Stop {
   return stops.reduce((best, s) => (Math.abs(s.position - position) < Math.abs(best.position - position) ? s : best));
 }
+
+/** Travel: chance each week of looking at other clubs' events. */
+export const TRAVEL_STOPS: readonly Stop[] = [
+  { position: 0, value: 0, label: "Stays home", meaning: "Only plays at their home club." },
+  { position: 50, value: 0.2, label: "Sometimes travels", meaning: "Looks at other clubs' events about one week in five." },
+  { position: 100, value: 0.6, label: "Travels often", meaning: "Looks at other clubs' events most weeks." },
+];
+
+/** Attendance: chance of playing in a given week. */
+export const ATTENDANCE_STOPS: readonly Stop[] = [
+  { position: 0, value: 0.1, label: "Now and then", meaning: "Plays about one week in ten." },
+  { position: 50, value: 0.5, label: "Every other week", meaning: "Plays about half the weeks." },
+  { position: 100, value: 1, label: "Every week", meaning: "Never misses a week." },
+];
