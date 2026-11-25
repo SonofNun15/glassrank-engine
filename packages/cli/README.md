@@ -1,6 +1,6 @@
 # @glassrank/cli
 
-`glassrank`: the [GlassRank](https://github.com/SonofNun15/glassrank) engine
+`glassrank`: the [GlassRank](https://github.com/SonofNun15/glassrank-engine) engine
 as a command, for services written in any language.
 
 ```sh

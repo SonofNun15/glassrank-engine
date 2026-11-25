@@ -11,10 +11,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SonofNun15/glassrank.git",
+    "url": "git+https://github.com/SonofNun15/glassrank-engine.git",
     "directory": "packages/engine"
   },
-  "homepage": "https://github.com/SonofNun15/glassrank#readme",
+  "homepage": "https://github.com/SonofNun15/glassrank-engine#readme",
   "type": "module",
   "exports": {
     ".": {

@@ -1,6 +1,6 @@
 # @glassrank/schema
 
-The versioned data model for [GlassRank](https://github.com/SonofNun15/glassrank):
+The versioned data model for [GlassRank](https://github.com/SonofNun15/glassrank-engine):
 events, seeds, rating state, policy, receipts, and the request and response for
 every engine entry point.
 

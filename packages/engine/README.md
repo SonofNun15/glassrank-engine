@@ -1,6 +1,6 @@
 # @glassrank/engine
 
-The [GlassRank](https://github.com/SonofNun15/glassrank) rating engine. Pure and
+The [GlassRank](https://github.com/SonofNun15/glassrank-engine) rating engine. Pure and
 deterministic: no I/O, no clock, no randomness. The same input gives
 byte-identical output on every platform.
 

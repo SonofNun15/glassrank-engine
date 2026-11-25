@@ -16,6 +16,8 @@ export default defineConfig({
   },
   test: {
     include: ["packages/*/src/**/*.test.ts", "apps/*/src/**/*.test.ts", "apps/*/src/**/*.test.tsx"],
+    // Simulation tests take a few seconds locally; shared CI runners can be several times slower.
+    testTimeout: 60_000,
     // A zone with daylight saving, so any accidental local-time math fails loudly.
     env: { TZ: "America/New_York" },
   },

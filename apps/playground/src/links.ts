@@ -1,4 +1,4 @@
-export const SOURCE_URL = "https://github.com/SonofNun15/glassrank";
+export const SOURCE_URL = "https://github.com/SonofNun15/glassrank-engine";
 
 /** Primary navigation, in order. */
 export const NAV = [
