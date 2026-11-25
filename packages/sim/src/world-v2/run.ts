@@ -28,6 +28,7 @@ import { createWorldPlayers, isActive, trueSkillOf, type WorldPlayer } from "./p
 import type { Club, EventSeries, Scoring, SimulationRecipeV2 } from "./recipe";
 import { rankEntrants, type MatchResult } from "./standings";
 import { STREAM, idKey } from "./streams";
+import { DEFAULT_TOURNAMENT_SETTINGS, enterTournaments, playTournament, updatePartnerships, type Partnerships, type Stage, type TournamentSlot } from "./tournament";
 
 /** Day 0 behind the scenes: a Monday. Never shown; the Test court shows relative days. */
 export const EPOCH_DATE = "2001-01-01";
@@ -53,6 +54,7 @@ export interface RatingPoint {
 
 export interface Occurrence {
   readonly eventId: string;
+  readonly format: "league" | "tournament";
   readonly series: string;
   readonly club: string;
   readonly day: number;
@@ -74,6 +76,8 @@ export interface CourtMate {
 
 export interface FollowedMatch {
   readonly matchId: string;
+  /** Where in the event: a league court, or a tournament's pool, bracket, main draw, back draw, or final. */
+  readonly stage: "court" | Stage;
   readonly partners: readonly CourtMate[];
   readonly opponents: readonly CourtMate[];
   /** Each game as [points for, points against] from the followed player's side. */
@@ -86,10 +90,11 @@ export interface FollowedMatch {
 /** One event from the followed player's side, with what only a simulation knows. */
 export interface FollowedEvent {
   readonly eventId: string;
+  readonly format: "league" | "tournament";
   readonly series: string;
   readonly day: number;
   readonly rated: boolean;
-  /** 1 is the top court. */
+  /** League: court number, 1 is the top court. Tournament: pool number (1 for a double-elimination draw). */
   readonly court: number;
   readonly courts: number;
   readonly ratingBefore: number;
@@ -125,6 +130,21 @@ interface SeriesState {
   order: string[];
   /** Registered players for the current season. */
   roster: Set<string>;
+}
+
+interface TourneySlot extends TournamentSlot {
+  readonly club: Club;
+  readonly occurredAt: string;
+}
+
+/** What a played event leaves behind, whatever its format. */
+interface Played {
+  readonly event: EventInput;
+  readonly order: readonly string[];
+  readonly courts: readonly (readonly string[])[];
+  readonly night: ReadonlyMap<string, number>;
+  readonly form: ReadonlyMap<string, ReadonlyMap<string, number>>;
+  readonly stage: (matchId: string) => "court" | Stage;
 }
 
 interface Slot {
@@ -166,6 +186,10 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule,
   const occurrences: Occurrence[] = [];
   const followed: FollowedEvent[] = [];
   const follow = options.follow;
+  const partnerships: Partnerships = { current: new Map(), broken: new Set() };
+  /** Who has shared a court or a match with whom: the people a player might ask to partner. */
+  const acquaintances = new Map<string, Set<string>>();
+  const tournamentSettings = recipe.world.tournaments ?? DEFAULT_TOURNAMENT_SETTINGS;
   const { nightShare, appetiteSpread, rallyK } = recipe.world;
   const nightSd = Math.sqrt(nightShare);
   const matchSd = Math.sqrt(1 - nightShare);
@@ -174,26 +198,25 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule,
   for (let week = 0; week < weeks; week++) {
     // This week's event occurrences.
     const slots: Slot[] = [];
+    const tourneys: TourneySlot[] = [];
     for (const series of seriesList) {
       const day = occursThisWeek(series, week, recipe.durationDays);
       if (day === null) continue;
       const state = states.get(series.id) as SeriesState;
       const index = state.occurrences++;
+      const hour = series.schedule.hour ?? DEFAULT_HOUR;
+      const occurredAt = formatTimestamp(EPOCH_MS + day * MS_PER_DAY + hour * 3_600_000);
+      const club = clubs.get(series.club) as Club;
+      if (series.format.type === "tournament") {
+        tourneys.push({ series, club, index, day, occurredAt });
+        continue;
+      }
       const season = series.format.season;
       const seasonStart = season === undefined || index % season.weeks === 0;
       if (season !== undefined && seasonStart) state.roster = new Set();
-      const hour = series.schedule.hour ?? DEFAULT_HOUR;
-      slots.push({
-        series,
-        club: clubs.get(series.club) as Club,
-        index,
-        day,
-        occurredAt: formatTimestamp(EPOCH_MS + day * MS_PER_DAY + hour * 3_600_000),
-        seasonStart,
-        entrants: [],
-      });
+      slots.push({ series, club, index, day, occurredAt, seasonStart, entrants: [] });
     }
-    if (slots.length === 0) continue;
+    if (slots.length === 0 && tourneys.length === 0) continue;
 
     // Ratings as players see them when they sign up for the week.
     const weekAt = formatTimestamp(EPOCH_MS + week * 7 * MS_PER_DAY);
@@ -241,19 +264,83 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule,
       const slot = options.find((s) => s.entrants.length < s.series.capacity);
       if (slot === undefined) continue;
       slot.entrants.push(player.id);
-      if (slot.series.format.season !== undefined) (states.get(slot.series.id) as SeriesState).roster.add(player.id);
+      if (slot.series.format.type === "league" && slot.series.format.season !== undefined) (states.get(slot.series.id) as SeriesState).roster.add(player.id);
     }
 
+    // Tournaments are entered separately: a weekend tournament doesn't use up a player's league night.
+    const entries = enterTournaments({
+      week,
+      slots: tourneys,
+      players,
+      byPlayer,
+      view,
+      root,
+      appetiteSpread,
+      settings: tournamentSettings,
+      partnerships,
+      acquaintances,
+      signup,
+    });
+
     // Play, in time order; ratings update between events.
-    slots.sort((a, b) => (a.occurredAt < b.occurredAt ? -1 : a.occurredAt > b.occurredAt ? 1 : byId(a.series.id, b.series.id)));
-    for (const slot of slots) {
-      const state = states.get(slot.series.id) as SeriesState;
-      const played = playLeague(slot, state, view, signup, byPlayer, root, rallyK, nightSd, matchSd);
+    const items: ({ kind: "league"; slot: Slot } | { kind: "tournament"; slot: TourneySlot })[] = [
+      ...slots.map((slot) => ({ kind: "league" as const, slot })),
+      ...tourneys.map((slot) => ({ kind: "tournament" as const, slot })),
+    ];
+    items.sort((a, b) => (a.slot.occurredAt < b.slot.occurredAt ? -1 : a.slot.occurredAt > b.slot.occurredAt ? 1 : byId(a.slot.series.id, b.slot.series.id)));
+    for (const item of items) {
+      const slot = item.slot;
+      let played: Played | null = null;
+      if (item.kind === "league") {
+        const league = playLeague(item.slot, states.get(slot.series.id) as SeriesState, view, signup, byPlayer, root, rallyK, nightSd, matchSd);
+        if (league !== null) played = { ...league, stage: () => "court" };
+      } else {
+        const t = playTournament({
+          series: slot.series,
+          index: slot.index,
+          day: slot.day,
+          teams: entries.get(item.slot) ?? [],
+          view,
+          byPlayer,
+          root,
+          rallyK,
+          nightSd,
+          matchSd,
+        });
+        if (t !== null) {
+          updatePartnerships({ played: t, partnerships, byPlayer, root, series: slot.series, index: slot.index, settings: tournamentSettings });
+          played = {
+            event: {
+              schemaVersion: SCHEMA_VERSION,
+              eventId: `${slot.series.id}.${slot.index + 1}`,
+              occurredAt: slot.occurredAt,
+              format: "tournament",
+              label: slot.series.label ?? slot.series.id,
+              source: { hostId: slot.club.id, tier: slot.club.tier },
+              matches: t.matches,
+            },
+            order: t.teams.flat(),
+            courts: t.groups,
+            night: t.night,
+            form: t.form,
+            stage: (id) => t.stages.get(id) ?? "pool",
+          };
+        }
+      }
       if (played === null) continue;
+      for (const m of played.event.matches) {
+        const everyone = m.teams.flat();
+        for (const a of everyone) {
+          let known = acquaintances.get(a);
+          if (known === undefined) acquaintances.set(a, (known = new Set()));
+          for (const b of everyone) if (b !== a) known.add(b);
+        }
+      }
       const rated = slot.series.rated ?? true;
       events.push(played.event);
       occurrences.push({
         eventId: played.event.eventId,
+        format: item.kind,
         series: slot.series.id,
         club: slot.club.id,
         day: slot.day,
@@ -274,6 +361,7 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule,
         const ratingBefore = before.get(follow) ?? view(follow).rating;
         followed.push({
           eventId: played.event.eventId,
+          format: item.kind,
           series: slot.series.id,
           day: slot.day,
           rated: result !== null,
@@ -292,11 +380,12 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule,
             return [
               {
                 matchId: m.matchId,
+                stage: (played as Played).stage(m.matchId),
                 partners: m.teams[side].filter((id) => id !== follow).map(mate),
                 opponents: m.teams[other].map(mate),
                 games,
                 won: wins > games.length - wins,
-                form: (played.form.get(m.matchId) as Map<string, number>).get(follow) as number,
+                form: (played as Played).form.get(m.matchId)?.get(follow) as number,
               },
             ];
           }),
@@ -344,6 +433,7 @@ function playLeague(
 } | null {
   const { series, day } = slot;
   const fmt = series.format;
+  if (fmt.type !== "league") throw new TypeError(`${series.id} is not a league`);
   const scoring = series.scoring ?? DEFAULT_SCORING;
   let order = carryOrder(state.order, slot.entrants, (id) => view(id).rating);
   const { sizes, sitOut } = courtSizes(order.length);

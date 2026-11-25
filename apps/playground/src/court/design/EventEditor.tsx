@@ -58,7 +58,10 @@ export function EventEditor(props: {
   const scoring = e.scoring ?? { games: 1, to: 11, winBy: 2 };
   const scoringKey = `${scoring.games}-${scoring.to}`;
   const otherClubs = recipe.clubs.filter((c) => c.id !== e.club);
-  const season = e.format.season;
+  // League-only settings. Tournament events get their own editor next.
+  const league = e.format.type === "league" ? e.format : null;
+  const season = league?.season;
+  const setLeague = (next: NonNullable<typeof league>) => onChange({ ...e, format: next });
   /** Change the range; a name that still matches the old range follows it. */
   const setRange = (bounds: { min?: number | undefined; max?: number | undefined }) => {
     const min = "min" in bounds ? bounds.min : e.range?.min;
@@ -258,14 +261,14 @@ export function EventEditor(props: {
           />
           <SelectField
             label="Court movement"
-            value={String(e.format.movesPerCourt ?? 1)}
+            value={String(league?.movesPerCourt ?? 1)}
             options={[
               { value: "0", label: "Nobody moves" },
               { value: "1", label: "Top 1 up, bottom 1 down" },
               { value: "2", label: "Top 2 up, bottom 2 down" },
             ]}
             help="After each week, between neighbouring courts."
-            onChange={(m) => onChange({ ...e, format: withField(e.format, "movesPerCourt", m === "1" ? undefined : Number(m)) })}
+            onChange={(m) => league !== null && setLeague(withField(league, "movesPerCourt", m === "1" ? undefined : Number(m)))}
           />
           {s.kind === "weekly" ? (
             <>
@@ -294,7 +297,7 @@ export function EventEditor(props: {
             label="Players sign up for a season"
             checked={season !== undefined}
             help="Eligibility is checked when they sign up, then they stay for the season."
-            onChange={(on) => onChange({ ...e, format: withField(e.format, "season", on ? { weeks: 10 } : undefined) })}
+            onChange={(on) => league !== null && setLeague(withField(league, "season", on ? { weeks: 10 } : undefined))}
           />
           {season !== undefined ? (
             <NumberField
@@ -303,7 +306,7 @@ export function EventEditor(props: {
               min={1}
               max={52}
               step={1}
-              onChange={(w) => onChange({ ...e, format: { ...e.format, season: { weeks: Math.round(w) } } })}
+              onChange={(w) => league !== null && setLeague({ ...league, season: { weeks: Math.round(w) } })}
             />
           ) : null}
           <Checkbox

@@ -33,7 +33,7 @@ describe("v2 world run", () => {
     for (const points of run.history.values()) {
       for (const pt of points) {
         const s = series.get(pt.series)!;
-        if (s.format.season !== undefined || s.range?.max === undefined) continue;
+        if ((s.format.type === "league" && s.format.season !== undefined) || s.range?.max === undefined) continue;
         expect(pt.ratingBefore).toBeLessThanOrEqual(s.range.max);
         checked++;
       }

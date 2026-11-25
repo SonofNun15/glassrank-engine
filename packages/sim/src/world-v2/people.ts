@@ -22,8 +22,20 @@ export interface WorldPlayer {
   readonly travel: number;
   readonly appetite: number;
   readonly attendance: number;
+  /** Chance of entering, or agreeing to partner in, a tournament they could play in. */
+  readonly tournaments: number;
+  /** How much they stick with one tournament partner. */
+  readonly loyalty: number;
+  /** A fixed tournament partner's player id (hand-made players only), or null. */
+  readonly partner: string | null;
   readonly seed: Seed;
 }
+
+/** Defaults for recipes that don't set tournament behavior. */
+export const DEFAULT_TOURNAMENTS: readonly [number, number] = [0.05, 0.4];
+export const DEFAULT_LOYALTY: readonly [number, number] = [0.3, 0.9];
+const DEFAULT_PLAYER_TOURNAMENTS = 0.2;
+const DEFAULT_PLAYER_LOYALTY = 0.6;
 
 /** Settings each preset draws, in draw order. */
 const PRESET_PARAMS = {
@@ -82,6 +94,9 @@ function groupPlayers(group: PlayerGroup, recipe: SimulationRecipeV2, root: Rng,
     const appetite = draw(r, group.appetite);
     const attendance = draw(r, group.attendance);
     const joinDay = Math.floor(draw(r, group.joinDay));
+    // Drawn after everything above, so adding them changed no earlier draw.
+    const tournaments = draw(r, group.tournaments ?? DEFAULT_TOURNAMENTS);
+    const loyalty = draw(r, group.loyalty ?? DEFAULT_LOYALTY);
     const recordedAt = formatTimestamp(epochMs + joinDay * MS_PER_DAY);
     const seed = generatedSeed(
       id,
@@ -102,6 +117,9 @@ function groupPlayers(group: PlayerGroup, recipe: SimulationRecipeV2, root: Rng,
       travel,
       appetite,
       attendance,
+      tournaments,
+      loyalty,
+      partner: null,
       seed,
     });
   }
@@ -128,6 +146,9 @@ function handMade(p: PlayerSpec, epochMs: number): WorldPlayer {
     travel: p.travel,
     appetite: p.appetite,
     attendance: p.attendance,
+    tournaments: p.tournaments ?? DEFAULT_PLAYER_TOURNAMENTS,
+    loyalty: p.loyalty ?? DEFAULT_PLAYER_LOYALTY,
+    partner: p.partner === undefined ? null : `p.${p.partner}`,
     seed,
   };
 }

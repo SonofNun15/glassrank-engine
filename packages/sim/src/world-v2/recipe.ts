@@ -133,6 +133,8 @@ export const PlayerGroup = g.object(
     attendance: span(0, 1, "Chance of playing in a given week."),
     joinDay: span(0, RECIPE_V2_LIMITS.maxDays),
     startingRatings: g.optional(StartingRatings),
+    tournaments: g.optional(span(0, 1, "Chance of entering, or agreeing to partner in, a tournament they could play in. Default 0.05–0.4.")),
+    loyalty: g.optional(span(0, 1, "How much they stick with one tournament partner. Default 0.3–0.9.")),
   },
   { description: "Many players drawn from ranges. Player ids are `<group id>.<n>`." },
 );
@@ -148,6 +150,9 @@ export const PlayerSpec = g.object(
     appetite: exact(-1, 1),
     attendance: exact(0, 1),
     joinDay: Day,
+    tournaments: g.optional(exact(0, 1, "Chance of entering, or agreeing to partner in, a tournament they could play in. Default 0.2.")),
+    loyalty: g.optional(exact(0, 1, "How much they stick with one tournament partner. Default 0.6.")),
+    partner: g.optional(g.string({ pattern: "^[a-z0-9][a-z0-9-]{0,31}$", description: "Another hand-made player's id: always asked first, and they never break up." })),
     inactive: g.optional(g.array(g.tuple([Day, Day]), { maxItems: 8, description: "[start, end) day ranges away from play." })),
     startingRating: g.tagged("source", {
       self: g.object({ source: g.literal("self"), rating: g.Rating }),
@@ -171,14 +176,6 @@ export const EventSchedule = g.tagged("kind", {
   once: g.object({ kind: g.literal("once"), day: Day, hour: g.optional(g.integer({ minimum: 0, maximum: 23 })) }),
 });
 
-export const EventFormatSpec = g.tagged("type", {
-  league: g.object({
-    type: g.literal("league"),
-    movesPerCourt: g.optional(g.integer({ minimum: 0, maximum: 2, description: "Players who move up or down a court each week. Default 1." })),
-    season: g.optional(g.object({ weeks: g.integer({ minimum: 1, maximum: 52 }) }, { description: "Register for this many occurrences; eligibility is checked at registration." })),
-  }),
-});
-
 export const Scoring = g.refine(
   g.object({
     games: g.integer({ minimum: 1, maximum: 5, description: "Games per match: 1, 3, or 5 (best of)." }),
@@ -190,6 +187,26 @@ export const Scoring = g.refine(
     if (s.games % 2 === 0) issues.push({ path: `${path}/games`, message: "must be odd" });
   },
 );
+
+export const TOURNAMENT_STRUCTURES = ["pools", "pools_then_bracket", "double_elimination"] as const;
+
+export const EventFormatSpec = g.tagged("type", {
+  league: g.object({
+    type: g.literal("league"),
+    movesPerCourt: g.optional(g.integer({ minimum: 0, maximum: 2, description: "Players who move up or down a court each week. Default 1." })),
+    season: g.optional(g.object({ weeks: g.integer({ minimum: 1, maximum: 52 }) }, { description: "Register for this many occurrences; eligibility is checked at registration." })),
+  }),
+  tournament: g.object({
+    type: g.literal("tournament"),
+    structure: g.enumOf(TOURNAMENT_STRUCTURES, {
+      description: "pools: everyone plays their pool. pools_then_bracket: pools, then the top teams play single elimination. double_elimination: a main draw and a back draw.",
+    }),
+    poolSize: g.optional(g.integer({ minimum: 3, maximum: 8, description: "Teams per pool. Default 4." })),
+    advance: g.optional(g.integer({ minimum: 1, maximum: 4, description: "Teams from each pool that reach the bracket. Default 2." })),
+    teamRule: g.optional(g.enumOf(["each", "average"], { description: "each (default): both partners must be eligible. average: the team's average rating must be." })),
+    bracketScoring: g.optional(Scoring),
+  }),
+});
 
 export const EventSeries = g.refine(
   g.object({
@@ -224,6 +241,16 @@ export const WorldSettings = g.object({
   nightShare: exact(0, 1, "Share of volatility drawn once per event (a good or bad night); the rest is per match."),
   appetiteSpread: exact(0, 1, "Week-to-week randomness in the level a player aims for."),
   rallyK: g.number({ exclusiveMinimum: 0, maximum: 5, description: "Rally-win curve steepness: 0.5 + 0.5*k*d/(1+k*|d|)." }),
+  tournaments: g.optional(
+    g.object(
+      {
+        soloEntry: exact(0, 1, "Share of entries registered as needing a partner. Default 0.03."),
+        roughBreakup: exact(0, 1, "Chance a team splits after a rough event. Default 0.6."),
+        reunion: exact(0, 1, "Chance a broken-up partner is considered again. Default 0.05."),
+      },
+      { description: "How tournament partnerships form and end." },
+    ),
+  ),
   startingRatings: StartingRatings,
 });
 
@@ -247,7 +274,7 @@ export const SimulationRecipeV2 = g.refine(
   ),
   `recipeVersion is compatible with ${RECIPE_V2_VERSION}; ids are unique within clubs, groups, players, and events; ` +
     `every home, club, and onlyFrom entry names a club; at most ${RECIPE_V2_LIMITS.maxPlayers} players; keyframes are in day order ` +
-    "within the run; inactive ranges have start < end",
+    "within the run; inactive ranges have start < end; a partner is another hand-made player",
   (r, path, issues) => {
     const [maj, min] = r.recipeVersion.split(".");
     const [cmaj, cmin] = RECIPE_V2_VERSION.split(".");
@@ -286,7 +313,11 @@ export const SimulationRecipeV2 = g.refine(
       });
     };
     r.groups.forEach((gr, i) => checkKeyframes(gr.skill, `${path}/groups/${i}/skill`));
+    const handMade = new Set(r.players.map((p) => p.id));
     r.players.forEach((p, i) => {
+      if (p.partner !== undefined && (p.partner === p.id || !handMade.has(p.partner))) {
+        issues.push({ path: `${path}/players/${i}/partner`, message: `partner must be another hand-made player` });
+      }
       checkKeyframes(p.skill, `${path}/players/${i}/skill`);
       (p.inactive ?? []).forEach(([a, b], j) => {
         if (a >= b) issues.push({ path: `${path}/players/${i}/inactive/${j}`, message: "start must be before end" });
@@ -304,5 +335,7 @@ export type PlayerSpec = g.Infer<typeof PlayerSpec>;
 export type EventSchedule = g.Infer<typeof EventSchedule>;
 export type EventSeries = g.Infer<typeof EventSeries>;
 export type Scoring = g.Infer<typeof Scoring>;
+export type EventFormatSpec = g.Infer<typeof EventFormatSpec>;
+export type TournamentStructure = (typeof TOURNAMENT_STRUCTURES)[number];
 export type WorldSettings = g.Infer<typeof WorldSettings>;
 export type SimulationRecipeV2 = g.Infer<typeof SimulationRecipeV2>;

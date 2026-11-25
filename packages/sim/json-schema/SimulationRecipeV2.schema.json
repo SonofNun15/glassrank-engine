@@ -114,6 +114,78 @@
                   "type"
                 ],
                 "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "advance": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4,
+                    "description": "Teams from each pool that reach the bracket. Default 2."
+                  },
+                  "bracketScoring": {
+                    "type": "object",
+                    "properties": {
+                      "games": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5,
+                        "description": "Games per match: 1, 3, or 5 (best of)."
+                      },
+                      "to": {
+                        "type": "integer",
+                        "minimum": 5,
+                        "maximum": 25
+                      },
+                      "winBy": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5
+                      }
+                    },
+                    "required": [
+                      "games",
+                      "to",
+                      "winBy"
+                    ],
+                    "additionalProperties": false,
+                    "x-glassrank-rules": [
+                      "games is odd"
+                    ]
+                  },
+                  "poolSize": {
+                    "type": "integer",
+                    "minimum": 3,
+                    "maximum": 8,
+                    "description": "Teams per pool. Default 4."
+                  },
+                  "structure": {
+                    "type": "string",
+                    "enum": [
+                      "pools",
+                      "pools_then_bracket",
+                      "double_elimination"
+                    ],
+                    "description": "pools: everyone plays their pool. pools_then_bracket: pools, then the top teams play single elimination. double_elimination: a main draw and a back draw."
+                  },
+                  "teamRule": {
+                    "type": "string",
+                    "enum": [
+                      "each",
+                      "average"
+                    ],
+                    "description": "each (default): both partners must be eligible. average: the team's average rating must be."
+                  },
+                  "type": {
+                    "const": "tournament"
+                  }
+                },
+                "required": [
+                  "structure",
+                  "type"
+                ],
+                "additionalProperties": false
               }
             ]
           },
@@ -383,6 +455,28 @@
             "type": "string",
             "maxLength": 60,
             "description": "Display name. User content: made up, never a real person."
+          },
+          "loyalty": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "How much they stick with one tournament partner. Default 0.3–0.9.",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
           },
           "skill": {
             "oneOf": [
@@ -1019,6 +1113,28 @@
               "mix sums to 1"
             ]
           },
+          "tournaments": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Chance of entering, or agreeing to partner in, a tournament they could play in. Default 0.05–0.4.",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          },
           "travel": {
             "type": "array",
             "prefixItems": [
@@ -1141,6 +1257,17 @@
             "type": "string",
             "maxLength": 60,
             "description": "Display name. User content: made up, never a real person."
+          },
+          "loyalty": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "How much they stick with one tournament partner. Default 0.6."
+          },
+          "partner": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Another hand-made player's id: always asked first, and they never break up."
           },
           "skill": {
             "oneOf": [
@@ -1454,6 +1581,12 @@
               }
             ]
           },
+          "tournaments": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Chance of entering, or agreeing to partner in, a tournament they could play in. Default 0.2."
+          },
           "travel": {
             "type": "number",
             "minimum": 0,
@@ -1618,6 +1751,36 @@
           "x-glassrank-rules": [
             "mix sums to 1"
           ]
+        },
+        "tournaments": {
+          "type": "object",
+          "properties": {
+            "reunion": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Chance a broken-up partner is considered again. Default 0.05."
+            },
+            "roughBreakup": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Chance a team splits after a rough event. Default 0.6."
+            },
+            "soloEntry": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Share of entries registered as needing a partner. Default 0.03."
+            }
+          },
+          "required": [
+            "reunion",
+            "roughBreakup",
+            "soloEntry"
+          ],
+          "additionalProperties": false,
+          "description": "How tournament partnerships form and end."
         }
       },
       "required": [
@@ -1643,6 +1806,6 @@
   "title": "SimulationRecipeV2",
   "description": "A simulated world of clubs, players, and events, reproducible exactly.",
   "x-glassrank-rules": [
-    "recipeVersion is compatible with 0.2.0; ids are unique within clubs, groups, players, and events; every home, club, and onlyFrom entry names a club; at most 500 players; keyframes are in day order within the run; inactive ranges have start < end"
+    "recipeVersion is compatible with 0.2.0; ids are unique within clubs, groups, players, and events; every home, club, and onlyFrom entry names a club; at most 500 players; keyframes are in day order within the run; inactive ranges have start < end; a partner is another hand-made player"
   ]
 }

@@ -483,3 +483,30 @@ available for research runs until v2 has its own goldens.
   moment, and play at most one event per week.
 - `runWorldV2(recipe, schedule)` takes any policy schedule, so research
   tooling can run the same recipe under other rating systems.
+
+## Implementation notes (tournaments)
+
+- **Divisions** are separate tournament events. A tournament with 3.0, 3.5,
+  and 4.0+ divisions is three events on the same day.
+- **Entry is separate from league play.** Wanting a tournament (`tournaments`)
+  is its own draw each week a tournament is open, and doesn't use up a
+  player's league night. Tournaments accept every club unless `onlyFrom`
+  says otherwise; players don't need to be traveling that week.
+- **Established teams pick a division they can both play.** A player with a
+  fixed partner, or sticking with their current partner (by `loyalty`),
+  chooses among divisions open to the pair as a team. Someone with a fixed
+  partner turns down other askers.
+- **"People they already play with"** are their home club's members plus
+  everyone they've shared a match with, at any event.
+- **Scoring defaults:** pools one game to 11 (the event's `scoring`),
+  brackets best of three to 11 (`bracketScoring`).
+- **Seeding:** pools by snake seeding on the team's average rating; the
+  bracket by pool finish, then wins, then point differential.
+- **Double elimination:** a main-draw loss drops a team into the back draw,
+  where a second loss ends its day; one final between the main-draw winner
+  and the back-draw winner. Medals aren't recorded.
+- **A rough event** (which may end a partnership) is fewer than a third of
+  matches won, or at least 1.5 fewer than true skill predicted. The
+  prediction reads game-win chances off the rally model (0.25 gap ≈ 67%,
+  0.5 ≈ 83%, 1.0 ≈ 95%).
+- A division needs at least four teams to run.

@@ -26,4 +26,10 @@ export const STREAM = {
   signup: 4,
   /** (series, occurrence): everything that happens at one event. */
   occurrence: 5,
+  /** (week, player): whether they want a tournament, solo entry, and the level they aim for. */
+  tournament: 6,
+  /** (week, asker, asked): whether a partner says yes, and whether a former partner gets a second chance. */
+  ask: 7,
+  /** (series, occurrence, team): whether a team splits up afterwards. */
+  breakup: 8,
 } as const;
