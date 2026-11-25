@@ -4,8 +4,9 @@ import { ChartLine, Download, LoaderCircle, MessageSquareText, Play, SlidersHori
 import { useMemo, useState } from "react";
 import { Design } from "../court/design/Design";
 import { DriftSection } from "../court/DriftSection";
+import { EventDetail, WhyPanel, type Namer } from "../court/PlayerWhy";
 import { RatingChart, weekOf } from "../court/RatingChart";
-import { useSimulation } from "../sim/useSimulation";
+import { useFollow, useSimulation } from "../sim/useSimulation";
 
 const icon = { className: "gr-icon", strokeWidth: 1.75, "aria-hidden": true } as const;
 const small = { ...icon, width: 16, height: 16 } as const;
@@ -170,6 +171,11 @@ function Simulation({ recipe }: { readonly recipe: SimulationRecipeV2 }) {
 function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: SimulationResultV2; readonly computeMs: number }) {
   const { recipe, result, computeMs } = props;
   const labels = useMemo(() => labelsFor(recipe), [recipe]);
+  const eventLabels = useMemo(() => Object.fromEntries(recipe.events.map((e) => [e.id, labels.event(e.id)])), [recipe, labels]);
+  const namer = useMemo((): Namer => {
+    const names = new Map(result.players.map((p) => [p.id, playerName(p, labels)]));
+    return { player: (id) => names.get(id) ?? id, event: labels.event };
+  }, [result, labels]);
   const followed = result.players.filter((p) => p.group === null);
   const [selected, setSelected] = useState(followed[0]?.id ?? result.players[0]?.id ?? "");
   const player = result.players.find((p) => p.id === selected) ?? null;
@@ -241,7 +247,7 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
         </select>
       </label>
 
-      {player !== null ? <PlayerView player={player} recipe={recipe} labels={labels} /> : null}
+      {player !== null ? <PlayerView key={player.id} player={player} recipe={recipe} labels={labels} namer={namer} eventLabels={eventLabels} /> : null}
       </section>
 
       <DriftSection
@@ -263,10 +269,24 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
   );
 }
 
-function PlayerView(props: { readonly player: PlayerHistory; readonly recipe: SimulationRecipeV2; readonly labels: Labels }) {
-  const { player, recipe, labels } = props;
+function PlayerView(props: {
+  readonly player: PlayerHistory;
+  readonly recipe: SimulationRecipeV2;
+  readonly labels: Labels;
+  readonly namer: Namer;
+  readonly eventLabels: Readonly<Record<string, string>>;
+}) {
+  const { player, recipe, labels, namer } = props;
   const last = player.points.at(-1) ?? null;
   const name = playerName(player, labels);
+  const follow = useFollow(recipe, player.id, props.eventLabels);
+  // The open event, by id: the chart shows rated events only, the event list shows every event.
+  const [picked, setPicked] = useState<string | null>(null);
+  const report = follow.status === "done" ? follow.report : null;
+  const pickFromChart = (i: number) => {
+    setPicked(player.points[i]?.eventId ?? null);
+    document.getElementById("event-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   return (
     <div className="stack-sm">
       <div className="court__player">
@@ -291,10 +311,41 @@ function PlayerView(props: { readonly player: PlayerHistory; readonly recipe: Si
         ) : null}
       </div>
       {last !== null ? (
-        <RatingChart points={player.points} durationDays={recipe.durationDays} eventLabel={labels.event} title="Rating and true skill" subject={name} />
+        <RatingChart
+          points={player.points}
+          durationDays={recipe.durationDays}
+          eventLabel={labels.event}
+          title="Rating and true skill"
+          subject={name}
+          onPick={pickFromChart}
+          picked={picked === null ? null : player.points.findIndex((p) => p.eventId === picked)}
+        />
       ) : (
         <p className="muted-2">This player didn't play a rated event in this simulation.</p>
       )}
+      {follow.status === "loading" ? (
+        <p className="court__status" role="status">
+          <LoaderCircle {...icon} className="gr-icon spin" />
+          Gathering the details of every event they played…
+        </p>
+      ) : follow.status === "error" ? (
+        <p className="court__status" role="alert">
+          Couldn't load their event details: {follow.message}
+        </p>
+      ) : null}
+      {report !== null ? (
+        <>
+          <WhyPanel report={report} namer={namer} />
+          <div id="event-detail">
+            <EventDetail
+              report={report}
+              namer={namer}
+              index={picked === null ? null : report.events.findIndex((e) => e.eventId === picked)}
+              onIndex={(i) => setPicked(i === null ? null : (report.events[i]?.eventId ?? null))}
+            />
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

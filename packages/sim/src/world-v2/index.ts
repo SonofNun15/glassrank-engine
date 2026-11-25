@@ -29,3 +29,6 @@ export type { Occurrence, RatingPoint, WorldRunV2 } from "./run";
 export { simulateRecipeV2, simulateRecipeV2Unchecked } from "./simulate";
 export type { PlayerHistory, SimulationResultV2 } from "./simulate";
 export { DEFAULT_RECIPE_V2 } from "./default-world";
+export type { CourtMate, FollowedEvent, FollowedMatch, RunOptions } from "./run";
+export { followPlayer } from "./follow";
+export type { FollowedEventReport, PlayerReport } from "./follow";

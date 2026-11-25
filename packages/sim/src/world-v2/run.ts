@@ -17,6 +17,7 @@ import {
   type PolicySchedule,
   type Prior,
   type RatingState,
+  type Receipt,
 } from "@glassrank/schema";
 import { scheduleOf } from "../policies";
 import { Rng } from "../rng";
@@ -63,6 +64,49 @@ export interface Occurrence {
   readonly meanTrueSkill: number;
 }
 
+/** Someone who shared a court with the followed player. */
+export interface CourtMate {
+  readonly id: string;
+  /** GlassRank rating going into the event. */
+  readonly rating: number;
+  readonly trueSkill: number;
+}
+
+export interface FollowedMatch {
+  readonly matchId: string;
+  readonly partners: readonly CourtMate[];
+  readonly opponents: readonly CourtMate[];
+  /** Each game as [points for, points against] from the followed player's side. */
+  readonly games: readonly (readonly [number, number])[];
+  readonly won: boolean;
+  /** How the followed player played in this match, relative to their true skill (simulation only). */
+  readonly form: number;
+}
+
+/** One event from the followed player's side, with what only a simulation knows. */
+export interface FollowedEvent {
+  readonly eventId: string;
+  readonly series: string;
+  readonly day: number;
+  readonly rated: boolean;
+  /** 1 is the top court. */
+  readonly court: number;
+  readonly courts: number;
+  readonly ratingBefore: number;
+  readonly rating: number;
+  readonly trueSkill: number;
+  /** The night's share of their form: how far above (+) or below (-) true skill they played all evening. */
+  readonly nightForm: number;
+  readonly matches: readonly FollowedMatch[];
+  /** GlassRank's receipt for this player at this event, or null if unrated. */
+  readonly receipt: Receipt | null;
+}
+
+export interface RunOptions {
+  /** Record full detail for this player id (see FollowedEvent). */
+  readonly follow?: string;
+}
+
 export interface WorldRunV2 {
   readonly players: readonly WorldPlayer[];
   /** Every event played, rated or not, in the order it happened. */
@@ -71,6 +115,8 @@ export interface WorldRunV2 {
   /** Rating history per player id (rated events only). */
   readonly history: ReadonlyMap<string, readonly RatingPoint[]>;
   readonly finalStates: readonly RatingState[];
+  /** Detail for `options.follow`, in event order; empty when not following anyone. */
+  readonly followed: readonly FollowedEvent[];
 }
 
 interface SeriesState {
@@ -107,7 +153,7 @@ function occursThisWeek(series: EventSeries, week: number, durationDays: number)
 
 const byId = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
-export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule): WorldRunV2 {
+export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule, options: RunOptions = {}): WorldRunV2 {
   const root = new Rng(recipe.seed);
   const players = createWorldPlayers(recipe, root, EPOCH_MS);
   const byPlayer = new Map(players.map((p) => [p.id, p]));
@@ -118,6 +164,8 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule)
   const history = new Map<string, RatingPoint[]>(players.map((p) => [p.id, []]));
   const events: EventInput[] = [];
   const occurrences: Occurrence[] = [];
+  const followed: FollowedEvent[] = [];
+  const follow = options.follow;
   const { nightShare, appetiteSpread, rallyK } = recipe.world;
   const nightSd = Math.sqrt(nightShare);
   const matchSd = Math.sqrt(1 - nightShare);
@@ -214,12 +262,48 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule)
         meanRating: played.order.reduce((s, id) => s + view(id).rating, 0) / played.order.length,
         meanTrueSkill: played.order.reduce((s, id) => s + trueSkillOf(byPlayer.get(id) as WorldPlayer, slot.day), 0) / played.order.length,
       });
-      if (!rated) continue;
-      const policy = resolvePolicy(schedule, slot.occurredAt);
-      if (policy === null) continue;
+      const policy = rated ? resolvePolicy(schedule, slot.occurredAt) : null;
       const ids = [...played.order].sort(byId);
-      const result = rateUnchecked({ schemaVersion: SCHEMA_VERSION, priors: ids.map((id) => latest.get(id) as Prior), event: played.event, policy });
-      const before = new Map(result.receipts.map((r) => [r.playerId, r.before.rating]));
+      const result =
+        policy === null ? null : rateUnchecked({ schemaVersion: SCHEMA_VERSION, priors: ids.map((id) => latest.get(id) as Prior), event: played.event, policy });
+      const before = new Map(result?.receipts.map((r) => [r.playerId, r.before.rating]) ?? []);
+      if (follow !== undefined && played.order.includes(follow)) {
+        const mate = (id: string): CourtMate => ({ id, rating: before.get(id) ?? view(id).rating, trueSkill: trueSkillOf(byPlayer.get(id) as WorldPlayer, slot.day) });
+        const court = played.courts.findIndex((c) => c.includes(follow));
+        const after = result?.states.find((st) => st.playerId === follow)?.rating;
+        const ratingBefore = before.get(follow) ?? view(follow).rating;
+        followed.push({
+          eventId: played.event.eventId,
+          series: slot.series.id,
+          day: slot.day,
+          rated: result !== null,
+          court: court + 1,
+          courts: played.courts.length,
+          ratingBefore,
+          rating: after ?? ratingBefore,
+          trueSkill: trueSkillOf(byPlayer.get(follow) as WorldPlayer, slot.day),
+          nightForm: played.night.get(follow) as number,
+          matches: played.event.matches.flatMap((m) => {
+            const side = m.teams[0].includes(follow) ? 0 : m.teams[1].includes(follow) ? 1 : -1;
+            if (side === -1) return [];
+            const other = side === 0 ? 1 : 0;
+            const games = m.games.map((gm) => [gm.score[side], gm.score[other]] as const);
+            const wins = games.filter(([a, b]) => a > b).length;
+            return [
+              {
+                matchId: m.matchId,
+                partners: m.teams[side].filter((id) => id !== follow).map(mate),
+                opponents: m.teams[other].map(mate),
+                games,
+                won: wins > games.length - wins,
+                form: (played.form.get(m.matchId) as Map<string, number>).get(follow) as number,
+              },
+            ];
+          }),
+          receipt: result?.receipts.find((r) => r.playerId === follow) ?? null,
+        });
+      }
+      if (result === null) continue;
       for (const st of result.states) {
         latest.set(st.playerId, { kind: "state", state: st });
         (history.get(st.playerId) as RatingPoint[]).push({
@@ -236,7 +320,7 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule)
   }
 
   const finalStates = [...latest.values()].flatMap((p) => (p.kind === "state" ? [p.state] : []));
-  return { players, events, occurrences, history, finalStates };
+  return { players, events, occurrences, history, finalStates, followed };
 }
 
 /** One league night. Returns null if fewer than four players came. */
@@ -250,7 +334,14 @@ function playLeague(
   rallyK: number,
   nightSd: number,
   matchSd: number,
-): { event: EventInput; order: string[] } | null {
+): {
+  event: EventInput;
+  order: string[];
+  courts: string[][];
+  night: ReadonlyMap<string, number>;
+  /** matchId -> player -> performance minus true skill. */
+  form: ReadonlyMap<string, ReadonlyMap<string, number>>;
+} | null {
   const { series, day } = slot;
   const fmt = series.format;
   const scoring = series.scoring ?? DEFAULT_SCORING;
@@ -269,13 +360,20 @@ function playLeague(
 
   const matches: Match[] = [];
   const ranked: string[][] = [];
+  const form = new Map<string, Map<string, number>>();
   courts.forEach((court, c) => {
     const rotations = court.length === 5 ? FIVE_ROTATIONS : FOUR_ROTATIONS;
     const results: MatchResult[] = [];
     rotations.forEach((rotation, r) => {
       const teams = rotation.map((side) => side.map((seat) => court[seat] as string)) as [string[], string[]];
-      const perf = (id: string) =>
-        trueSkillOf(player(id), day) + (night.get(id) as number) + occ.fork(2, c, r, idKey(id)).normal(0, player(id).volatility * matchSd);
+      // Each draw has its own keyed stream, so recording it changes nothing.
+      const matchForm = new Map<string, number>();
+      form.set(`c${c + 1}-r${r + 1}`, matchForm);
+      const perf = (id: string) => {
+        const f = (night.get(id) as number) + occ.fork(2, c, r, idKey(id)).normal(0, player(id).volatility * matchSd);
+        matchForm.set(id, f);
+        return trueSkillOf(player(id), day) + f;
+      };
       const team = (ids: string[]) => ids.reduce((s, id) => s + perf(id), 0) / ids.length;
       const pA = rallyWinProbability(team(teams[0]), team(teams[1]), rallyK);
       const rally = occ.fork(3, c, r);
@@ -312,5 +410,5 @@ function playLeague(
     source: { hostId: slot.club.id, tier: slot.club.tier },
     matches,
   };
-  return { event, order };
+  return { event, order, courts, night, form };
 }

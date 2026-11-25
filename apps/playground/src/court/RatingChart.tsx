@@ -35,8 +35,11 @@ export function RatingChart(props: {
   readonly title: string;
   /** Whose chart this is, for screen readers. */
   readonly subject: string;
+  /** Called with a point's index when the visitor clicks it (or presses Enter on it). */
+  readonly onPick?: (index: number) => void;
+  readonly picked?: number | null;
 }) {
-  const { points, durationDays, eventLabel, title, subject } = props;
+  const { points, durationDays, eventLabel, title, subject, onPick, picked = null } = props;
   const [wrapRef, width] = useWidth<HTMLDivElement>(720);
   const [active, setActive] = useState<number | null>(null);
 
@@ -96,7 +99,8 @@ export function RatingChart(props: {
       e.preventDefault();
       const d = e.key === "ArrowRight" ? 1 : -1;
       setActive((a) => Math.min(points.length - 1, Math.max(0, (a ?? (d > 0 ? -1 : points.length)) + d)));
-    } else if (e.key === "Escape") setActive(null);
+    } else if (e.key === "Enter" && active !== null) onPick?.(active);
+    else if (e.key === "Escape") setActive(null);
   };
 
   const pt = active === null ? null : (points[active] ?? null);
@@ -118,7 +122,7 @@ export function RatingChart(props: {
           width={width}
           height={HEIGHT}
           role="img"
-          aria-label={`${subject}: GlassRank rating and true skill by week. Use the left and right arrow keys to step through events.`}
+          aria-label={`${subject}: GlassRank rating and true skill by week. Use the left and right arrow keys to step through events${onPick ? ", and Enter to open one" : ""}.`}
           tabIndex={0}
           onKeyDown={onKey}
           onBlur={() => setActive(null)}
@@ -139,6 +143,9 @@ export function RatingChart(props: {
           {geo.band !== "" ? <path className="chart__band" d={geo.band} /> : null}
           <path className="chart__truth" d={geo.truth} />
           <path className="chart__rating" d={geo.rating} />
+          {picked !== null && points[picked] !== undefined ? (
+            <circle className="chart__dot chart__dot--picked" cx={geo.x((points[picked] as RatingPoint).day)} cy={geo.y((points[picked] as RatingPoint).rating)} r={6} />
+          ) : null}
           {pt !== null ? (
             <g>
               <line className="chart__cross" x1={tipLeft} x2={tipLeft} y1={M.top} y2={HEIGHT - M.bottom} />
@@ -154,6 +161,12 @@ export function RatingChart(props: {
             height={Math.max(0, geo.ih)}
             onPointerMove={onMove}
             onPointerLeave={() => setActive(null)}
+            onClick={(e) => {
+              if (onPick === undefined) return;
+              const box = e.currentTarget.getBoundingClientRect();
+              onPick(nearest(((e.clientX - box.left) / box.width) * durationDays));
+            }}
+            style={onPick ? { cursor: "pointer" } : undefined}
           />
         </svg>
         {pt !== null ? (
@@ -170,6 +183,7 @@ export function RatingChart(props: {
               <span>True skill</span>
               <span className="mono">{formatRating(pt.trueSkill)}</span>
             </span>
+            {onPick ? <span className="t-small muted">Click to see this event</span> : null}
           </div>
         ) : null}
       </div>

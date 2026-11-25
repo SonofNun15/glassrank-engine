@@ -82,20 +82,37 @@ export interface Explanation {
   readonly details: readonly string[];
 }
 
-/** Drops the leading "<delta>[ at <event>]. " from an engine headline; the card shows those separately. */
-export function headlineBody(headline: string): string {
-  return headline.replace(/^[+−±]\d+\.\d{3}(?: at [^.]+)?\.\s*/, "");
+/**
+ * Drops the leading "<delta>[ at <event>]. " from an engine headline; the card
+ * shows those separately. Event labels often contain periods ("3.5 and
+ * under"), so pass `eventLabel` when you have it; otherwise the event part
+ * ends at the first ". " followed by a capital letter.
+ */
+export function headlineBody(headline: string, eventLabel?: string): string {
+  const delta = headline.match(/^[+−±]\d+\.\d{3}/)?.[0];
+  if (delta === undefined) return headline;
+  if (eventLabel !== undefined) {
+    const lead = `${delta} at ${eventLabel}. `;
+    if (headline.startsWith(lead)) return headline.slice(lead.length);
+  }
+  return headline.replace(/^[+−±]\d+\.\d{3}(?: at .+?)?\.\s+(?=[A-Z])/, "");
 }
 
 /** One rating change explained in the engine's three tiers. Render engine text; never hand-write it. */
-export function ReceiptCard(props: { readonly eyebrow: string; readonly delta: number; readonly explanation: Explanation }) {
+export function ReceiptCard(props: {
+  readonly eyebrow: string;
+  readonly delta: number;
+  readonly explanation: Explanation;
+  /** The event label the explanation was written with, so it can be dropped from the headline exactly. */
+  readonly eventLabel?: string;
+}) {
   const e = props.explanation;
   return (
     <article className="gr-receipt">
       <span className="gr-receipt__eyebrow">{props.eyebrow}</span>
       <div className="gr-receipt__head">
         <DeltaChip value={props.delta} />
-        <p className="gr-receipt__headline">{headlineBody(e.headline)}</p>
+        <p className="gr-receipt__headline">{headlineBody(e.headline, props.eventLabel)}</p>
       </div>
       <ul className="gr-receipt__summary">
         {e.summary.map((s) => (

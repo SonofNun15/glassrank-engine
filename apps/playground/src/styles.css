@@ -246,3 +246,22 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .drift__table--open { max-height: none; }
 .drift__table td.drift__who { white-space: normal; }
 .drift__who { display: grid; }
+.chart__dot--picked { fill: none; stroke: var(--forest); stroke-width: 3; }
+
+/* Test court: why a player's rating ended where it did */
+.why { padding-top: var(--space-4); border-top: 1px solid var(--line); scroll-margin-top: 96px; }
+#event-detail { scroll-margin-top: 96px; }
+.why__profile { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.why__facts { margin: 0; display: grid; gap: var(--space-2); }
+.why__fact { display: grid; gap: 2px; padding: var(--space-3) var(--space-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.why__fact dt { display: flex; align-items: center; gap: var(--space-2); font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink); }
+.why__fact dd { margin: 0; color: var(--ink-2); }
+.why__fact.is-highlight { border-color: var(--line-strong); }
+.why__event-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--space-3); }
+.why__nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.why__select { min-height: 36px; max-width: 280px; font-size: 14px; }
+.why__event-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); }
+.why__cell { white-space: normal !important; }
+.why__person { display: grid; }
+.why__person + .why__person { margin-top: var(--space-1); }
+.why__event .gr-receipt { max-width: none; }
