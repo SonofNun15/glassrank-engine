@@ -28,10 +28,15 @@ function labelsFor(recipe: SimulationRecipeV2): Labels {
   };
 }
 
-const COMING = [
-  { title: "Tournaments", body: "Teams that sign up together, pools, brackets, and double elimination, drawing players from many clubs." },
-  { title: "Start over", body: "Start from an empty world and build your own." },
-  { title: "Share", body: "Share a simulation as a link. It's rebuilt exactly, down to every rating change, on anyone's screen." },
+const COMING: readonly { readonly title: string; readonly body: string; readonly now?: boolean }[] = [
+  {
+    title: "Tournaments",
+    body: "Partners who sign up together and sometimes split up, pools, brackets, and double elimination, drawing players from many clubs.",
+    now: true,
+  },
+  { title: "Ladders", body: "Informal nights where winners move up a court after every game." },
+  { title: "Start from scratch", body: "Begin with an empty world and build your own clubs, events, and players." },
+  { title: "Share a link", body: "Share a simulation as a link. It's rebuilt exactly, down to every rating change, on anyone's screen." },
 ];
 
 function playerName(p: PlayerHistory, labels: Labels): string {
@@ -135,10 +140,13 @@ export function TestCourt() {
         <h2 id="coming-title" className="t-title">
           Coming next
         </h2>
-        <ul className="grid-3">
+        <ul className="grid-4">
           {COMING.map((c) => (
             <li key={c.title} className="stack-xs">
-              <h3 className="t-title">{c.title}</h3>
+              <h3 className="t-title court__coming-title">
+                {c.title}
+                {c.now === true ? <Tag tone="brand">Being built now</Tag> : null}
+              </h3>
               <p className="muted-2">{c.body}</p>
             </li>
           ))}

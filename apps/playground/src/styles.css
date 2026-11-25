@@ -291,3 +291,4 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .fit thead th { vertical-align: bottom; }
 .fit__value { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 32px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .fit figcaption { display: flex; align-items: center; gap: var(--space-2); }
+.court__coming-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
