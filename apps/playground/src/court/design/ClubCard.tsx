@@ -4,19 +4,12 @@ import type { Club, EventSeries, PlayerGroup, SimulationRecipeV2 } from "@glassr
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { APPETITE_STOPS, ATTENDANCE_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
-import { GROUP_TEMPLATES, PRESETS, groupStart, presetGroupSkill, type Preset } from "./defaults";
-import { CardDisclosure, More, NumberField, RangeField, SelectField, TextField } from "./fields";
+import { GROUP_TEMPLATES, PRESETS, groupStart, newEvent, newGroup, presetGroupSkill, type Preset } from "./defaults";
+import { EventEditor } from "./EventEditor";
+import { CardDisclosure, More, NumberField, RangeField, RowDisclosure, SelectField, TextField } from "./fields";
 
-const WEEKDAYS = ["Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays", "Sundays"];
 const small = { className: "gr-icon", width: 16, height: 16, strokeWidth: 1.75, "aria-hidden": true } as const;
 type GroupPreset = Exclude<Preset, "keyframes">;
-
-export function rangeText(range: EventSeries["range"]): string {
-  if (range?.min !== undefined && range.max !== undefined) return `${range.min.toFixed(1)}–${range.max.toFixed(1)}`;
-  if (range?.max !== undefined) return `${range.max.toFixed(1)} and under`;
-  if (range?.min !== undefined) return `${range.min.toFixed(1)} and up`;
-  return "All levels";
-}
 
 /** A range of a plain-language scale, shown as the labels its ends fall on. */
 function scaleRange(label: string, stops: typeof VOLATILITY_STOPS, value: readonly [number, number], min: number, max: number, onChange: (v: [number, number]) => void) {
@@ -34,7 +27,13 @@ function scaleRange(label: string, stops: typeof VOLATILITY_STOPS, value: readon
   );
 }
 
-function GroupEditor(props: { readonly group: PlayerGroup; readonly durationDays: number; readonly onChange: (g: PlayerGroup) => void; readonly onRemove: () => void }) {
+function GroupEditor(props: {
+  readonly group: PlayerGroup;
+  readonly durationDays: number;
+  readonly onChange: (g: PlayerGroup) => void;
+  readonly onRemove: () => void;
+  readonly defaultOpen?: boolean;
+}) {
   const { group: g, onChange } = props;
   const set = (patch: Partial<PlayerGroup>) => onChange({ ...g, ...patch });
   const skill = g.skill;
@@ -43,16 +42,19 @@ function GroupEditor(props: { readonly group: PlayerGroup; readonly durationDays
     <RangeField label={label} value={value} min={min} max={260} step={1} scale={7} onChange={(v) => setSkill({ [key]: v })} />
   );
 
+  const [lo, hi] = groupStart(skill);
+  const preset = PRESETS.find((x) => x.value === skill.preset)?.label ?? skill.preset;
   return (
-    <li className="design__group stack-sm">
-      <div className="design__card-head">
-        <span className="t-body">
-          <span className="mono">{g.count}</span> {g.label ?? g.id}
-        </span>
-        <Button variant="ghost" size="sm" onClick={props.onRemove} icon={<Trash2 {...small} />}>
-          Remove
-        </Button>
-      </div>
+    <li>
+      <RowDisclosure
+        title={
+          <>
+            <span className="mono">{g.count}</span> {g.label ?? g.id}
+          </>
+        }
+        meta={`${preset} · skill ${lo.toFixed(2)}–${hi.toFixed(2)}`}
+        {...(props.defaultOpen === undefined ? {} : { defaultOpen: props.defaultOpen })}
+      >
       <div className="design__grid">
         <TextField label="Group name" value={g.label ?? ""} maxLength={60} onChange={(label) => set({ label })} />
         <NumberField label="Players" value={g.count} min={1} max={500} step={1} onChange={(count) => set({ count: Math.round(count) })} />
@@ -117,6 +119,12 @@ function GroupEditor(props: { readonly group: PlayerGroup; readonly durationDays
           {scaleRange("Plays", ATTENDANCE_STOPS, g.attendance, 0, 1, (attendance) => set({ attendance }))}
         </div>
       </More>
+      <div>
+        <Button variant="ghost" size="sm" onClick={props.onRemove} icon={<Trash2 {...small} />}>
+          Remove {g.label ?? "group"}
+        </Button>
+      </div>
+      </RowDisclosure>
     </li>
   );
 }
@@ -126,9 +134,10 @@ export function ClubCard(props: {
   readonly recipe: SimulationRecipeV2;
   readonly canRemove: boolean;
   readonly canAddGroup: boolean;
+  readonly canAddEvent: boolean;
+  readonly starts: readonly { readonly home: string; readonly rating: number }[];
   readonly onChange: (next: SimulationRecipeV2) => void;
   readonly onRemove: () => void;
-  readonly onAddGroup: (club: string, template: (typeof GROUP_TEMPLATES)[number]) => void;
   readonly defaultOpen?: boolean;
 }) {
   const { club: c, recipe, onChange } = props;
@@ -136,6 +145,20 @@ export function ClubCard(props: {
   const setClub = (patch: Partial<Club>) => onChange({ ...recipe, clubs: recipe.clubs.map((x) => (x.id === c.id ? { ...x, ...patch } : x)) });
   const setGroup = (id: string, g: PlayerGroup) => onChange({ ...recipe, groups: recipe.groups.map((x) => (x.id === id ? g : x)) });
   const removeGroup = (id: string) => onChange({ ...recipe, groups: recipe.groups.filter((x) => x.id !== id) });
+  const setEvent = (id: string, e: EventSeries) => onChange({ ...recipe, events: recipe.events.map((x) => (x.id === id ? e : x)) });
+  const removeEvent = (id: string) => onChange({ ...recipe, events: recipe.events.filter((x) => x.id !== id) });
+  // Events and groups added here open by default; the rest start collapsed.
+  const [added, setAdded] = useState<ReadonlySet<string>>(new Set());
+  const addEvent = () => {
+    const e = newEvent(recipe, c.id);
+    setAdded((s) => new Set([...s, `event:${e.id}`]));
+    onChange({ ...recipe, events: [...recipe.events, e] });
+  };
+  const addGroup = () => {
+    const g = newGroup(recipe, c.id, GROUP_TEMPLATES.find((t) => t.label === template) ?? GROUP_TEMPLATES[0]!);
+    setAdded((s) => new Set([...s, `group:${g.id}`]));
+    onChange({ ...recipe, groups: [...recipe.groups, g] });
+  };
   const groups = recipe.groups.filter((g) => g.home === c.id);
   const events = recipe.events.filter((e) => e.club === c.id);
   const count = groups.reduce((n, g) => n + g.count, 0);
@@ -160,22 +183,28 @@ export function ClubCard(props: {
       </div>
 
       <div className="stack-xs">
-        <span className="gr-field__label">Events</span>
-        {events.length === 0 ? (
-          <p className="t-small muted">No events. This club's players only play when they travel.</p>
-        ) : (
-          <ul className="design__list">
-            {events.map((e) => (
-              <li key={e.id}>
-                <strong>{e.label ?? e.id}</strong>{" "}
-                <span className="muted-2">
-                  {e.label === rangeText(e.range) ? "" : `· ${rangeText(e.range)} `}· {e.schedule.kind === "weekly" ? WEEKDAYS[e.schedule.weekday] : `day ${e.schedule.day}`} · up to {e.capacity}
-                  {(e.invites ?? []).length > 0 ? " · open to other clubs" : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <span className="gr-field__label">
+          Events <span className="muted">({events.length})</span>
+        </span>
+        {events.length === 0 ? <p className="t-small muted">No events. This club's players only play when they travel.</p> : null}
+        <ul className="design__groups">
+          {events.map((e) => (
+            <EventEditor
+              key={e.id}
+              event={e}
+              recipe={recipe}
+              defaultOpen={added.has(`event:${e.id}`)}
+              starts={props.starts}
+              onChange={(next) => setEvent(e.id, next)}
+              onRemove={() => removeEvent(e.id)}
+            />
+          ))}
+        </ul>
+        <div>
+          <Button variant="secondary" size="sm" disabled={!props.canAddEvent} onClick={addEvent} icon={<Plus {...small} />}>
+            Add a round-robin league
+          </Button>
+        </div>
       </div>
 
       <div className="stack-xs">
@@ -184,7 +213,14 @@ export function ClubCard(props: {
         </span>
         <ul className="design__groups">
           {groups.map((g) => (
-            <GroupEditor key={g.id} group={g} durationDays={recipe.durationDays} onChange={(next) => setGroup(g.id, next)} onRemove={() => removeGroup(g.id)} />
+            <GroupEditor
+              key={g.id}
+              group={g}
+              durationDays={recipe.durationDays}
+              defaultOpen={added.has(`group:${g.id}`)}
+              onChange={(next) => setGroup(g.id, next)}
+              onRemove={() => removeGroup(g.id)}
+            />
           ))}
         </ul>
         <div className="design__add">
@@ -194,7 +230,7 @@ export function ClubCard(props: {
             options={GROUP_TEMPLATES.map((t) => ({ value: t.label, label: t.label }))}
             onChange={setTemplate}
           />
-          <Button variant="secondary" size="sm" disabled={!props.canAddGroup} onClick={() => props.onAddGroup(c.id, GROUP_TEMPLATES.find((t) => t.label === template) ?? GROUP_TEMPLATES[0]!)} icon={<Plus {...small} />}>
+          <Button variant="secondary" size="sm" disabled={!props.canAddGroup} onClick={addGroup} icon={<Plus {...small} />}>
             Add group
           </Button>
         </div>

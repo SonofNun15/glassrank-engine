@@ -150,7 +150,7 @@ export function addClub(recipe: SimulationRecipeV2): SimulationRecipeV2 {
 
 /**
  * Remove a club with its events and groups. Its featured players move to the
- * first remaining club, and other clubs' events stop inviting it.
+ * first remaining club, and it drops out of other events' onlyFrom lists.
  */
 export function removeClub(recipe: SimulationRecipeV2, id: string): SimulationRecipeV2 {
   const clubs = recipe.clubs.filter((c) => c.id !== id);
@@ -161,10 +161,65 @@ export function removeClub(recipe: SimulationRecipeV2, id: string): SimulationRe
     clubs,
     events: recipe.events
       .filter((e) => e.club !== id)
-      .map((e) => (e.invites?.includes(id) ? { ...e, invites: e.invites.filter((c) => c !== id) } : e)),
+      .map((e) => (e.onlyFrom?.includes(id) ? { ...e, onlyFrom: e.onlyFrom.filter((c) => c !== id) } : e)),
     groups: recipe.groups.filter((g) => g.home !== id),
     players: recipe.players.map((p) => (p.home === id ? { ...p, home: fallback } : p)),
   };
 }
 
 export const totalPlayers = (r: SimulationRecipeV2) => r.groups.reduce((n, g) => n + g.count, 0) + r.players.length;
+
+export type RangeKind = "all" | "max" | "min" | "between";
+
+export function rangeKind(range: EventSeries["range"]): RangeKind {
+  if (range?.min !== undefined && range.max !== undefined) return "between";
+  if (range?.max !== undefined) return "max";
+  if (range?.min !== undefined) return "min";
+  return "all";
+}
+
+/** A range of the given kind, keeping what it can from `from`. */
+export function withRangeKind(kind: RangeKind, from: EventSeries["range"]): EventSeries["range"] | undefined {
+  const min = from?.min ?? (from?.max !== undefined ? from.max - 0.5 : 3.0);
+  const max = from?.max ?? (from?.min !== undefined ? from.min + 0.5 : 3.5);
+  switch (kind) {
+    case "all":
+      return undefined;
+    case "max":
+      return { max };
+    case "min":
+      return { min };
+    case "between":
+      return { min: Math.min(min, max), max: Math.max(min, max) };
+  }
+}
+
+export function rangeName(range: EventSeries["range"]): string {
+  if (range?.min !== undefined && range.max !== undefined) return `${range.min.toFixed(1)}–${range.max.toFixed(1)}`;
+  if (range?.max !== undefined) return `${range.max.toFixed(1)} and under`;
+  if (range?.min !== undefined) return `${range.min.toFixed(1)} and up`;
+  return "All levels";
+}
+
+export const EVENT_TEMPLATES: readonly { readonly key: string; readonly label: string; readonly range?: EventSeries["range"] }[] = [
+  { key: "all", label: "All levels" },
+  { key: "between", label: "A bracket (3.0–3.5)", range: { min: 3.0, max: 3.5 } },
+  { key: "max", label: "3.5 and under", range: { max: 3.5 } },
+  { key: "min", label: "4.0 and up", range: { min: 4.0 } },
+];
+
+/** A weekly league for `club`, on a weekday the club doesn't use yet if there is one. */
+export function newEvent(recipe: SimulationRecipeV2, club: string, template = EVENT_TEMPLATES[0]!): EventSeries {
+  const used = new Set(recipe.events.filter((e) => e.club === club && e.schedule.kind === "weekly").map((e) => (e.schedule.kind === "weekly" ? e.schedule.weekday : -1)));
+  const weekday = [0, 1, 2, 3, 4, 5, 6].find((d) => !used.has(d)) ?? 0;
+  const label = rangeName(template.range);
+  return {
+    id: uniqueId(`${club}-${label}`, recipe.events.map((e) => e.id)),
+    label,
+    club,
+    schedule: { kind: "weekly", weekday },
+    ...(template.range === undefined ? {} : { range: template.range }),
+    capacity: 24,
+    format: { type: "league" },
+  };
+}

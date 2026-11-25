@@ -227,7 +227,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .design__disclosure > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .design__disclosure[open] > summary { border-bottom: 1px solid var(--line); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 .design__chevron { color: var(--ink-2); transition: transform 0.15s ease; }
-.design__disclosure[open] .design__chevron { transform: rotate(180deg); }
+.design__disclosure[open] > summary .design__chevron { transform: rotate(180deg); }
 @media (prefers-reduced-motion: reduce) { .design__chevron { transition: none; } }
 .design__disclosure-body { padding: var(--space-4); }
 .design__cards, .design__clubs { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
@@ -265,3 +265,29 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .why__person { display: grid; }
 .why__person + .why__person { margin-top: var(--space-1); }
 .why__event .gr-receipt { max-width: none; }
+.design__check label { display: flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+.design__check input { width: 18px; height: 18px; accent-color: var(--forest); }
+.design__invites { border: 0; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+.design__invites legend { padding: 0; margin-bottom: var(--space-1); }
+.design__row { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-sunken); }
+.design__row > summary { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: var(--space-3); cursor: pointer; list-style: none; border-radius: var(--radius-md); }
+.design__row > summary::-webkit-details-marker { display: none; }
+.design__row > summary:hover { background: var(--glass); }
+.design__row > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.design__row[open] > summary { border-bottom: 1px solid var(--line); border-radius: var(--radius-md) var(--radius-md) 0 0; }
+.design__row[open] > summary .design__chevron { transform: rotate(180deg); }
+.design__row-body { padding: var(--space-3); }
+.design__reach { display: flex; align-items: flex-start; gap: var(--space-2); }
+.design__reach .gr-icon { margin-top: 2px; }
+.design__format { min-height: 44px; display: flex; align-items: center; padding: 0 var(--space-3); border: 1px dashed var(--line-strong); border-radius: var(--radius-md); color: var(--ink); }
+
+/* Who fits an event */
+.fit { margin: 0; display: grid; gap: var(--space-2); padding: var(--space-3); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.fit table { width: 100%; border-collapse: collapse; }
+.fit th, .fit td { padding: var(--space-2); text-align: left; vertical-align: bottom; border-bottom: 1px solid var(--line); }
+.fit tbody tr:last-child th, .fit tbody tr:last-child td { border-bottom: 0; }
+.fit th { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink); }
+.fit th span { display: block; font-weight: 400; font-size: 12px; line-height: 16px; color: var(--muted); }
+.fit thead th { vertical-align: bottom; }
+.fit__value { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 32px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.fit figcaption { display: flex; align-items: center; gap: var(--space-2); }

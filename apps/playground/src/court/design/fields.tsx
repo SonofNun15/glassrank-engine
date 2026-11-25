@@ -194,3 +194,69 @@ export function CardDisclosure(props: { readonly title: string; readonly meta: s
     </details>
   );
 }
+
+/** A smaller collapsible row inside a card (events, groups of players). */
+export function RowDisclosure(props: { readonly title: ReactNode; readonly meta: string; readonly defaultOpen?: boolean; readonly children: ReactNode }) {
+  const [open, setOpen] = useState(props.defaultOpen ?? false);
+  return (
+    <details className="design__row" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
+      <summary>
+        <span className="stack-xs">
+          <span className="t-body">{props.title}</span>
+          <span className="t-small muted">{props.meta}</span>
+        </span>
+        <ChevronDown className="gr-icon design__chevron" width={20} height={20} strokeWidth={1.75} aria-hidden="true" />
+      </summary>
+      <div className="stack-sm design__row-body">{open ? props.children : null}</div>
+    </details>
+  );
+}
+
+/** A number that may be left empty (empty = no limit). Keeps what the visitor types until it's valid. */
+export function OptionalNumberField(props: {
+  readonly label: string;
+  readonly value: number | undefined;
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+  readonly placeholder: string;
+  readonly help?: ReactNode;
+  readonly onChange: (v: number | undefined) => void;
+}) {
+  const id = useId();
+  const shown = props.value === undefined ? "" : String(props.value);
+  const [text, setText] = useState(shown);
+  useEffect(() => setText(shown), [shown]);
+  const n = Number(text);
+  const invalid = text.trim() !== "" && (!Number.isFinite(n) || n < props.min || n > props.max);
+  return (
+    <div className="gr-field">
+      <label className="gr-field__label" htmlFor={id}>
+        {props.label}
+      </label>
+      <input
+        id={id}
+        className="gr-input mono design__number"
+        type="number"
+        inputMode="decimal"
+        min={props.min}
+        max={props.max}
+        step={props.step}
+        placeholder={props.placeholder}
+        value={text}
+        aria-invalid={invalid}
+        onChange={(e) => {
+          const t = e.target.value;
+          setText(t);
+          if (t.trim() === "") props.onChange(undefined);
+          else {
+            const v = Number(t);
+            if (Number.isFinite(v) && v >= props.min && v <= props.max) props.onChange(round(v, 2));
+          }
+        }}
+        onBlur={() => setText(shown)}
+      />
+      {props.help !== undefined ? <span className="gr-field__help">{props.help}</span> : null}
+    </div>
+  );
+}

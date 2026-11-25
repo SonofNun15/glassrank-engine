@@ -4,12 +4,12 @@
  * it can run.
  */
 import { Button } from "@glassrank/design";
-import { RECIPE_V2_LIMITS, SimulationRecipeV2 } from "@glassrank/sim";
+import { GLASSRANK, RECIPE_V2_LIMITS, SimulationRecipeV2, startingRatings } from "@glassrank/sim";
 import { parse } from "@glassrank/schema";
 import { CircleAlert, Play, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ClubCard } from "./ClubCard";
-import { addClub, newGroup, newPlayer, removeClub, totalPlayers } from "./defaults";
+import { addClub, newPlayer, removeClub, totalPlayers } from "./defaults";
 import { PlayerCard } from "./PlayerCard";
 
 const icon = { className: "gr-icon", width: 16, height: 16, strokeWidth: 1.75, "aria-hidden": true } as const;
@@ -42,6 +42,8 @@ export function Design(props: {
 }) {
   const { draft, onChange } = props;
   const problems = useMemo(() => draftProblems(draft), [draft]);
+  // Starting ratings for "who could enter" counts; generating players is cheap and plays no games.
+  const starts = useMemo(() => (problems.length > 0 ? [] : startingRatings(draft, GLASSRANK.seeding.defaultRating)), [draft, problems]);
   // Players and clubs added in this session open by default; the rest start collapsed.
   const [added, setAdded] = useState<ReadonlySet<string>>(new Set());
   const markAdded = (id: string | undefined) => id !== undefined && setAdded((s) => new Set([...s, id]));
@@ -139,8 +141,8 @@ export function Design(props: {
               Clubs and their players
             </h3>
             <p className="t-small muted">
-              {draft.clubs.length} of {RECIPE_V2_LIMITS.maxClubs} clubs · {total} of {RECIPE_V2_LIMITS.maxPlayers} players in all. A new club starts with an
-              all-levels league and 20 steady players. Editing events comes next.
+              {draft.clubs.length} of {RECIPE_V2_LIMITS.maxClubs} clubs · {draft.events.length} of {RECIPE_V2_LIMITS.maxEvents} events ·{" "}
+              {total} of {RECIPE_V2_LIMITS.maxPlayers} players in all. A new club starts with an all-levels league and 20 steady players.
             </p>
           </div>
           <Button variant="secondary" size="sm" disabled={!canAddClub} onClick={() => {
@@ -160,9 +162,10 @@ export function Design(props: {
               defaultOpen={added.has(`club:${c.id}`)}
               canRemove={draft.clubs.length > 1}
               canAddGroup={canAddGroup}
+              canAddEvent={draft.events.length < RECIPE_V2_LIMITS.maxEvents}
+              starts={starts}
               onChange={onChange}
               onRemove={() => onChange(removeClub(draft, c.id))}
-              onAddGroup={(club, template) => onChange({ ...draft, groups: [...draft.groups, newGroup(draft, club, template)] })}
             />
           ))}
         </ul>

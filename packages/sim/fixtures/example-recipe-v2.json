@@ -796,10 +796,6 @@
       "id": "east-all",
       "label": "All levels",
       "club": "east",
-      "invites": [
-        "north",
-        "south"
-      ],
       "schedule": {
         "kind": "weekly",
         "weekday": 5,

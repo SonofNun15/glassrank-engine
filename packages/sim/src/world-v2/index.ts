@@ -24,7 +24,7 @@ export type { RatingView } from "./choose";
 export { FIVE_ROTATIONS, FOUR_ROTATIONS, carryOrder, courtSizes, moveCourts, seatCourts } from "./league";
 export { rankEntrants } from "./standings";
 export type { MatchResult } from "./standings";
-export { EPOCH_DATE, runWorldV2, scheduleFromDayZero } from "./run";
+export { EPOCH_DATE, runWorldV2, scheduleFromDayZero, startingRatings } from "./run";
 export type { Occurrence, RatingPoint, WorldRunV2 } from "./run";
 export { simulateRecipeV2, simulateRecipeV2Unchecked } from "./simulate";
 export type { PlayerHistory, SimulationResultV2 } from "./simulate";

@@ -1,6 +1,6 @@
 /**
  * A small default v2 world: three made-up clubs with rated league ladders,
- * an all-levels night that invites everyone, every kind of player, and two
+ * an all-levels night, every kind of player, and two
  * hand-made players to follow. Used for the golden run and as an example
  * recipe. The Test court's larger default world is sized later, once runs
  * are measured in a browser.
@@ -108,7 +108,6 @@ export const DEFAULT_RECIPE_V2: SimulationRecipeV2 = {
       id: "east-all",
       label: "All levels",
       club: "east",
-      invites: ["north", "south"],
       schedule: { kind: "weekly", weekday: 5, hour: 10 },
       capacity: 32,
       format: { type: "league" },

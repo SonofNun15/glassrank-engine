@@ -16,7 +16,7 @@ describe("recipe v0.2", () => {
 
   it("rejects duplicate ids and unknown clubs", () => {
     const r = clone();
-    const events = [...r.events, { ...r.events[0]!, club: "nowhere", invites: ["also-nowhere"] }];
+    const events = [...r.events, { ...r.events[0]!, club: "nowhere", onlyFrom: ["also-nowhere"] }];
     const out = issues({ ...r, events });
     expect(out.some((m) => m.includes("duplicate id north-30"))).toBe(true);
     expect(out.some((m) => m.includes("unknown club nowhere"))).toBe(true);

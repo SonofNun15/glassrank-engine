@@ -228,7 +228,7 @@ export function runWorldV2(recipe: SimulationRecipeV2, schedule: PolicySchedule,
         (s) =>
           isActive(p, s.day) &&
           s.seasonStart &&
-          (s.series.club === p.home || (travels && (s.series.invites ?? []).includes(p.home))) &&
+          (s.series.club === p.home || (travels && (s.series.onlyFrom?.includes(p.home) ?? true))) &&
           isEligible(v, s.series),
       );
       if (open.length === 0) continue;
@@ -411,4 +411,17 @@ function playLeague(
     matches,
   };
   return { event, order, courts, night, form };
+}
+
+/**
+ * Every player's starting rating, as a club would see it before anyone plays:
+ * the rating they bring, or the policy's default for new players. Cheap (no
+ * games are played) and identical to the players a run creates.
+ */
+export function startingRatings(recipe: SimulationRecipeV2, defaultRating: number): { readonly id: string; readonly home: string; readonly rating: number }[] {
+  return createWorldPlayers(recipe, new Rng(recipe.seed), EPOCH_MS).map((p) => ({
+    id: p.id,
+    home: p.home,
+    rating: p.seed.source === "policy_default" ? defaultRating : p.seed.rating,
+  }));
 }

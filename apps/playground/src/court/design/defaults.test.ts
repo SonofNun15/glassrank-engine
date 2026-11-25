@@ -2,7 +2,23 @@ import { parse } from "@glassrank/schema";
 import { DEFAULT_RECIPE_V2, SimulationRecipeV2, type SimulationRecipeV2 as Recipe } from "@glassrank/sim";
 import { describe, expect, it } from "vitest";
 import { draftProblems } from "./Design";
-import { GROUP_TEMPLATES, PRESETS, addClub, newGroup, newPlayer, presetGroupSkill, presetSkill, removeClub, totalPlayers, uniqueId } from "./defaults";
+import {
+  EVENT_TEMPLATES,
+  GROUP_TEMPLATES,
+  PRESETS,
+  addClub,
+  newEvent,
+  newGroup,
+  newPlayer,
+  presetGroupSkill,
+  presetSkill,
+  rangeKind,
+  rangeName,
+  removeClub,
+  totalPlayers,
+  uniqueId,
+  withRangeKind,
+} from "./defaults";
 
 const valid = (r: Recipe) => parse(SimulationRecipeV2, r).ok;
 
@@ -40,11 +56,11 @@ describe("design edits", () => {
     expect(valid(withGroups)).toBe(true);
   });
 
-  it("removes a club with its events and groups, rehoming featured players and dropping invites", () => {
+  it("removes a club with its events and groups, rehoming featured players and dropping it from entry lists", () => {
     const r = removeClub(DEFAULT_RECIPE_V2, "north");
     expect(valid(r)).toBe(true);
     expect(r.clubs.map((c) => c.id)).toEqual(["south", "east"]);
-    expect(r.events.some((e) => e.club === "north" || e.invites?.includes("north"))).toBe(false);
+    expect(r.events.some((e) => e.club === "north" || e.onlyFrom?.includes("north"))).toBe(false);
     expect(r.groups.some((g) => g.home === "north")).toBe(false);
     expect(r.players.find((p) => p.id === "rosa")?.home).toBe("south");
     expect(removeClub({ ...r, clubs: [r.clubs[0]!] }, r.clubs[0]!.id).clubs).toHaveLength(1);
@@ -55,5 +71,35 @@ describe("design edits", () => {
     const late = { ...DEFAULT_RECIPE_V2, players: [{ ...DEFAULT_RECIPE_V2.players[0]!, skill: { preset: "keyframes" as const, keyframes: [[0, 3], [400, 3.5]] as [number, number][] } }] };
     expect(draftProblems(late)[0]).toMatch(/^Rosa \(made up\): a true-skill point is after the end of the run/);
     expect(draftProblems({ ...DEFAULT_RECIPE_V2, events: [] })[0]).toMatch(/at least one event/);
+  });
+
+  it("adds valid events on a day the club doesn't use yet", () => {
+    let r = DEFAULT_RECIPE_V2;
+    for (const t of EVENT_TEMPLATES) r = { ...r, events: [...r.events, newEvent(r, "south", t)] };
+    expect(valid(r)).toBe(true);
+    const days = r.events.filter((e) => e.club === "south").map((e) => (e.schedule.kind === "weekly" ? e.schedule.weekday : -1));
+    expect(new Set(days).size).toBe(days.length);
+    expect(r.events.at(-1)?.label).toBe("4.0 and up");
+  });
+
+  it("switches between range kinds, keeping what it can", () => {
+    expect(withRangeKind("all", { min: 3, max: 3.5 })).toBeUndefined();
+    expect(withRangeKind("max", { min: 3 })).toEqual({ max: 3.5 });
+    expect(withRangeKind("min", { max: 3.5 })).toEqual({ min: 3 });
+    expect(withRangeKind("between", { max: 4 })).toEqual({ min: 3.5, max: 4 });
+    expect(rangeKind(undefined)).toBe("all");
+    expect(rangeName({ min: 3, max: 3.5 })).toBe("3.0–3.5");
+  });
+
+  it("splitting a wide league into two brackets is a valid world", () => {
+    const events = DEFAULT_RECIPE_V2.events.flatMap((e) =>
+      e.id === "south-35"
+        ? [
+            { ...e, label: "3.0 and under", range: { max: 3.0 } },
+            { ...e, id: "south-30-35", label: "3.0–3.5", range: { min: 3.0, max: 3.5 }, schedule: { kind: "weekly" as const, weekday: 2 } },
+          ]
+        : [e],
+    );
+    expect(valid({ ...DEFAULT_RECIPE_V2, events })).toBe(true);
   });
 });

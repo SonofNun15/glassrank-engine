@@ -29,7 +29,7 @@ function labelsFor(recipe: SimulationRecipeV2): Labels {
 }
 
 const COMING = [
-  { title: "Edit events", body: "Add and change league nights and tournaments: their rating ranges, days, and which clubs they invite." },
+  { title: "Tournaments", body: "Teams that sign up together, pools, brackets, and double elimination, drawing players from many clubs." },
   { title: "Start over", body: "Start from an empty world and build your own." },
   { title: "Share", body: "Share a simulation as a link. It's rebuilt exactly, down to every rating change, on anyone's screen." },
 ];
@@ -47,7 +47,7 @@ function summarySentence(recipe: SimulationRecipeV2, weeks: number): string {
   const count = NUMBER_WORDS[clubs] ?? String(clubs);
   const leagues = recipe.events.length;
   const leagueCount = NUMBER_WORDS[leagues] ?? String(leagues);
-  return `${count[0]?.toUpperCase()}${count.slice(1)} club${clubs === 1 ? "" : "s"} run${clubs === 1 ? "s" : ""} ${leagueCount} weekly league${leagues === 1 ? "" : "s"} for ${weeks} weeks.`;
+  return `${count[0]?.toUpperCase()}${count.slice(1)} club${clubs === 1 ? "" : "s"} run${clubs === 1 ? "s" : ""} ${leagueCount} round-robin league${leagues === 1 ? "" : "s"} for ${weeks} weeks.`;
 }
 
 function downloadRecipe(recipe: SimulationRecipeV2) {

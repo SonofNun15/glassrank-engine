@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { GLASSRANK } from "../policies";
 import { DEFAULT_RECIPE_V2 } from "./default-world";
 import type { SimulationRecipeV2 } from "./recipe";
-import { runWorldV2, scheduleFromDayZero } from "./run";
+import { runWorldV2, scheduleFromDayZero, startingRatings } from "./run";
 import { simulateRecipeV2 } from "./simulate";
 
 const schedule = scheduleFromDayZero(GLASSRANK);
@@ -68,3 +68,12 @@ describe("v2 world run", () => {
 });
 
 const dayOf = (ts: string) => Math.floor((Date.parse(ts) - Date.parse("2001-01-01T00:00:00Z")) / 86_400_000);
+
+describe("starting ratings", () => {
+  it("match the seeds a run starts from", () => {
+    const run = runWorldV2(withDays(14), schedule);
+    const starts = new Map(startingRatings(withDays(14), 3.0).map((s) => [s.id, s.rating]));
+    expect(starts.size).toBe(run.players.length);
+    for (const p of run.players) expect(starts.get(p.id)).toBe(p.seed.source === "policy_default" ? 3.0 : p.seed.rating);
+  });
+});

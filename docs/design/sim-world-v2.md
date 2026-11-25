@@ -46,7 +46,7 @@ mostly play together. A club has:
 - Optionally `inflates`: it reports close losses of a few favored members as
   wins, as today.
 
-Events belong to a club and can invite players from other clubs.
+Events belong to a club and, by default, are open to players from every club.
 Independent organizers who run events without a venue are modeled as clubs
 for now.
 
@@ -199,7 +199,7 @@ Every event series has:
 | Field | Meaning |
 |---|---|
 | `club` | Which club runs and reports it (and so its tier). |
-| `invites` | Clubs whose players may enter: the running club's own, plus others. |
+| `onlyFrom` | Optional. Restricts entry to the host club plus these clubs (an empty list: host club only). Absent, the default: open to players from every club, since hosts rarely turn anyone away. |
 | `schedule` | Weekly on a weekday, every N weeks, or once on a given day. |
 | `range` | `{ min?, max? }` in GlassRank rating. |
 | `playUp` | `open` (any rating below `max` may enter), `margin` (up to X below `min`), or `strict` (must be at least `min`). Default `open`. |
@@ -322,7 +322,8 @@ For each week, in day order:
    probability `attendance`. Separately, when a tournament is open for entry,
    they consider it with probability `tournaments`.
 2. **Which events they consider.** Their home club's events, plus, with
-   probability `travel`, events at other clubs that invite them.
+   probability `travel`, events at other clubs that accept them (all of them,
+   unless an event limits entry with `onlyFrom`).
 3. **Eligibility.** Drop events whose `max` they exceed, and those whose
    `playUp` rule they fail. A league with seasons only accepts registrations
    at the start of a season.
@@ -406,11 +407,11 @@ existing rules (no `Math.exp` or trig in the generator).
       "joinDay": 0, "startingRating": { "self": 3.5 } }
   ],
   "events": [
-    { "id": "north-35", "club": "north", "invites": ["north"],
+    { "id": "north-35", "club": "north",
       "schedule": { "weekly": 1 }, "range": { "min": 3.0, "max": 3.5 },
       "playUp": "open", "capacity": 24,
       "format": { "type": "league", "movesPerCourt": 1, "season": { "weeks": 10 } } },
-    { "id": "fall-classic-35", "club": "north", "invites": ["north", "south"],
+    { "id": "fall-classic-35", "club": "north",
       "schedule": { "onDay": 280 }, "range": { "max": 3.5 }, "capacity": 32,
       "format": { "type": "tournament", "structure": "pools_then_bracket", "poolSize": 4, "advance": 2, "teamRule": "each" },
       "scoring": { "pools": { "games": 1, "to": 11 }, "bracket": { "games": 3, "to": 11 } } }

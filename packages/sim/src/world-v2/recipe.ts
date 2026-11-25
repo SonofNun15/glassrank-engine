@@ -196,7 +196,12 @@ export const EventSeries = g.refine(
     id: Id,
     label: Label,
     club: Id,
-    invites: g.optional(g.array(Id, { maxItems: RECIPE_V2_LIMITS.maxClubs, description: "Other clubs whose players may enter." })),
+    onlyFrom: g.optional(
+      g.array(Id, {
+        maxItems: RECIPE_V2_LIMITS.maxClubs,
+        description: "Restricts entry to the host club plus these clubs (empty: host club only). Absent: open to players from every club.",
+      }),
+    ),
     schedule: EventSchedule,
     range: g.optional(g.object({ min: g.optional(g.Rating), max: g.optional(g.Rating) })),
     playUp: g.optional(g.enumOf(["open", "margin", "strict"], { description: "Below `min`: open (default), within `playUpMargin`, or not at all." })),
@@ -241,7 +246,7 @@ export const SimulationRecipeV2 = g.refine(
     { title: "SimulationRecipeV2", description: "A simulated world of clubs, players, and events, reproducible exactly." },
   ),
   `recipeVersion is compatible with ${RECIPE_V2_VERSION}; ids are unique within clubs, groups, players, and events; ` +
-    `every home, club, and invite names a club; at most ${RECIPE_V2_LIMITS.maxPlayers} players; keyframes are in day order ` +
+    `every home, club, and onlyFrom entry names a club; at most ${RECIPE_V2_LIMITS.maxPlayers} players; keyframes are in day order ` +
     "within the run; inactive ranges have start < end",
   (r, path, issues) => {
     const [maj, min] = r.recipeVersion.split(".");
@@ -268,7 +273,7 @@ export const SimulationRecipeV2 = g.refine(
     r.players.forEach((p, i) => known(p.home, `${path}/players/${i}/home`));
     r.events.forEach((e, i) => {
       known(e.club, `${path}/events/${i}/club`);
-      (e.invites ?? []).forEach((c, j) => known(c, `${path}/events/${i}/invites/${j}`));
+      (e.onlyFrom ?? []).forEach((c, j) => known(c, `${path}/events/${i}/onlyFrom/${j}`));
     });
     const total = r.groups.reduce((n, gr) => n + gr.count, 0) + r.players.length;
     if (total > RECIPE_V2_LIMITS.maxPlayers) issues.push({ path: `${path}/groups`, message: `${total} players; the limit is ${RECIPE_V2_LIMITS.maxPlayers}` });
