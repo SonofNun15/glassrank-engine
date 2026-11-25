@@ -32,7 +32,7 @@ describe("following a player", () => {
     const s = report.summary;
     expect(s.events).toBe(report.events.length);
     expect(s.leagues.reduce((n, l) => n + l.events, 0)).toBe(s.events);
-    expect(s.courts.reduce((n, c) => n + c.events, 0)).toBe(s.events);
+    expect(s.courts.reduce((n, c) => n + c.events, 0)).toBe(s.leagueEvents);
     expect(s.gamesWon).toBeLessThanOrEqual(s.gamesPlayed);
     expect(report.profile.appetite).toBe(-1);
     expect(report.profile.startingRating).toEqual({ source: "self", rating: 3.2 });
@@ -43,5 +43,32 @@ describe("following a player", () => {
 
   it("rejects unknown players", () => {
     expect(() => followPlayer(recipe, GLASSRANK, "p.nobody")).toThrow(/no player/);
+  });
+});
+
+describe("following a tournament player", () => {
+  const recipe = DEFAULT_RECIPE_V2;
+  const run = runWorldV2(recipe, scheduleFromDayZero(GLASSRANK));
+  const tourney = run.events.find((e) => e.format === "tournament")!;
+  const someone = tourney.matches[0]!.teams[0][0]!;
+  const report = followPlayer(recipe, GLASSRANK, someone);
+
+  it("labels tournament matches by stage and keeps the same partner", () => {
+    const t = report.events.find((e) => e.format === "tournament")!;
+    const partners = new Set(t.matches.flatMap((m) => m.partners.map((p) => p.id)));
+    expect(partners.size).toBe(1);
+    for (const m of t.matches) expect(["pool", "bracket", "main draw", "back draw", "final"]).toContain(m.stage);
+  });
+
+  it("summarizes variation, luck, early nights, and partners", () => {
+    const s = report.summary;
+    expect(s.tournamentEvents).toBeGreaterThan(0);
+    expect(s.leagueEvents + s.tournamentEvents).toBe(s.events);
+    expect(s.nights.low).toBeLessThanOrEqual(s.nights.high);
+    expect(s.typicalSwing).toBeGreaterThanOrEqual(0);
+    expect(s.truthExpectedGamesWon).toBeGreaterThan(0);
+    expect(s.truthExpectedGamesWon).toBeLessThanOrEqual(s.ratedGamesPlayed);
+    expect(s.early.events).toBe(Math.min(8, s.events));
+    expect(s.partners?.count).toBeGreaterThan(0);
   });
 });

@@ -1,6 +1,6 @@
 {
   "recipeVersion": "0.2.0",
-  "name": "Three made-up clubs, one year",
+  "name": "Three made-up clubs and a monthly tournament, one year",
   "seed": 1,
   "durationDays": 364,
   "world": {
@@ -790,6 +790,82 @@
       "capacity": 20,
       "format": {
         "type": "league"
+      }
+    },
+    {
+      "id": "south-weekend-30",
+      "label": "Weekend tournament: 3.0",
+      "club": "south",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 6,
+        "hour": 9,
+        "everyWeeks": 4
+      },
+      "range": {
+        "max": 3.49
+      },
+      "capacity": 16,
+      "format": {
+        "type": "tournament",
+        "structure": "pools_then_bracket"
+      }
+    },
+    {
+      "id": "south-weekend-35",
+      "label": "Weekend tournament: 3.5",
+      "club": "south",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 6,
+        "hour": 9,
+        "everyWeeks": 4
+      },
+      "range": {
+        "max": 3.99
+      },
+      "capacity": 16,
+      "format": {
+        "type": "tournament",
+        "structure": "pools_then_bracket"
+      }
+    },
+    {
+      "id": "south-weekend-40",
+      "label": "Weekend tournament: 4.0",
+      "club": "south",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 6,
+        "hour": 9,
+        "everyWeeks": 4
+      },
+      "range": {
+        "max": 4.49
+      },
+      "capacity": 16,
+      "format": {
+        "type": "tournament",
+        "structure": "pools_then_bracket"
+      }
+    },
+    {
+      "id": "south-weekend-45",
+      "label": "Weekend tournament: 4.5+",
+      "club": "south",
+      "schedule": {
+        "kind": "weekly",
+        "weekday": 6,
+        "hour": 9,
+        "everyWeeks": 4
+      },
+      "range": {
+        "min": 4.5
+      },
+      "capacity": 16,
+      "format": {
+        "type": "tournament",
+        "structure": "pools_then_bracket"
       }
     },
     {

@@ -1,6 +1,7 @@
 /**
  * A small default v2 world: three made-up clubs with rated league ladders,
- * an all-levels night, every kind of player, and two
+ * an all-levels night, a monthly tournament in four divisions, every kind of
+ * player, and two
  * hand-made players to follow. Used for the golden run and as an example
  * recipe. The Test court's larger default world is sized later, once runs
  * are measured in a browser.
@@ -43,7 +44,7 @@ function groups(home: string, scale: number): PlayerGroup[] {
 
 export const DEFAULT_RECIPE_V2: SimulationRecipeV2 = {
   recipeVersion: RECIPE_V2_VERSION,
-  name: "Three made-up clubs, one year",
+  name: "Three made-up clubs and a monthly tournament, one year",
   seed: 1,
   durationDays: 364,
   world: {
@@ -104,6 +105,23 @@ export const DEFAULT_RECIPE_V2: SimulationRecipeV2 = {
     { id: "north-open", label: "4.0 and up", club: "north", schedule: { kind: "weekly", weekday: 3 }, range: { min: 4.0 }, capacity: 16, format: { type: "league" } },
     { id: "south-35", label: "3.5 and under", club: "south", schedule: { kind: "weekly", weekday: 1 }, range: { max: 3.5 }, capacity: 24, format: { type: "league" } },
     { id: "south-up", label: "3.5 and up", club: "south", schedule: { kind: "weekly", weekday: 3 }, range: { min: 3.5 }, capacity: 20, format: { type: "league" } },
+    // A monthly weekend tournament (every four weeks), in the usual four divisions. A division's number is the
+    // top of its range in steps of half a point: a 4.0 can't play the 3.5 division, but anyone
+    // may play up.
+    ...([
+      ["30", "3.0", { max: 3.49 }],
+      ["35", "3.5", { max: 3.99 }],
+      ["40", "4.0", { max: 4.49 }],
+      ["45", "4.5+", { min: 4.5 }],
+    ] as const).map(([id, name, range]) => ({
+      id: `south-weekend-${id}`,
+      label: `Weekend tournament: ${name}`,
+      club: "south",
+      schedule: { kind: "weekly" as const, weekday: 6, hour: 9, everyWeeks: 4 },
+      range,
+      capacity: 16,
+      format: { type: "tournament" as const, structure: "pools_then_bracket" as const },
+    })),
     {
       id: "east-all",
       label: "All levels",

@@ -3,8 +3,8 @@ import { Button } from "@glassrank/design";
 import type { Club, EventSeries, PlayerGroup, SimulationRecipeV2 } from "@glassrank/sim";
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { APPETITE_STOPS, ATTENDANCE_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
-import { GROUP_TEMPLATES, PRESETS, groupStart, newEvent, newGroup, presetGroupSkill, type Preset } from "./defaults";
+import { APPETITE_STOPS, ATTENDANCE_STOPS, LOYALTY_STOPS, TOURNAMENT_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
+import { GROUP_TEMPLATES, PRESETS, groupStart, newEvent, newGroup, newWeekendTournament, presetGroupSkill, type Preset } from "./defaults";
 import { EventEditor } from "./EventEditor";
 import { CardDisclosure, More, NumberField, RangeField, RowDisclosure, SelectField, TextField } from "./fields";
 
@@ -117,6 +117,8 @@ function GroupEditor(props: {
           {scaleRange("Appetite", APPETITE_STOPS, g.appetite, -1, 1, (appetite) => set({ appetite }))}
           {scaleRange("Travel", TRAVEL_STOPS, g.travel, 0, 1, (travel) => set({ travel }))}
           {scaleRange("Plays", ATTENDANCE_STOPS, g.attendance, 0, 1, (attendance) => set({ attendance }))}
+          {scaleRange("Tournaments", TOURNAMENT_STOPS, g.tournaments ?? [0.05, 0.4], 0, 1, (tournaments) => set({ tournaments }))}
+          {scaleRange("Partner loyalty", LOYALTY_STOPS, g.loyalty ?? [0.3, 0.9], 0, 1, (loyalty) => set({ loyalty }))}
         </div>
       </More>
       <div>
@@ -135,6 +137,8 @@ export function ClubCard(props: {
   readonly canRemove: boolean;
   readonly canAddGroup: boolean;
   readonly canAddEvent: boolean;
+  /** Room for four more events (a tournament's divisions). */
+  readonly canAddTournament: boolean;
   readonly starts: readonly { readonly home: string; readonly rating: number }[];
   readonly onChange: (next: SimulationRecipeV2) => void;
   readonly onRemove: () => void;
@@ -153,6 +157,11 @@ export function ClubCard(props: {
     const e = newEvent(recipe, c.id);
     setAdded((s) => new Set([...s, `event:${e.id}`]));
     onChange({ ...recipe, events: [...recipe.events, e] });
+  };
+  const addTournament = () => {
+    const divisions = newWeekendTournament(recipe, c.id);
+    setAdded((s) => new Set([...s, ...divisions.map((d) => `event:${d.id}`)]));
+    onChange({ ...recipe, events: [...recipe.events, ...divisions] });
   };
   const addGroup = () => {
     const g = newGroup(recipe, c.id, GROUP_TEMPLATES.find((t) => t.label === template) ?? GROUP_TEMPLATES[0]!);
@@ -200,9 +209,12 @@ export function ClubCard(props: {
             />
           ))}
         </ul>
-        <div>
+        <div className="actions">
           <Button variant="secondary" size="sm" disabled={!props.canAddEvent} onClick={addEvent} icon={<Plus {...small} />}>
             Add a round-robin league
+          </Button>
+          <Button variant="secondary" size="sm" disabled={!props.canAddTournament} onClick={addTournament} icon={<Plus {...small} />}>
+            Add a weekend tournament
           </Button>
         </div>
       </div>

@@ -9,6 +9,12 @@ import { assertValid, type PolicyConfig, type SeedSource } from "@glassrank/sche
 import type { PlayerSkill } from "./recipe";
 import { SimulationRecipeV2 } from "./recipe";
 import { runWorldV2, scheduleFromDayZero, type FollowedEvent } from "./run";
+import { gameWinChance } from "./tournament";
+
+/** Nights at least this far below true skill count as bad nights. */
+export const BAD_NIGHT = -0.15;
+/** Events while a rating is provisional (policy v1): results count at full strength. */
+const EARLY_EVENTS = 8;
 
 export interface FollowedEventReport extends Omit<FollowedEvent, "receipt"> {
   /** GlassRank's explanation of the rating change, or null if the event wasn't rated. */
@@ -46,12 +52,30 @@ export interface PlayerReport {
     readonly ratedGamesWon: number;
     /** Events per league, most first. */
     readonly leagues: readonly { readonly series: string; readonly events: number }[];
-    /** Events per court position (1 = top court). */
+    /** League events per court position (1 = top court). */
     readonly courts: readonly { readonly court: number; readonly events: number }[];
+    readonly leagueEvents: number;
+    readonly tournamentEvents: number;
     /** Their true skill minus their court-mates', on average: how much stronger they really were than who they played. */
     readonly edge: number;
-    /** How they played relative to their true skill, on average across matches. */
+    /** How they played relative to their true skill, on average across matches (about zero over many matches). */
     readonly form: number;
+    /** Their worst and best nights, relative to true skill. */
+    readonly nights: { readonly low: number; readonly high: number };
+    /** Most matches (80%) were within this much of their true skill. */
+    readonly typicalSwing: number;
+    /** Rated games their true skill (and their partners' and opponents') predicts they'd win: luck is the difference. */
+    readonly truthExpectedGamesWon: number;
+    /** Bad nights among their first events, while their rating was provisional. */
+    readonly early: { readonly events: number; readonly badNights: number };
+    /** Tournament partners, or null if they played no tournaments. */
+    readonly partners: {
+      readonly count: number;
+      /** Partners' true skill minus their own, on average. */
+      readonly strength: number;
+      /** Partners' rating minus true skill, on average: above zero means partners were rated higher than they play. */
+      readonly ratingGap: number;
+    } | null;
     /** Court-mates' rating minus true skill, on average: below zero means they played in a pool rated too low. */
     readonly poolGap: number;
     /** Their own rating minus true skill going into events, on average. */
@@ -81,6 +105,21 @@ export function followPlayer(input: unknown, policy: PolicyConfig, playerId: str
   });
 
   const rated = events.filter((e) => e.rated);
+  const leagues = events.filter((e) => e.format === "league");
+  const tournaments = events.filter((e) => e.format === "tournament");
+  const matchForms = events.flatMap((e) => e.matches.map((m) => Math.abs(m.form))).sort((a, b) => a - b);
+  const team = (self: number, partners: readonly { trueSkill: number }[]) => (self + partners.reduce((t, p) => t + p.trueSkill, 0)) / (1 + partners.length);
+  const truthExpected = rated.reduce(
+    (n, e) =>
+      n +
+      e.matches.reduce((g, m) => {
+        const opp = m.opponents.reduce((t, o) => t + o.trueSkill, 0) / m.opponents.length;
+        return g + m.games.length * gameWinChance(team(e.trueSkill, m.partners) - opp);
+      }, 0),
+    0,
+  );
+  const tournamentPartners = tournaments.flatMap((e) => (e.matches[0]?.partners ?? []).map((p) => ({ ...p, self: e.trueSkill })));
+  const early = events.slice(0, EARLY_EVENTS);
   const count = (keys: readonly (string | number)[]) => {
     const m = new Map<string | number, number>();
     for (const k of keys) m.set(k, (m.get(k) ?? 0) + 1);
@@ -117,9 +156,23 @@ export function followPlayer(input: unknown, policy: PolicyConfig, playerId: str
       leagues: [...count(events.map((e) => e.series))]
         .map(([series, n]) => ({ series: series as string, events: n }))
         .sort((a, b) => b.events - a.events || (a.series < b.series ? -1 : 1)),
-      courts: [...count(events.map((e) => e.court))].map(([court, n]) => ({ court: court as number, events: n })).sort((a, b) => a.court - b.court),
+      courts: [...count(leagues.map((e) => e.court))].map(([court, n]) => ({ court: court as number, events: n })).sort((a, b) => a.court - b.court),
+      leagueEvents: leagues.length,
+      tournamentEvents: tournaments.length,
       edge: mean(mates.map((m) => m.self - m.trueSkill)),
       form: mean(events.flatMap((e) => e.matches.map((m) => m.form))),
+      nights: events.length === 0 ? { low: 0, high: 0 } : { low: Math.min(...events.map((e) => e.nightForm)), high: Math.max(...events.map((e) => e.nightForm)) },
+      typicalSwing: matchForms.length === 0 ? 0 : (matchForms[Math.min(matchForms.length - 1, Math.floor(matchForms.length * 0.8))] as number),
+      truthExpectedGamesWon: truthExpected,
+      early: { events: early.length, badNights: early.filter((e) => e.nightForm <= BAD_NIGHT).length },
+      partners:
+        tournaments.length === 0
+          ? null
+          : {
+              count: new Set(tournamentPartners.map((p) => p.id)).size,
+              strength: mean(tournamentPartners.map((p) => p.trueSkill - p.self)),
+              ratingGap: mean(tournamentPartners.map((p) => p.rating - p.trueSkill)),
+            },
       poolGap: mean(mates.map((m) => m.rating - m.trueSkill)),
       ownGap: mean(events.map((e) => e.ratingBefore - e.trueSkill)),
     },

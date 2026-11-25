@@ -36,13 +36,32 @@ function startedFrom(p: PlayerReport["profile"]["startingRating"]): string {
   }
 }
 
+/** A match's place in a tournament, in words. */
+function stageName(stage: string, matchId: string): string {
+  const round = matchId.match(/^[a-z]+(\d+)-/)?.[1];
+  switch (stage) {
+    case "pool":
+      return `Pool ${round ?? ""}`.trim();
+    case "bracket":
+      return `Bracket, round ${round ?? ""}`.trim();
+    case "main draw":
+      return `Main draw, round ${round ?? ""}`.trim();
+    case "back draw":
+      return `Back draw, round ${round ?? ""}`.trim();
+    case "final":
+      return "Final";
+    default:
+      return "Court";
+  }
+}
+
 export function WhyPanel({ report, namer }: { readonly report: PlayerReport; readonly namer: Namer }) {
   const s = report.summary;
   const p = report.profile;
   if (s.events === 0) return null;
   const [top, ...rest] = s.leagues;
   const usual = [...s.courts].sort((a, b) => b.events - a.events)[0];
-  const maxCourts = Math.max(...report.events.map((e) => e.courts));
+  const maxCourts = Math.max(0, ...report.events.filter((e) => e.format === "league").map((e) => e.courts));
   const pct = s.ratedGamesPlayed === 0 ? 0 : Math.round((100 * s.ratedGamesWon) / s.ratedGamesPlayed);
   const diff = s.ratedGamesWon - s.expectedGamesWon;
   const versus = Math.abs(diff) <= 1 ? "about what the ratings expected" : diff > 0 ? "more than the ratings expected" : "fewer than the ratings expected";
@@ -55,12 +74,23 @@ export function WhyPanel({ report, namer }: { readonly report: PlayerReport; rea
       text:
         `${top?.events} of ${s.events} events at ${namer.event(top?.series ?? "")}` +
         (rest.length > 0 ? `; the rest at ${rest.map((l) => namer.event(l.series)).join(", ")}` : "") +
-        `. Usually on court ${usual?.court} of up to ${maxCourts} (court 1 is the top court).`,
+        "." +
+        (s.leagueEvents > 0 && usual !== undefined ? ` In leagues, usually on court ${usual.court} of up to ${maxCourts} (court 1 is the top court).` : ""),
     },
     {
       key: "results",
       title: "Results",
       text: `Won ${s.ratedGamesWon} of ${s.ratedGamesPlayed} rated games (${pct}%): ${versus}, which was about ${s.expectedGamesWon.toFixed(1)}.`,
+    },
+    {
+      key: "luck",
+      title: "Luck",
+      text: (() => {
+        const d = s.ratedGamesWon - s.truthExpectedGamesWon;
+        const base = `Their true skill, and their partners' and opponents', predicts about ${s.truthExpectedGamesWon.toFixed(1)} wins`;
+        if (Math.abs(d) < 1.5) return `${base}, so their results were about what their real level earns.`;
+        return `${base}, so they won ${Math.abs(d).toFixed(1)} ${d > 0 ? "more" : "fewer"}: luck worked ${d > 0 ? "for" : "against"} them, and ratings follow results.`;
+      })(),
     },
     {
       key: "pool",
@@ -86,12 +116,30 @@ export function WhyPanel({ report, namer }: { readonly report: PlayerReport; rea
     },
     {
       key: "form",
-      title: "How they played",
+      title: "How consistently they played",
       text:
-        off(s.form, "above", "below") === null
-          ? "On average they played right at their true skill."
-          : `On average they played ${off(s.form, "above", "below")} their true skill.`,
+        `Their nights ranged from ${Math.abs(s.nights.low).toFixed(2)} ${s.nights.low < 0 ? "below" : "above"} to ${Math.abs(s.nights.high).toFixed(2)} ${s.nights.high < 0 ? "below" : "above"} their true skill, ` +
+        `and most matches were within ±${s.typicalSwing.toFixed(2)} of it.` +
+        (s.early.badNights >= 2
+          ? ` ${s.early.badNights} of their first ${s.early.events} nights were well below their level while their rating was still provisional, when results count at full strength.`
+          : ""),
     },
+    ...(s.partners === null
+      ? []
+      : [
+          {
+            key: "partners",
+            title: "Tournament partners",
+            text:
+              `${s.tournamentEvents} tournament division${s.tournamentEvents === 1 ? "" : "s"} with ${s.partners.count} different partner${s.partners.count === 1 ? "" : "s"}. ` +
+              (off(s.partners.strength, "stronger", "weaker") === null
+                ? "Their partners were about as strong as they were"
+                : `Their partners were ${off(s.partners.strength, "stronger", "weaker")} than them in true skill`) +
+              (Math.abs(s.partners.ratingGap) >= 0.1
+                ? `, and rated ${Math.abs(s.partners.ratingGap).toFixed(2)} ${s.partners.ratingGap > 0 ? "higher than they play, so their teams were expected to win more than they could" : "lower than they play, so their teams were expected to win less than they could"}.`
+                : "."),
+          },
+        ]),
     {
       key: "own",
       title: "Their own rating",
@@ -191,7 +239,8 @@ export function EventDetail(props: {
         <div className="stack-sm why__event">
           <div className="why__event-title">
             <span className="t-body">
-              <strong>Week {weekOf(e.day)}</strong> · {namer.event(e.series)} · court {e.court} of {e.courts}
+              <strong>Week {weekOf(e.day)}</strong> · {namer.event(e.series)} ·{" "}
+              {e.format === "league" ? `court ${e.court} of ${e.courts}` : e.courts > 1 ? `tournament, pool ${e.court} of ${e.courts}` : "tournament"}
             </span>
             {e.rated ? <DeltaChip value={e.rating - e.ratingBefore} /> : <Tag>Not rated</Tag>}
           </div>
@@ -203,6 +252,7 @@ export function EventDetail(props: {
             <table>
               <thead>
                 <tr>
+                  {e.format === "tournament" ? <th scope="col">Stage</th> : null}
                   <th scope="col">Partner</th>
                   <th scope="col">Opponents</th>
                   <th scope="col">Score</th>
@@ -212,6 +262,7 @@ export function EventDetail(props: {
               <tbody>
                 {e.matches.map((m) => (
                   <tr key={m.matchId}>
+                    {e.format === "tournament" ? <td>{stageName(m.stage, m.matchId)}</td> : null}
                     <td className="why__cell">
                       {m.partners.map((x) => (
                         <Person key={x.id} mate={x} namer={namer} />

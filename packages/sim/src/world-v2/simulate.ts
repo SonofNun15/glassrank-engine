@@ -21,7 +21,15 @@ export interface SimulationResultV2 {
   readonly engineVersion: string;
   readonly simVersion: string;
   readonly policyId: string;
-  readonly world: { readonly players: number; readonly events: number; readonly ratedEvents: number; readonly games: number };
+  readonly world: {
+    readonly players: number;
+    readonly events: number;
+    readonly ratedEvents: number;
+    readonly games: number;
+    readonly leagueNights: number;
+    /** Tournament divisions played (each division is its own event). */
+    readonly tournaments: number;
+  };
   readonly eventLogHash: string;
   readonly players: readonly PlayerHistory[];
   /** Hash of everything above. */
@@ -47,6 +55,8 @@ export function simulateRecipeV2Unchecked(recipe: SimulationRecipeV2, policy: Po
       events: run.events.length,
       ratedEvents: ratedIds.size,
       games: run.events.reduce((n, e) => n + e.matches.reduce((m, x) => m + x.games.length, 0), 0),
+      leagueNights: run.occurrences.filter((o) => o.format === "league").length,
+      tournaments: run.occurrences.filter((o) => o.format === "tournament").length,
     },
     eventLogHash: hashCanonical(run.events),
     players: run.players.map((p) => ({

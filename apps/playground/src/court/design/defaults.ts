@@ -194,10 +194,13 @@ export function withRangeKind(kind: RangeKind, from: EventSeries["range"]): Even
   }
 }
 
+/** A rating as written on an event: one decimal when that's exact (3.5), otherwise two (3.49). */
+const ratingText = (x: number) => (Math.abs(x * 10 - Math.round(x * 10)) < 1e-9 ? x.toFixed(1) : x.toFixed(2));
+
 export function rangeName(range: EventSeries["range"]): string {
-  if (range?.min !== undefined && range.max !== undefined) return `${range.min.toFixed(1)}–${range.max.toFixed(1)}`;
-  if (range?.max !== undefined) return `${range.max.toFixed(1)} and under`;
-  if (range?.min !== undefined) return `${range.min.toFixed(1)} and up`;
+  if (range?.min !== undefined && range.max !== undefined) return `${ratingText(range.min)}–${ratingText(range.max)}`;
+  if (range?.max !== undefined) return `${ratingText(range.max)} and under`;
+  if (range?.min !== undefined) return `${ratingText(range.min)} and up`;
   return "All levels";
 }
 
@@ -222,4 +225,36 @@ export function newEvent(recipe: SimulationRecipeV2, club: string, template = EV
     capacity: 24,
     format: { type: "league" },
   };
+}
+
+export const STRUCTURES = [
+  { value: "pools", label: "Pools only", help: "Every team plays every other team in its pool." },
+  { value: "pools_then_bracket", label: "Pools, then a bracket", help: "Pool play, then the top teams play single elimination." },
+  { value: "double_elimination", label: "Double elimination", help: "A main draw; losing once drops a team to the back draw, losing twice ends its day." },
+] as const;
+
+/** The usual monthly weekend tournament: 3.0, 3.5, 4.0, and 4.5+ divisions (a 4.0 can't play the 3.5 division, but anyone may play up). */
+export function newWeekendTournament(recipe: SimulationRecipeV2, club: string): EventSeries[] {
+  const busySaturday = recipe.events.some((e) => e.club === club && e.format.type === "tournament" && e.schedule.kind === "weekly" && e.schedule.weekday === 5);
+  const weekday = busySaturday ? 6 : 5;
+  const divisions: readonly (readonly [string, string, EventSeries["range"]])[] = [
+    ["3-0", "3.0", { max: 3.49 }],
+    ["3-5", "3.5", { max: 3.99 }],
+    ["4-0", "4.0", { max: 4.49 }],
+    ["4-5", "4.5+", { min: 4.5 }],
+  ];
+  const taken = recipe.events.map((e) => e.id);
+  return divisions.map(([id, name, range]) => {
+    const eventId = uniqueId(`${club}-weekend-${id}`, taken);
+    taken.push(eventId);
+    return {
+      id: eventId,
+      label: `Weekend tournament: ${name}`,
+      club,
+      schedule: { kind: "weekly", weekday, hour: 9, everyWeeks: 4 },
+      ...(range === undefined ? {} : { range }),
+      capacity: 16,
+      format: { type: "tournament", structure: "pools_then_bracket" },
+    };
+  });
 }

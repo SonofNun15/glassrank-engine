@@ -26,24 +26,29 @@ describe("v2 world run", () => {
     expect(hashCanonical(before(long.events))).toBe(hashCanonical(before(short.events)));
   });
 
-  it("never seats a player above an event's max (weekly sign-up events)", () => {
+  it("never seats a player above an event's max when they sign up (weekly sign-up events)", () => {
     const run = runWorldV2(withDays(200), schedule);
     const series = new Map(DEFAULT_RECIPE_V2.events.map((e) => [e.id, e]));
     let checked = 0;
     for (const points of run.history.values()) {
-      for (const pt of points) {
+      points.forEach((pt, i) => {
         const s = series.get(pt.series)!;
-        if ((s.format.type === "league" && s.format.season !== undefined) || s.range?.max === undefined) continue;
-        expect(pt.ratingBefore).toBeLessThanOrEqual(s.range.max);
+        if ((s.format.type === "league" && s.format.season !== undefined) || s.range?.max === undefined) return;
+        // Players sign up at the start of the week; an earlier event that week can move them after that.
+        const weekStart = Math.floor(pt.day / 7) * 7;
+        const atSignup = points.slice(0, i).filter((x) => x.day < weekStart).at(-1)?.rating ?? points[0]!.ratingBefore;
+        expect(atSignup).toBeLessThanOrEqual(s.range.max);
         checked++;
-      }
+      });
     }
     expect(checked).toBeGreaterThan(100);
   });
 
-  it("changing one hand-made player leaves other clubs' first week alone", () => {
-    const base = runWorldV2(withDays(14), schedule);
-    const edited = runWorldV2({ ...withDays(14), players: DEFAULT_RECIPE_V2.players.map((p) => (p.id === "sam" ? { ...p, volatility: 0.3 } : p)) }, schedule);
+  it("changing one hand-made player leaves other clubs' first week alone (leagues only)", () => {
+    // Tournaments mix every club, so this checks the leagues-only world.
+    const leagues = { ...withDays(14), events: DEFAULT_RECIPE_V2.events.filter((e) => e.format.type === "league") };
+    const base = runWorldV2(leagues, schedule);
+    const edited = runWorldV2({ ...leagues, players: DEFAULT_RECIPE_V2.players.map((p) => (p.id === "sam" ? { ...p, volatility: 0.3 } : p)) }, schedule);
     const north = (events: typeof base.events) => events.filter((e) => e.source.hostId === "north");
     expect(hashCanonical(north(edited.events))).toBe(hashCanonical(north(base.events)));
     expect(hashCanonical(edited.events)).not.toBe(hashCanonical(base.events));

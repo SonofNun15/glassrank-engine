@@ -70,3 +70,18 @@ export const ATTENDANCE_STOPS: readonly Stop[] = [
   { position: 50, value: 0.5, label: "Every other week", meaning: "Plays about half the weeks." },
   { position: 100, value: 1, label: "Every week", meaning: "Never misses a week." },
 ];
+
+/** Tournaments: chance of entering (or agreeing to partner in) a tournament they could play in. */
+export const TOURNAMENT_STOPS: readonly Stop[] = [
+  { position: 0, value: 0, label: "Never", meaning: "Doesn't play tournaments." },
+  { position: 33, value: 0.1, label: "Rarely", meaning: "Enters about one tournament in ten." },
+  { position: 67, value: 0.4, label: "Sometimes", meaning: "Enters a fair share of the tournaments they could play." },
+  { position: 100, value: 0.9, label: "Most tournaments", meaning: "Plays nearly every tournament they can." },
+];
+
+/** Loyalty: how much they stick with one tournament partner. */
+export const LOYALTY_STOPS: readonly Stop[] = [
+  { position: 0, value: 0.05, label: "New partner most events", meaning: "Rarely plays with the same partner twice." },
+  { position: 50, value: 0.5, label: "Sometimes the same", meaning: "Sticks with a partner for a while, then moves on." },
+  { position: 100, value: 0.95, label: "Same partner every time", meaning: "Keeps a partner for event after event, unless a rough day splits them up." },
+];

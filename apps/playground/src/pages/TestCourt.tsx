@@ -34,7 +34,6 @@ const COMING: readonly { readonly title: string; readonly body: string; readonly
     body: "Partners who sign up together and sometimes split up, pools, brackets, and double elimination, drawing players from many clubs.",
     now: true,
   },
-  { title: "Ladders", body: "Informal nights where winners move up a court after every game." },
   { title: "Start from scratch", body: "Begin with an empty world and build your own clubs, events, and players." },
   { title: "Share a link", body: "Share a simulation as a link. It's rebuilt exactly, down to every rating change, on anyone's screen." },
 ];
@@ -50,9 +49,23 @@ const NUMBER_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven
 function summarySentence(recipe: SimulationRecipeV2, weeks: number): string {
   const clubs = recipe.clubs.length;
   const count = NUMBER_WORDS[clubs] ?? String(clubs);
-  const leagues = recipe.events.length;
-  const leagueCount = NUMBER_WORDS[leagues] ?? String(leagues);
-  return `${count[0]?.toUpperCase()}${count.slice(1)} club${clubs === 1 ? "" : "s"} run${clubs === 1 ? "s" : ""} ${leagueCount} round-robin league${leagues === 1 ? "" : "s"} for ${weeks} weeks.`;
+  const word = (n: number) => NUMBER_WORDS[n] ?? String(n);
+  const leagues = recipe.events.filter((e) => e.format.type === "league").length;
+  const divisions = recipe.events.length - leagues;
+  const what = [
+    leagues > 0 ? `${word(leagues)} round-robin league${leagues === 1 ? "" : "s"}` : null,
+    divisions > 0 ? `${word(divisions)} tournament division${divisions === 1 ? "" : "s"}` : null,
+  ]
+    .filter((x) => x !== null)
+    .join(" and ");
+  const lead = `${count[0]?.toUpperCase()}${count.slice(1)} club${clubs === 1 ? "" : "s"} run${clubs === 1 ? "s" : ""} ${what} for ${weeks} weeks.`;
+  const how = [
+    leagues > 0 ? "Players choose which league night to play each week based on their GlassRank rating" : null,
+    divisions > 0 ? "enter tournaments as teams of two" : null,
+  ]
+    .filter((x) => x !== null)
+    .join(", and ");
+  return `${lead} ${how[0]?.toUpperCase()}${how.slice(1)}.`;
 }
 
 function downloadRecipe(recipe: SimulationRecipeV2) {
@@ -140,7 +153,7 @@ export function TestCourt() {
         <h2 id="coming-title" className="t-title">
           Coming next
         </h2>
-        <ul className="grid-4">
+        <ul className="grid-3">
           {COMING.map((c) => (
             <li key={c.title} className="stack-xs">
               <h3 className="t-title court__coming-title">
@@ -199,7 +212,8 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
     { value: recipe.clubs.length, label: "clubs" },
     { value: result.world.players, label: "players" },
     { value: weeks, label: "weeks" },
-    { value: result.world.events, label: "league nights" },
+    { value: result.world.leagueNights, label: "league nights" },
+    ...(result.world.tournaments > 0 ? [{ value: result.world.tournaments, label: "tournament divisions" }] : []),
     { value: result.world.games, label: "games" },
   ];
 
@@ -211,7 +225,7 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
             In this simulation <span className="muted court__madeup">(all made up)</span>
           </h2>
           <p className="muted-2">
-            {summarySentence(recipe, weeks)} Players choose which league night to play each week based on their GlassRank rating.
+            {summarySentence(recipe, weeks)}
           </p>
         </div>
         <ul className="court__stats">

@@ -467,7 +467,7 @@ available for research runs until v2 has its own goldens.
    format), with players, clubs, and event choice.
 2. Tournament `pools` and `pools_then_bracket`, with team entry.
 3. `double_elimination`.
-4. Ladder.
+4. Ladder (deferred indefinitely).
 5. Measure the default world in a browser worker and size it to fit.
 
 ## Implementation notes (step 1)
@@ -510,3 +510,11 @@ available for research runs until v2 has its own goldens.
   prediction reads game-win chances off the rally model (0.25 gap ≈ 67%,
   0.5 ≈ 83%, 1.0 ≈ 95%).
 - A division needs at least four teams to run.
+- **Division numbers** follow the usual convention: a division's number is
+  the top of its range in half-point steps, so a 3.5 division admits ratings
+  up to 3.99 (a 4.0 can't play it) and players may play up. The default
+  world's tournament runs monthly (every four weeks, as most clubs do) with
+  3.0, 3.5, 4.0, and 4.5+ divisions.
+- **Gender isn't modeled.** Real tournaments run men's, women's, and mixed
+  events; here those would only split the same players into more divisions
+  without changing how ratings behave.

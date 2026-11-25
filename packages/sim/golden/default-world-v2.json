@@ -1,37 +1,39 @@
 {
-  "recipeHash": "sha256:053c952e55bacad35aa964942205b22decf44b3d4f386441f2731ada7d442733",
+  "recipeHash": "sha256:3aac81852268ec3e0e822e13a9cfb99f31739d3d45b1ba6055c52c5ef23392b7",
   "policyId": "sim-glassrank-v1-proposal",
   "world": {
     "players": 147,
-    "events": 359,
-    "ratedEvents": 359,
-    "games": 3772
+    "events": 391,
+    "ratedEvents": 391,
+    "games": 4301,
+    "leagueNights": 362,
+    "tournaments": 29
   },
-  "eventLogHash": "sha256:b969c1ee992b45b5bdd3707e5573383e01b350c2e552f87d883e1dcb2712f061",
-  "resultHash": "sha256:61fd0aaadc837498ec83414db4b6feb133e7268f71a16682dd7e92b8cdee2082",
+  "eventLogHash": "sha256:548f531ee055b61db2802d7eb6de641e0119674095deef7da4a32c494b495f6c",
+  "resultHash": "sha256:1d030447d830748a74307cfba71ad99377c011b369baf82d776c778b7d805e89",
   "handMadePlayers": [
     {
       "id": "p.rosa",
-      "events": 48,
+      "events": 50,
       "last": {
         "eventId": "north-40.52",
         "series": "north-40",
         "day": 359,
-        "ratingBefore": 3.468288,
-        "rating": 3.497893,
+        "ratingBefore": 3.750901,
+        "rating": 3.718508,
         "trueSkill": 3.749478,
         "provisional": null
       }
     },
     {
       "id": "p.sam",
-      "events": 47,
+      "events": 51,
       "last": {
         "eventId": "south-up.52",
         "series": "south-up",
         "day": 360,
-        "ratingBefore": 3.890283,
-        "rating": 3.84378,
+        "ratingBefore": 3.93327,
+        "rating": 3.906737,
         "trueSkill": 3.9,
         "provisional": null
       }

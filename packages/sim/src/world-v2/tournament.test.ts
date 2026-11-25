@@ -23,7 +23,8 @@ function withTournaments(durationDays = 364, extra: Partial<SimulationRecipeV2> 
     ...DEFAULT_RECIPE_V2,
     durationDays,
     events: [
-      ...DEFAULT_RECIPE_V2.events,
+      // The default world's leagues only: its own tournament would share these weeks.
+      ...DEFAULT_RECIPE_V2.events.filter((e) => e.format.type === "league"),
       division("open-30", "3.0 and under", { max: 3.0 }, "pools"),
       division("open-35", "3.5 and under", { max: 3.5 }, "pools_then_bracket"),
       division("open-up", "3.5 and up", { min: 3.5 }, "double_elimination"),
@@ -81,15 +82,19 @@ describe("tournaments in a world", () => {
     expect(prefixes("open-up")).toEqual(new Set(["m", "d", "final"]));
   });
 
-  it("only seat teams whose players are both eligible", () => {
+  it("only seat teams whose players are both eligible when they sign up", () => {
     let checked = 0;
     for (const points of run.history.values()) {
-      for (const pt of points) {
+      points.forEach((pt, i) => {
         const max = series.get(pt.series)?.range?.max;
-        if (series.get(pt.series)?.format.type !== "tournament" || max === undefined) continue;
-        expect(pt.ratingBefore).toBeLessThanOrEqual(max);
+        if (series.get(pt.series)?.format.type !== "tournament" || max === undefined) return;
+        // Players sign up at the start of the week, so a league night earlier that week doesn't count.
+        const weekStart = Math.floor(pt.day / 7) * 7;
+        const earlier = points.slice(0, i).filter((x) => x.day < weekStart);
+        const atSignup = earlier.at(-1)?.rating ?? points[0]!.ratingBefore;
+        expect(atSignup).toBeLessThanOrEqual(max);
         checked++;
-      }
+      });
     }
     expect(checked).toBeGreaterThan(50);
   });

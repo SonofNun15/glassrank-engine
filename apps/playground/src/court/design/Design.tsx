@@ -4,7 +4,7 @@
  * it can run.
  */
 import { Button } from "@glassrank/design";
-import { GLASSRANK, RECIPE_V2_LIMITS, SimulationRecipeV2, startingRatings } from "@glassrank/sim";
+import { GLASSRANK, RECIPE_V2_LIMITS, SimulationRecipeV2, startingRatings, type PlayerSpec } from "@glassrank/sim";
 import { parse } from "@glassrank/schema";
 import { CircleAlert, Play, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -30,6 +30,23 @@ export function draftProblems(draft: SimulationRecipeV2): string[] {
     if (issue.path === "/events" && issue.message.includes("at least")) return "The world needs at least one event. Add a club to get one.";
     if (issue.message.includes("after the end of the run")) return `${where}a true-skill point is after the end of the run. Make the run longer or move the point.`;
     return `${where}${issue.message}`;
+  });
+}
+
+const withoutPartner = (p: PlayerSpec): PlayerSpec => {
+  const { partner: _, ...rest } = p;
+  return rest;
+};
+
+/** Make `id` and `partner` each other's fixed partners, freeing anyone either was paired with. */
+export function pairPlayers(players: readonly PlayerSpec[], id: string, partner: string | null): PlayerSpec[] {
+  const old = new Set([id, partner, players.find((x) => x.id === id)?.partner, partner === null ? undefined : players.find((x) => x.id === partner)?.partner]);
+  return players.map((x) => {
+    const freed = old.has(x.id) || (x.partner !== undefined && old.has(x.partner)) ? withoutPartner(x) : x;
+    if (partner === null) return freed;
+    if (x.id === id) return { ...freed, partner };
+    if (x.id === partner) return { ...freed, partner: id };
+    return freed;
   });
 }
 
@@ -128,7 +145,13 @@ export function Design(props: {
               recipe={draft}
               defaultOpen={added.has(`player:${p.id}`)}
               onChange={(next) => onChange({ ...draft, players: draft.players.map((x) => (x.id === p.id ? next : x)) })}
-              onRemove={() => onChange({ ...draft, players: draft.players.filter((x) => x.id !== p.id) })}
+              onRemove={() =>
+                onChange({
+                  ...draft,
+                  players: draft.players.filter((x) => x.id !== p.id).map((x) => (x.partner === p.id ? withoutPartner(x) : x)),
+                })
+              }
+              onPartner={(partner) => onChange({ ...draft, players: pairPlayers(draft.players, p.id, partner) })}
             />
           ))}
         </ul>
@@ -163,6 +186,7 @@ export function Design(props: {
               canRemove={draft.clubs.length > 1}
               canAddGroup={canAddGroup}
               canAddEvent={draft.events.length < RECIPE_V2_LIMITS.maxEvents}
+              canAddTournament={draft.events.length + 4 <= RECIPE_V2_LIMITS.maxEvents}
               starts={starts}
               onChange={onChange}
               onRemove={() => onChange(removeClub(draft, c.id))}

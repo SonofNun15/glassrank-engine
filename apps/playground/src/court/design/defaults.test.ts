@@ -1,7 +1,7 @@
 import { parse } from "@glassrank/schema";
 import { DEFAULT_RECIPE_V2, SimulationRecipeV2, type SimulationRecipeV2 as Recipe } from "@glassrank/sim";
 import { describe, expect, it } from "vitest";
-import { draftProblems } from "./Design";
+import { draftProblems, pairPlayers } from "./Design";
 import {
   EVENT_TEMPLATES,
   GROUP_TEMPLATES,
@@ -9,6 +9,7 @@ import {
   addClub,
   newEvent,
   newGroup,
+  newWeekendTournament,
   newPlayer,
   presetGroupSkill,
   presetSkill,
@@ -77,7 +78,8 @@ describe("design edits", () => {
     let r = DEFAULT_RECIPE_V2;
     for (const t of EVENT_TEMPLATES) r = { ...r, events: [...r.events, newEvent(r, "south", t)] };
     expect(valid(r)).toBe(true);
-    const days = r.events.filter((e) => e.club === "south").map((e) => (e.schedule.kind === "weekly" ? e.schedule.weekday : -1));
+    // Leagues only: a tournament's divisions deliberately share a day.
+    const days = r.events.filter((e) => e.club === "south" && e.format.type === "league").map((e) => (e.schedule.kind === "weekly" ? e.schedule.weekday : -1));
     expect(new Set(days).size).toBe(days.length);
     expect(r.events.at(-1)?.label).toBe("4.0 and up");
   });
@@ -101,5 +103,31 @@ describe("design edits", () => {
         : [e],
     );
     expect(valid({ ...DEFAULT_RECIPE_V2, events })).toBe(true);
+  });
+
+  it("adds a valid weekend tournament in four divisions", () => {
+    const divisions = newWeekendTournament(DEFAULT_RECIPE_V2, "north");
+    expect(divisions.map((d) => d.label)).toEqual(["Weekend tournament: 3.0", "Weekend tournament: 3.5", "Weekend tournament: 4.0", "Weekend tournament: 4.5+"]);
+    expect(divisions[1]!.range).toEqual({ max: 3.99 });
+    expect(valid({ ...DEFAULT_RECIPE_V2, events: [...DEFAULT_RECIPE_V2.events, ...divisions] })).toBe(true);
+    // A second one at the same club goes on the other weekend day, with its own ids.
+    const once = { ...DEFAULT_RECIPE_V2, events: [...DEFAULT_RECIPE_V2.events, ...divisions] };
+    const again = newWeekendTournament(once, "north");
+    expect(again[0]!.schedule).toMatchObject({ weekday: 6 });
+    expect(valid({ ...once, events: [...once.events, ...again] })).toBe(true);
+  });
+
+  it("pairs featured players both ways, and re-pairing frees the old partners", () => {
+    const players = [
+      { ...newPlayer(DEFAULT_RECIPE_V2), id: "a" },
+      { ...newPlayer(DEFAULT_RECIPE_V2), id: "b" },
+      { ...newPlayer(DEFAULT_RECIPE_V2), id: "c" },
+    ];
+    const ab = pairPlayers(players, "a", "b");
+    expect(ab.map((p) => p.partner)).toEqual(["b", "a", undefined]);
+    const ac = pairPlayers(ab, "a", "c");
+    expect(ac.map((p) => p.partner)).toEqual(["c", undefined, "a"]);
+    expect(pairPlayers(ac, "c", null).map((p) => p.partner)).toEqual([undefined, undefined, undefined]);
+    expect(valid({ ...DEFAULT_RECIPE_V2, players: ac })).toBe(true);
   });
 });
