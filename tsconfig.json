@@ -6,7 +6,8 @@
     "paths": {
       "@glassrank/schema": ["./packages/schema/src/index.ts"],
       "@glassrank/engine": ["./packages/engine/src/index.ts"],
-      "@glassrank/sim": ["./packages/sim/src/index.ts"]
+      "@glassrank/sim": ["./packages/sim/src/index.ts"],
+      "@glassrank/cli": ["./packages/cli/src/index.ts"]
     }
   },
   "include": ["packages/*/src", "packages/*/tsdown.config.ts", "vitest.config.ts"]

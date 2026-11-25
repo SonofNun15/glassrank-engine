@@ -28,5 +28,7 @@ jobs:
       - name: Type-check and test (fails if any golden file differs)
         run: pnpm test
       - run: pnpm build
+      - name: Conformance cases against the built CLI
+        run: node conformance/check.mjs
       - name: No generated file changed
         run: git diff --exit-code

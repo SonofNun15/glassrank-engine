@@ -1,0 +1,227 @@
+{
+  "receipt": {
+    "schemaVersion": "0.1.0",
+    "eventId": "evt-2026-11-14-oakridge-rr",
+    "playerId": "p-dee",
+    "discipline": "doubles",
+    "occurredAt": "2026-11-14T14:00:00Z",
+    "before": {
+      "rating": 3,
+      "mu": 3,
+      "sigma": 1
+    },
+    "after": {
+      "rating": 2.579301659,
+      "mu": 2.579301659,
+      "sigma": 0.802382003
+    },
+    "headline": {
+      "delta": -0.420698341,
+      "direction": "down",
+      "reasons": [
+        "first_event",
+        "below_expected"
+      ],
+      "facts": {
+        "games_played": 3,
+        "games_won": 0,
+        "higher_rated_wins": 0,
+        "lower_rated_losses": 0,
+        "voided_matches": 0
+      },
+      "provisional": {
+        "eventsRemaining": 7,
+        "low": 2,
+        "high": 3.381683662
+      }
+    },
+    "summary": {
+      "gamesPlayed": 3,
+      "gamesWon": 0,
+      "expectedGamesWon": 1.09044886,
+      "pointsFor": 24,
+      "pointsAgainst": 33,
+      "expectedPointShare": 0.442348092,
+      "actualPointShare": 0.421052632,
+      "voidedMatches": 0,
+      "keyGames": [
+        {
+          "matchId": "m2",
+          "gameIndex": 0,
+          "impact": -0.156414712
+        },
+        {
+          "matchId": "m1",
+          "gameIndex": 0,
+          "impact": -0.148629392
+        },
+        {
+          "matchId": "m3",
+          "gameIndex": 0,
+          "impact": -0.115654237
+        }
+      ],
+      "protections": [
+        "provisional_period"
+      ]
+    },
+    "technical": {
+      "evidenceModel": "bayes_v0",
+      "evidenceParams": {
+        "win_scale": 3.2,
+        "share_scale": 1,
+        "margin_weight": 0.5,
+        "dynamics_sigma": 0.05,
+        "sigma_floor": 0.08
+      },
+      "sigmaWidening": {
+        "daysAway": 0,
+        "sigmaBefore": 1,
+        "sigmaAfter": 1
+      },
+      "games": [
+        {
+          "matchId": "m1",
+          "gameIndex": 0,
+          "partners": [
+            "p-cam"
+          ],
+          "opponents": [
+            "p-ava",
+            "p-ben"
+          ],
+          "score": [
+            7,
+            11
+          ],
+          "weight": 1,
+          "expectedShare": 0.446214641,
+          "actualShare": 0.388888889,
+          "contribution": -0.148629392
+        },
+        {
+          "matchId": "m2",
+          "gameIndex": 0,
+          "partners": [
+            "p-ben"
+          ],
+          "opponents": [
+            "p-ava",
+            "p-cam"
+          ],
+          "score": [
+            9,
+            11
+          ],
+          "weight": 1,
+          "expectedShare": 0.462872413,
+          "actualShare": 0.45,
+          "contribution": -0.156414712
+        },
+        {
+          "matchId": "m3",
+          "gameIndex": 0,
+          "partners": [
+            "p-ava"
+          ],
+          "opponents": [
+            "p-ben",
+            "p-cam"
+          ],
+          "score": [
+            8,
+            11
+          ],
+          "weight": 1,
+          "expectedShare": 0.417957223,
+          "actualShare": 0.421052632,
+          "contribution": -0.115654237
+        }
+      ],
+      "evidenceDelta": {
+        "mu": -0.420698341,
+        "sigma": -0.197617997
+      },
+      "rules": [
+        {
+          "rule": "provisional_period",
+          "fired": true,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {
+            "events": 8,
+            "event_number": 1
+          }
+        },
+        {
+          "rule": "upward_bias",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "decline_damping",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "returning_protection",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "correction_overlay",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "large_gain_hold",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "held_gain_release",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "decline_cap",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {}
+        },
+        {
+          "rule": "scale_bounds",
+          "fired": false,
+          "before": -0.420698341,
+          "after": -0.420698341,
+          "params": {
+            "min": 2,
+            "max": 8
+          }
+        }
+      ]
+    },
+    "provenance": {
+      "schemaVersion": "0.1.0",
+      "engineVersion": "0.1.0",
+      "policyId": "conformance-bayes",
+      "policyHash": "sha256:8d6823a1f493d6646d3eec78acd2830f17414ae61e757b62b9bbfd918311318a",
+      "overlayId": null,
+      "inputHash": "sha256:a0723daea8a921cb1bdd5ac04cc08b20965b722be9025aed6f51f07c0b3de7a4"
+    }
+  },
+  "eventLabel": "Saturday round robin"
+}

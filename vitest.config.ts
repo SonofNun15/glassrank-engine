@@ -10,6 +10,7 @@ export default defineConfig({
       "@glassrank/schema": src("schema"),
       "@glassrank/engine": src("engine"),
       "@glassrank/sim": src("sim"),
+      "@glassrank/cli": src("cli"),
     },
   },
   test: {

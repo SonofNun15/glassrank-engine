@@ -1,0 +1,43 @@
+{
+  "name": "@glassrank/cli",
+  "version": "0.1.0",
+  "description": "JSON command-line interface to the GlassRank engine, for services in any language.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "pickleball",
+    "rating",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SonofNun15/glassrank.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/SonofNun15/glassrank#readme",
+  "type": "module",
+  "bin": {
+    "glassrank": "./dist/main.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@glassrank/engine": "workspace:*",
+    "@glassrank/schema": "workspace:*"
+  }
+}

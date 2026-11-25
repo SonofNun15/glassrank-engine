@@ -1,0 +1,62 @@
+[
+  {
+    "command": "rate",
+    "name": "elo-basic",
+    "exitCode": 0
+  },
+  {
+    "command": "rate",
+    "name": "bayes-provisional-newcomers",
+    "exitCode": 0
+  },
+  {
+    "command": "rate",
+    "name": "bayes-correction-active",
+    "exitCode": 0
+  },
+  {
+    "command": "rate",
+    "name": "voided-match",
+    "exitCode": 0
+  },
+  {
+    "command": "rate",
+    "name": "error-missing-prior",
+    "exitCode": 2
+  },
+  {
+    "command": "predict",
+    "name": "doubles",
+    "exitCode": 0
+  },
+  {
+    "command": "forecast",
+    "name": "standard-outcomes",
+    "exitCode": 0
+  },
+  {
+    "command": "replay",
+    "name": "two-events",
+    "exitCode": 0
+  },
+  {
+    "command": "verify",
+    "name": "ok",
+    "exitCode": 0
+  },
+  {
+    "command": "verify",
+    "name": "tampered",
+    "exitCode": 0
+  },
+  {
+    "command": "explain",
+    "name": "newcomer-receipt",
+    "exitCode": 0
+  },
+  {
+    "command": "version",
+    "name": "current",
+    "exitCode": 0
+  }
+]

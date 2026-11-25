@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "0.1.0",
+  "at": "2026-11-14T14:00:00Z",
+  "priors": [
+    {
+      "kind": "state",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "playerId": "p-ava",
+        "discipline": "doubles",
+        "rating": 3.42,
+        "evidence": {
+          "mu": 3.38,
+          "sigma": 0.41
+        },
+        "heldGain": 0,
+        "provisional": null,
+        "protectedEventsRemaining": 0,
+        "recentDeclines": [
+          {
+            "at": "2026-11-07T14:00:00Z",
+            "eventId": "evt-2026-11-07-oakridge-rr",
+            "amount": 0.021
+          }
+        ],
+        "counts": {
+          "events": 14,
+          "matches": 52,
+          "games": 61
+        },
+        "origin": {
+          "source": "self",
+          "rating": 3
+        },
+        "firstRatedAt": "2026-06-06T14:00:00Z",
+        "lastPlayedAt": "2026-11-07T14:00:00Z",
+        "lastUpdate": {
+          "eventId": "evt-2026-11-07-oakridge-rr",
+          "engineVersion": "0.0.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "inputHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      }
+    },
+    {
+      "kind": "state",
+      "state": {
+        "schemaVersion": "0.1.0",
+        "playerId": "p-ben",
+        "discipline": "doubles",
+        "rating": 3.61,
+        "evidence": {
+          "mu": 3.57,
+          "sigma": 0.38
+        },
+        "heldGain": 0,
+        "provisional": null,
+        "protectedEventsRemaining": 0,
+        "recentDeclines": [],
+        "counts": {
+          "events": 22,
+          "matches": 80,
+          "games": 95
+        },
+        "origin": {
+          "source": "host",
+          "rating": 3.5
+        },
+        "firstRatedAt": "2026-03-07T14:00:00Z",
+        "lastPlayedAt": "2026-11-07T14:00:00Z",
+        "lastUpdate": {
+          "eventId": "evt-2026-11-07-oakridge-rr",
+          "engineVersion": "0.0.0",
+          "policyId": "example-2026.0",
+          "policyHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "inputHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      }
+    },
+    {
+      "kind": "seed",
+      "seed": {
+        "source": "self",
+        "playerId": "p-cam",
+        "discipline": "doubles",
+        "rating": 3.5,
+        "recordedAt": "2026-11-10T18:30:00Z"
+      }
+    },
+    {
+      "kind": "seed",
+      "seed": {
+        "source": "policy_default",
+        "playerId": "p-dee",
+        "discipline": "doubles"
+      }
+    }
+  ],
+  "teams": [
+    [
+      "p-ava",
+      "p-ben"
+    ],
+    [
+      "p-cam",
+      "p-dee"
+    ]
+  ],
+  "gameFormat": {
+    "target": 11,
+    "winBy": 2,
+    "scoring": "side_out"
+  },
+  "policy": {
+    "base": {
+      "schemaVersion": "0.1.0",
+      "policyId": "conformance-bayes",
+      "title": "Example policy for fixtures and the Elo baseline (not a proposal)",
+      "scale": {
+        "min": 2,
+        "max": 8,
+        "displayDecimals": 3
+      },
+      "seeding": {
+        "defaultRating": 3,
+        "defaultSigma": 1,
+        "sigmaBySource": {
+          "self": 0.9,
+          "host": 0.6,
+          "external_claimed": 0.7
+        }
+      },
+      "sourceWeights": {
+        "verified_host": 1,
+        "provisional_host": 0.5,
+        "video_verified": 1
+      },
+      "evidence": {
+        "model": "bayes_v0",
+        "winScale": 3.2,
+        "shareScale": 1,
+        "marginWeight": 0.5,
+        "dynamicsSigma": 0.05,
+        "sigmaFloor": 0.08
+      },
+      "inactivity": {
+        "graceDays": 30,
+        "sigmaGrowthPerDay": 0.005,
+        "sigmaMax": 1.2
+      },
+      "rules": {
+        "provisionalPeriod": {
+          "events": 8,
+          "rangeSd": 1
+        },
+        "upwardBias": {
+          "gainMultiplier": 1.25
+        },
+        "declineDamping": {
+          "lossMultiplier": 0.6
+        },
+        "returningProtection": {
+          "awayDays": 60,
+          "events": 3,
+          "lossMultiplier": 0.5
+        },
+        "declineCap": {
+          "amount": 0.15,
+          "windowDays": 30
+        },
+        "largeGain": {
+          "perEventThreshold": 0.25,
+          "minGamesToExceed": 6
+        }
+      }
+    },
+    "overlay": null
+  }
+}
