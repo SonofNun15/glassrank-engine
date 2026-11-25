@@ -15,4 +15,7 @@ and `@glassrank/cli`. Schema 0.1.0, engine 0.1.0.
   scale bounds.
 - `glassrank` command-line tool and conformance cases for checking other
   implementations.
-- Simulator and metrics for evaluating policies (not published).
+- `@glassrank/sim`: simulated communities, metrics, policy tuning, and
+  simulation recipes (reproducible, size-limited JSON describing a run,
+  including custom players and up to four rating systems), with
+  `simulateRecipe()` and `glassrank simulate`.

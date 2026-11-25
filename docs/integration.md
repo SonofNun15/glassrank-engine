@@ -60,6 +60,14 @@ replay from there.
 - `forecast` answers "what happens if I win 11-7?" before a match;
   `predict` gives win probabilities for balancing courts.
 
+## Simulation recipes
+
+Feedback can carry a `SimulationRecipe` as evidence. Validate it with
+`SimulationRecipe` from `@glassrank/sim` (or its JSON Schema), store it with
+its `recipeHash` and `createdWith` versions, and re-run it with
+`simulateRecipe` (or `glassrank simulate`) to confirm what the submitter saw.
+The format's size limits keep every accepted recipe quick to run.
+
 ## Checking a port
 
 If the service reimplements the engine instead of calling it, run

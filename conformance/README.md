@@ -21,6 +21,7 @@ needs the same calling convention as `glassrank`.
 | replay | Two events with a policy schedule |
 | verify | A matching receipt; a tampered receipt |
 | explain | A newcomer's receipt rendered to text |
+| simulate | A small simulation recipe with custom players and two rating systems |
 | version | Version report |
 
 Outputs are canonical JSON (RFC 8785) followed by a newline. The cases are

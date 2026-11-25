@@ -22,7 +22,7 @@ export function formatReports(reports: readonly Report[]): string {
   add("  everyone", (r) => f(r.overall.rmse));
   section("Bad seeds (off by 0.5+)");
   add("  players", (r) => String(r.seeds.badSeeds));
-  add("  median events to within 0.25", (r) => f(r.seeds.medianEventsToConverge, 1));
+  add("  median events to within 0.25", (r) => (r.seeds.medianEventsToConverge === null ? "never" : f(r.seeds.medianEventsToConverge, 1)));
   add("  converged within 10 events", (r) => String(r.seeds.convergedWithin10));
   section("Inflating host (bias)");
   add("  favored players", (r) => signed(r.inflation.favored.bias));

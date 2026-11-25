@@ -14,11 +14,12 @@ import {
   replay,
   verify,
 } from "@glassrank/engine";
+import { simulateRecipe } from "@glassrank/sim";
 import { Receipt, SCHEMA_VERSION, SchemaError, assertValid, canonicalJson, type Issue } from "@glassrank/schema";
 
 export const CLI_VERSION = "0.1.0" as const;
 
-export const COMMANDS = ["rate", "predict", "forecast", "replay", "verify", "explain", "version"] as const;
+export const COMMANDS = ["rate", "predict", "forecast", "replay", "verify", "explain", "simulate", "version"] as const;
 export type Command = (typeof COMMANDS)[number];
 
 /** 0 success; 1 internal error (a bug); 2 bad input or usage. */
@@ -68,6 +69,8 @@ export function runCommand(command: string, input: unknown): CliResult {
         return { exitCode: 0, output: verify(input) };
       case "explain":
         return { exitCode: 0, output: explain(input) };
+      case "simulate":
+        return { exitCode: 0, output: simulateRecipe(input) };
       case "version":
         return { exitCode: 0, output: { cliVersion: CLI_VERSION, engineVersion: ENGINE_VERSION, schemaVersion: SCHEMA_VERSION } };
       default:

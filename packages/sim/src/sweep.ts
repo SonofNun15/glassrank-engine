@@ -41,7 +41,7 @@ export function keyMetrics(report: Report): KeyMetrics {
     declinerBias: report.cohorts.slow_decliner.bias,
     returnerBias: report.returners.bias,
     favoredBias: report.inflation.favored.bias,
-    seedMedianEvents: Number.isFinite(report.seeds.medianEventsToConverge) ? report.seeds.medianEventsToConverge : 999,
+    seedMedianEvents: report.seeds.medianEventsToConverge ?? 999,
     largestDrop: report.experience.largestDrop,
   };
 }

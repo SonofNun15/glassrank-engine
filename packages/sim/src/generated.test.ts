@@ -36,3 +36,30 @@ it("default comparison matches its golden report", async () => {
     join(import.meta.dirname, "..", "golden", "default-comparison.json"),
   );
 }, 120_000);
+
+it("SimulationRecipe JSON Schema and example recipe match their sources", async () => {
+  const { SimulationRecipe, makeRecipe } = await import("./recipe");
+  const { GLASSRANK, ELO_BASELINE } = await import("./policies");
+  const schema = { $schema: "https://json-schema.org/draft/2020-12/schema", $id: "urn:glassrank:sim:0.1.0:SimulationRecipe", ...SimulationRecipe.json };
+  await expect(`${JSON.stringify(schema, null, 2)}\n`).toMatchFileSnapshot(join(import.meta.dirname, "..", "json-schema", "SimulationRecipe.schema.json"));
+  const example = makeRecipe(
+    DEFAULT_SCENARIO,
+    [
+      { label: "GlassRank v1", policy: GLASSRANK, overlays: [] },
+      { label: "Plain Elo", policy: ELO_BASELINE, overlays: [] },
+    ],
+    [
+      {
+        label: "Fast climber",
+        homeClub: "club-a",
+        joinWeek: 0,
+        attendance: 0.9,
+        startSkill: 3.0,
+        improvement: { gain: 1.2, halfLifeDays: 180 },
+        claimedStart: { source: "self", rating: 3.25 },
+      },
+    ],
+    "Default community with one fast climber",
+  );
+  await expect(`${JSON.stringify(example, null, 2)}\n`).toMatchFileSnapshot(join(import.meta.dirname, "..", "fixtures", "example-recipe.json"));
+});

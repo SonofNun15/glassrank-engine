@@ -30,3 +30,8 @@ export { keyMetrics, runSeeds, summarize } from "./sweep";
 export type { KeyMetrics, Summary } from "./sweep";
 export { EVIDENCE_KNOBS, RULE_KNOBS, predictionObjective, trackingObjective, tune } from "./tune";
 export type { Knob, Objective, TuneStep } from "./tune";
+export { Community, CustomPlayer, RECIPE_LIMITS, RECIPE_VERSION, RatingSystem, SIM_VERSION, SimulationRecipe, customPlayers, makeRecipe, recipeScenario } from "./recipe";
+export { simulateRecipe, simulateRecipeUnchecked } from "./simulate";
+export type { CustomPlayerResult, PlayerPoint, SimulationResult, SystemResult } from "./simulate";
+export type { CohortName } from "./scenario";
+export type { ExtraPlayers } from "./world";

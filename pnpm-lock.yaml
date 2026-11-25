@@ -196,6 +196,9 @@ importers:
       '@glassrank/schema':
         specifier: workspace:*
         version: link:../schema
+      '@glassrank/sim':
+        specifier: workspace:*
+        version: link:../sim
 
   packages/engine:
     dependencies:

@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@glassrank/engine": "workspace:*",
-    "@glassrank/schema": "workspace:*"
+    "@glassrank/schema": "workspace:*",
+    "@glassrank/sim": "workspace:*"
   }
 }

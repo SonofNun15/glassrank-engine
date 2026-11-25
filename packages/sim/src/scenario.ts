@@ -12,7 +12,10 @@ export const COHORTS = [
   "returner",
   "older_pool",
 ] as const;
-export type Cohort = (typeof COHORTS)[number];
+/** The simulated cohorts a scenario populates by count. */
+export type CohortName = (typeof COHORTS)[number];
+/** A player's cohort: a simulated cohort, or "custom" for a player defined in a recipe. */
+export type Cohort = CohortName | "custom";
 
 /** A [low, high) range; values are drawn uniformly from it. */
 export type Range = readonly [low: number, high: number];
@@ -41,7 +44,7 @@ export interface Scenario {
   /** A Monday, `YYYY-MM-DD`. Week 0 starts here. */
   readonly startDate: string;
   readonly weeks: number;
-  readonly cohorts: { readonly [C in Cohort]: CohortSpec };
+  readonly cohorts: { readonly [C in CohortName]: CohortSpec };
   readonly clubs: readonly ClubSpec[];
   readonly players: {
     /** Chance a regular player is also a member of a second club. */

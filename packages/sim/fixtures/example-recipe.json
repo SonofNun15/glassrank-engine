@@ -1,0 +1,336 @@
+{
+  "recipeVersion": "0.1.0",
+  "name": "Default community with one fast climber",
+  "seed": 1,
+  "startDate": "2026-01-05",
+  "weeks": 156,
+  "community": {
+    "cohorts": {
+      "fast_improver": {
+        "count": 40,
+        "baseSkill": [
+          2.6,
+          3.6
+        ]
+      },
+      "steady": {
+        "count": 80,
+        "baseSkill": [
+          2.8,
+          4.6
+        ]
+      },
+      "slow_decliner": {
+        "count": 30,
+        "baseSkill": [
+          3,
+          4.4
+        ]
+      },
+      "new_player": {
+        "count": 50,
+        "baseSkill": [
+          2.2,
+          3
+        ]
+      },
+      "returner": {
+        "count": 25,
+        "baseSkill": [
+          2.8,
+          4.2
+        ]
+      },
+      "older_pool": {
+        "count": 30,
+        "baseSkill": [
+          2.8,
+          4
+        ]
+      }
+    },
+    "clubs": [
+      {
+        "id": "club-a",
+        "tier": "verified_host",
+        "weekday": 1,
+        "hourUtc": 23
+      },
+      {
+        "id": "club-b",
+        "tier": "verified_host",
+        "weekday": 2,
+        "hourUtc": 23
+      },
+      {
+        "id": "club-c",
+        "tier": "verified_host",
+        "weekday": 3,
+        "hourUtc": 23
+      },
+      {
+        "id": "club-d",
+        "tier": "verified_host",
+        "weekday": 5,
+        "hourUtc": 14
+      },
+      {
+        "id": "club-e",
+        "tier": "verified_host",
+        "weekday": 6,
+        "hourUtc": 14
+      },
+      {
+        "id": "club-f",
+        "tier": "provisional_host",
+        "weekday": 4,
+        "hourUtc": 23
+      },
+      {
+        "id": "club-g",
+        "tier": "provisional_host",
+        "weekday": 0,
+        "hourUtc": 23,
+        "inflates": true
+      },
+      {
+        "id": "club-older",
+        "tier": "verified_host",
+        "weekday": 2,
+        "hourUtc": 15,
+        "olderPool": true
+      }
+    ],
+    "players": {
+      "secondClubChance": 0.2,
+      "attendance": [
+        0.4,
+        0.9
+      ],
+      "bridgeCount": 3,
+      "formSd": 0.15
+    },
+    "trajectories": {
+      "improverGain": [
+        0.8,
+        1.5
+      ],
+      "improverHalfLifeDays": [
+        120,
+        400
+      ],
+      "newPlayerGain": [
+        0.5,
+        1.2
+      ],
+      "newPlayerHalfLifeDays": [
+        90,
+        300
+      ],
+      "declinePerYear": [
+        0.05,
+        0.15
+      ],
+      "olderDeclinePerYear": [
+        0.02,
+        0.08
+      ],
+      "layoffStartDay": [
+        120,
+        400
+      ],
+      "layoffDays": [
+        90,
+        240
+      ],
+      "rust": [
+        0.1,
+        0.4
+      ],
+      "rustRecoveryDays": 60
+    },
+    "seeds": {
+      "mix": {
+        "self": 0.5,
+        "host": 0.2,
+        "external_claimed": 0.1,
+        "policy_default": 0.2
+      },
+      "self": {
+        "bias": 0.2,
+        "sd": 0.4
+      },
+      "host": {
+        "bias": 0,
+        "sd": 0.25
+      },
+      "external_claimed": {
+        "bias": 0.1,
+        "sd": 0.3
+      }
+    },
+    "play": {
+      "rallyK": 0.32,
+      "groupingNoiseSd": 0.3,
+      "target": 11,
+      "winBy": 2
+    },
+    "inflation": {
+      "favoredCount": 4,
+      "maxMargin": 4
+    }
+  },
+  "customPlayers": [
+    {
+      "label": "Fast climber",
+      "homeClub": "club-a",
+      "joinWeek": 0,
+      "attendance": 0.9,
+      "startSkill": 3,
+      "improvement": {
+        "gain": 1.2,
+        "halfLifeDays": 180
+      },
+      "claimedStart": {
+        "source": "self",
+        "rating": 3.25
+      }
+    }
+  ],
+  "systems": [
+    {
+      "label": "GlassRank v1",
+      "policy": {
+        "schemaVersion": "0.1.0",
+        "scale": {
+          "min": 2,
+          "max": 8,
+          "displayDecimals": 3
+        },
+        "seeding": {
+          "defaultRating": 3,
+          "defaultSigma": 0.8,
+          "sigmaBySource": {
+            "self": 0.7,
+            "host": 0.5,
+            "external_claimed": 0.6
+          }
+        },
+        "sourceWeights": {
+          "verified_host": 1,
+          "provisional_host": 0.6,
+          "video_verified": 1
+        },
+        "inactivity": {
+          "graceDays": 30,
+          "sigmaGrowthPerDay": 0.004,
+          "sigmaMax": 0.8
+        },
+        "policyId": "sim-glassrank-v1-proposal",
+        "title": "Evidence layer with community rules (v1 proposal)",
+        "evidence": {
+          "model": "bayes_v0",
+          "winScale": 2.4,
+          "shareScale": 1.6,
+          "marginWeight": 0.8,
+          "dynamicsSigma": 0.08,
+          "sigmaFloor": 0.08
+        },
+        "rules": {
+          "provisionalPeriod": {
+            "events": 8,
+            "rangeSd": 1
+          },
+          "upwardBias": {
+            "gainMultiplier": 1.2
+          },
+          "declineDamping": {
+            "lossMultiplier": 0.6
+          },
+          "returningProtection": {
+            "awayDays": 60,
+            "events": 3,
+            "lossMultiplier": 0.5
+          },
+          "declineCap": {
+            "amount": 0.2,
+            "windowDays": 30
+          },
+          "largeGain": {
+            "perEventThreshold": 0.3,
+            "minGamesToExceed": 6
+          }
+        }
+      },
+      "overlays": []
+    },
+    {
+      "label": "Plain Elo",
+      "policy": {
+        "schemaVersion": "0.1.0",
+        "scale": {
+          "min": 2,
+          "max": 8,
+          "displayDecimals": 3
+        },
+        "seeding": {
+          "defaultRating": 3,
+          "defaultSigma": 0.8,
+          "sigmaBySource": {
+            "self": 0.7,
+            "host": 0.5,
+            "external_claimed": 0.6
+          }
+        },
+        "sourceWeights": {
+          "verified_host": 1,
+          "provisional_host": 1,
+          "video_verified": 1
+        },
+        "inactivity": {
+          "graceDays": 30,
+          "sigmaGrowthPerDay": 0.004,
+          "sigmaMax": 0.8
+        },
+        "policyId": "sim-elo-baseline",
+        "title": "Plain Elo baseline",
+        "evidence": {
+          "model": "elo_baseline",
+          "kFactor": 0.06,
+          "spread": 0.73,
+          "useMargin": false
+        },
+        "rules": {
+          "provisionalPeriod": {
+            "events": 0,
+            "rangeSd": 1
+          },
+          "upwardBias": {
+            "gainMultiplier": 1
+          },
+          "declineDamping": {
+            "lossMultiplier": 1
+          },
+          "returningProtection": {
+            "awayDays": 3650,
+            "events": 1,
+            "lossMultiplier": 1
+          },
+          "declineCap": {
+            "amount": 10,
+            "windowDays": 30
+          },
+          "largeGain": {
+            "perEventThreshold": 10,
+            "minGamesToExceed": 1
+          }
+        }
+      },
+      "overlays": []
+    }
+  ],
+  "createdWith": {
+    "engineVersion": "0.1.0",
+    "simVersion": "0.1.0"
+  }
+}

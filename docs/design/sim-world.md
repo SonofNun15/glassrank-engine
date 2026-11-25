@@ -56,3 +56,27 @@ generator changes on purpose.
 - One game per match; no best-of-three.
 - No serve advantage beyond what side-out scoring implies.
 - Calibration of `k` is a starting guess, to revisit against real data.
+
+## Simulation recipes
+
+A `SimulationRecipe` (`packages/sim/src/recipe.ts`, JSON Schema in
+`packages/sim/json-schema/`) holds everything needed to reproduce a run:
+the community (cohorts, clubs, play and seed settings), up to 20 custom
+players, one to four rating systems to compare (each a policy plus optional
+correction overlays), the seed, start date, and length, and the engine and
+simulator versions it was made with. Because runs are deterministic, a
+recipe of a few kilobytes reproduces megabytes of results exactly.
+
+- **Custom players** have a starting true skill plus optional improvement
+  (total gain and half-life), yearly decline, and a layoff with rust; a
+  claimed starting rating; home and other clubs; and optionally favor from an
+  inflating home club. Their ids are `c-01`, `c-02`, ... and their labels are
+  user content, never used in math.
+- **Limits** are part of the format (260 weeks, 500 players, 20 custom
+  players, 12 clubs, 4 systems), so a server can accept uploads safely.
+- **`simulateRecipe(recipe)`** (or `glassrank simulate`) returns the world's
+  size, each system's metrics report, every custom player's history, a hash
+  of the recipe, and a hash of the whole result. Re-running a submitted recipe
+  and comparing result hashes confirms the submitter saw exactly that result.
+- Reproducing a recipe exactly needs the engine and simulator versions it was
+  made with (`createdWith`).

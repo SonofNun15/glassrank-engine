@@ -55,6 +55,11 @@
     "exitCode": 0
   },
   {
+    "command": "simulate",
+    "name": "small-recipe",
+    "exitCode": 0
+  },
+  {
     "command": "version",
     "name": "current",
     "exitCode": 0

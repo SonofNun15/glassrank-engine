@@ -28,6 +28,8 @@ export interface SimPlayer {
   readonly rust: number;
   /** Favored by an inflating host. */
   readonly favored: boolean;
+  /** Display label for a custom player (user content; never used in math). */
+  readonly label?: string;
 }
 
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
@@ -55,6 +57,16 @@ export function trueSkill(player: SimPlayer, day: number, rustRecoveryDays: numb
       break;
     case "steady":
       break;
+    case "custom": {
+      // Any combination of improvement, yearly decline, and a layoff with rust.
+      if (player.gain !== 0) skill += (player.gain * d) / (d + player.halfLifeDays);
+      skill -= (player.declinePerYear * d) / 365;
+      if (player.layoff !== null && day >= player.layoff.endDay) {
+        const recovered = Math.min(1, (day - player.layoff.endDay) / rustRecoveryDays);
+        skill -= player.rust * (1 - recovered);
+      }
+      break;
+    }
   }
   return clamp(skill, SKILL_MIN, SKILL_MAX);
 }

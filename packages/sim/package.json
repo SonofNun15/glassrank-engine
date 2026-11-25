@@ -1,9 +1,8 @@
 {
   "name": "@glassrank/sim",
   "version": "0.1.0",
-  "description": "Simulated pickleball communities and metrics for evaluating GlassRank rating policies.",
+  "description": "Simulated pickleball communities, simulation recipes, and metrics for evaluating GlassRank rating policies.",
   "license": "Apache-2.0",
-  "private": true,
   "keywords": [
     "pickleball",
     "rating",
@@ -23,10 +22,15 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "json-schema",
+    "fixtures"
   ],
   "engines": {
     "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsdown"

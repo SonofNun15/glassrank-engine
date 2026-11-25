@@ -14,6 +14,8 @@ export { rate, rateUnchecked } from "./rate";
 export { predict, predictUnchecked } from "./predict";
 export { replay, replayUnchecked } from "./replay";
 export { resolvePolicy } from "./policy";
+/** Deterministic exp and natural log (identical bits on every JavaScript engine). */
+export { exp, log } from "./math";
 export { forecast, forecastUnchecked, standardOutcomes } from "./forecast";
 export { verify, verifyUnchecked } from "./verify";
 export { explainReceipt } from "./explain";

@@ -25,7 +25,7 @@ audit it, and propose improvements.
 | `@glassrank/schema` | Versioned types: events, matches, rating state, receipts, policy config |
 | `@glassrank/engine` | Pure, deterministic `rate(priorStates, event, policy)`: evidence layer + policy layer |
 | `@glassrank/cli` | `glassrank` command: JSON in, JSON out, for services in any language |
-| `@glassrank/sim` | Synthetic players and events, plus metrics for scoring the engine (not published) |
+| `@glassrank/sim` | Simulated communities, reproducible simulation recipes, and metrics for scoring rating policies |
 
 ## Using it
 

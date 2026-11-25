@@ -5,8 +5,9 @@
  * (an improver left behind), positive means rated too high (inflation, or a
  * protected decline).
  */
+import { log } from "@glassrank/engine";
 import type { GameRecord, PlayerEventRecord, RunResult } from "./harness";
-import { COHORTS, type Cohort } from "./scenario";
+import { COHORTS, type CohortName } from "./scenario";
 
 export interface ErrorStats {
   readonly n: number;
@@ -27,19 +28,20 @@ export interface Report {
     readonly establishedLogLoss: number;
   };
   /** Error at every rated appearance in the final two thirds of the run, by cohort. */
-  readonly cohorts: { readonly [C in Cohort]: ErrorStats };
+  readonly cohorts: { readonly [C in CohortName]: ErrorStats };
   readonly overall: ErrorStats;
   readonly seeds: {
     /** Players whose starting rating was off by at least 0.5. */
     readonly badSeeds: number;
     /** Median events until within 0.25 of true skill (Infinity if never). */
-    readonly medianEventsToConverge: number;
+    /** Null when the median player never got within 0.25 (or there were no bad seeds). */
+    readonly medianEventsToConverge: number | null;
     readonly convergedWithin10: number;
   };
   /** Mean (rating - true) across all appearances, per 13-week quarter. */
   readonly driftByQuarter: readonly number[];
   /** Mean (rating - true) per cohort, per 13-week quarter (0 when a cohort has no appearances). */
-  readonly cohortBiasByQuarter: { readonly [C in Cohort]: readonly number[] };
+  readonly cohortBiasByQuarter: { readonly [C in CohortName]: readonly number[] };
   readonly returners: ErrorStats;
   readonly inflation: { readonly favored: ErrorStats; readonly clubmates: ErrorStats };
   readonly experience: {
@@ -71,7 +73,7 @@ function calibration(games: readonly GameRecord[], keep: (g: GameRecord) => bool
   for (const g of games) {
     if (!keep(g)) continue;
     const p = Math.min(1 - 1e-6, Math.max(1e-6, g.predicted));
-    ll -= g.outcome * Math.log(p) + (1 - g.outcome) * Math.log(1 - p);
+    ll -= g.outcome * log(p) + (1 - g.outcome) * log(1 - p);
     brier += (p - g.outcome) ** 2;
     n++;
   }
@@ -147,7 +149,7 @@ export function computeReport(run: RunResult, totalDays: number): Report {
     overall: errorStats(settled),
     seeds: {
       badSeeds: toConverge.length,
-      medianEventsToConverge: median(toConverge),
+      medianEventsToConverge: toConverge.length === 0 || !Number.isFinite(median(toConverge)) ? null : median(toConverge),
       convergedWithin10: toConverge.filter((n) => n <= 10).length,
     },
     driftByQuarter,

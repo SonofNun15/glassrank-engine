@@ -4,7 +4,7 @@
 as a command, for services written in any language.
 
 ```sh
-glassrank <rate|predict|forecast|replay|verify|explain|version> [input.json] [--pretty]
+glassrank <rate|predict|forecast|replay|verify|explain|simulate|version> [input.json] [--pretty]
 ```
 
 Reads a JSON request from the file or stdin and writes the JSON response to

@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { PolicyConfig, RateRequest } from "@glassrank/schema";
 import { expect, it } from "vitest";
+import { DEFAULT_SCENARIO, ELO_BASELINE, GLASSRANK, makeRecipe } from "@glassrank/sim";
 import { formatOutput, runCommand } from "./index";
 
 const root = join(import.meta.dirname, "../../..");
@@ -71,6 +72,31 @@ const CASES: Record<string, Record<string, unknown>> = {
   },
   explain: {
     "newcomer-receipt": { receipt: bayesReceipts.find((r) => r.playerId === "p-dee"), eventLabel: "Saturday round robin" },
+  },
+  simulate: {
+    "small-recipe": makeRecipe(
+      {
+        ...DEFAULT_SCENARIO,
+        weeks: 12,
+        cohorts: {
+          fast_improver: { count: 6, baseSkill: [2.6, 3.6] },
+          steady: { count: 12, baseSkill: [2.8, 4.6] },
+          slow_decliner: { count: 4, baseSkill: [3.0, 4.4] },
+          new_player: { count: 6, baseSkill: [2.2, 3.0] },
+          returner: { count: 4, baseSkill: [2.8, 4.2] },
+          older_pool: { count: 4, baseSkill: [2.8, 4.0] },
+        },
+      },
+      [
+        { label: "GlassRank v1", policy: GLASSRANK, overlays: [] },
+        { label: "Plain Elo", policy: ELO_BASELINE, overlays: [] },
+      ],
+      [
+        { label: "Climber", homeClub: "club-a", joinWeek: 0, attendance: 0.95, startSkill: 3.0, improvement: { gain: 1, halfLifeDays: 60 }, claimedStart: { source: "self", rating: 3.0 } },
+        { label: "Overclaimer", homeClub: "club-b", joinWeek: 2, attendance: 0.9, startSkill: 3.2, claimedStart: { source: "self", rating: 4.2 } },
+      ],
+      "Conformance: small community",
+    ),
   },
   version: { current: null },
 };

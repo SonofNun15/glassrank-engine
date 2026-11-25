@@ -154,14 +154,27 @@ function roundRobin(
   };
 }
 
-/** Generate a world. Pure: the same scenario always yields the same world. */
-export function generateWorld(scenario: Scenario): SimWorld {
+export interface ExtraPlayers {
+  readonly players: readonly SimPlayer[];
+  /** One seed per extra player. */
+  readonly seeds: readonly Seed[];
+}
+
+/**
+ * Generate a world. Pure: the same scenario (and extra players) always yields
+ * the same world. Extra players, such as a recipe's custom players, join the
+ * clubs they name and play like everyone else.
+ */
+export function generateWorld(scenario: Scenario, extra: ExtraPlayers = { players: [], seeds: [] }): SimWorld {
   validateScenario(scenario);
   const root = new Rng(scenario.seed);
   const startMs = scenarioStartMs(scenario);
-  const players = createPlayers(scenario, root.fork(1));
+  const generated = createPlayers(scenario, root.fork(1));
   const seedRng = root.fork(2);
-  const seeds = players.map((p, i) => createSeed(p, scenario, startMs, seedRng.fork(i)));
+  const players = [...generated, ...extra.players];
+  const seeds = [...generated.map((p, i) => createSeed(p, scenario, startMs, seedRng.fork(i))), ...extra.seeds].sort(
+    (a, b) => (a.playerId < b.playerId ? -1 : a.playerId > b.playerId ? 1 : 0),
+  );
 
   const manipulated: ManipulatedGame[] = [];
   const events: EventInput[] = [];
