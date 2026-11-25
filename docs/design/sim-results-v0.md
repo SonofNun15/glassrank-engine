@@ -11,8 +11,9 @@ games over three years. Four systems, all fed the same events. Reproduce with
 | glassrank | `bayes_v0` with the draft community rules |
 | glassrank + dial | Same, with a one-year correction overlay in year 2 |
 
-Policies are in `packages/sim/src/policies.ts`. Their numbers are untuned
-starting points.
+Policies are in `packages/sim/src/policies.ts`. The numbers in this document
+are for the untuned v0 draft; the simulator now uses the v1 proposal
+(`policy-v1-proposal.md`), so `pnpm sim` output differs from these tables.
 
 ## Results
 

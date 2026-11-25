@@ -35,12 +35,17 @@ export const GLASSRANK_RULES: PolicyConfig["rules"] = {
   largeGain: { perEventThreshold: 0.3, minGamesToExceed: 6 },
 };
 
+/**
+ * Evidence settings from the M7 tuning (docs/design/policy-v1-proposal.md):
+ * tuned for prediction on simulated seeds 1-3, then dynamicsSigma raised from
+ * 0.05 to 0.08 so fast improvers are not left behind.
+ */
 const BAYES = {
   model: "bayes_v0",
-  winScale: 3.2,
-  shareScale: 1.0,
-  marginWeight: 0.5,
-  dynamicsSigma: 0.05,
+  winScale: 2.4,
+  shareScale: 1.6,
+  marginWeight: 0.8,
+  dynamicsSigma: 0.08,
   sigmaFloor: 0.08,
 } as const;
 
@@ -66,8 +71,8 @@ export const EVIDENCE_ONLY: PolicyConfig = {
 /** Evidence layer plus community rules. */
 export const GLASSRANK: PolicyConfig = {
   ...SHARED,
-  policyId: "sim-glassrank-v0",
-  title: "Evidence layer with community rules (draft parameters)",
+  policyId: "sim-glassrank-v1-proposal",
+  title: "Evidence layer with community rules (v1 proposal)",
   evidence: BAYES,
   rules: GLASSRANK_RULES,
 };

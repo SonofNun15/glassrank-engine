@@ -12,7 +12,7 @@ the engine, so there is a baseline to beat from the first engine commit.
 | M4 | Evidence layer | engine | Done on one platform: `bayes_v0` beats Elo on calibration; golden vectors in `packages/engine/golden/`. Second-platform check pending (needs CI). |
 | M5 | Policy layer and correction dial | engine | Done, with caveats: improver lag and decliner bias improve slightly vs. evidence only; the dial moves drift, but the sim shows deflation, not inflation. See `engine-impl-v0.1.md`. |
 | M6 | Receipts, forecast, replay, verify | engine | Done. Every receipt from a simulated year verifies and renders to text; forecast agrees exactly with rate for the outcome that happened. |
-| M7 | Tuning and published results | sim | Results and sample receipts are ready to show founding clubs and advisors. |
+| M7 | Tuning and published results | sim | Done: v1 proposal from tuning across seeds and community mixes (`policy-v1-proposal.md`), with a published results page. |
 | M8 | Integration release | all | Done (not yet published to npm): `glassrank` CLI, conformance cases with a checker, 0.1.0 package metadata, `docs/integration.md`, `docs/compatibility.md`, `CHANGELOG.md`. |
 
 ## Scope notes

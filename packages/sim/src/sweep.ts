@@ -26,7 +26,7 @@ export interface KeyMetrics {
   readonly returnerBias: number;
   readonly favoredBias: number;
   readonly seedMedianEvents: number;
-  readonly largestEstablishedDrop: number;
+  readonly largestDrop: number;
 }
 
 export function keyMetrics(report: Report): KeyMetrics {
@@ -42,7 +42,7 @@ export function keyMetrics(report: Report): KeyMetrics {
     returnerBias: report.returners.bias,
     favoredBias: report.inflation.favored.bias,
     seedMedianEvents: Number.isFinite(report.seeds.medianEventsToConverge) ? report.seeds.medianEventsToConverge : 999,
-    largestEstablishedDrop: report.experience.largestDrop,
+    largestDrop: report.experience.largestDrop,
   };
 }
 
