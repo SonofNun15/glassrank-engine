@@ -135,6 +135,7 @@ export const PlayerGroup = g.object(
     startingRatings: g.optional(StartingRatings),
     tournaments: g.optional(span(0, 1, "Chance of entering, or agreeing to partner in, a tournament they could play in. Default 0.05–0.4.")),
     loyalty: g.optional(span(0, 1, "How much they stick with one tournament partner. Default 0.3–0.9.")),
+    tournamentTravel: g.optional(span(0, 1, "Chance of considering another club's tournament. Default 0.3–0.8.")),
   },
   { description: "Many players drawn from ranges. Player ids are `<group id>.<n>`." },
 );
@@ -152,6 +153,7 @@ export const PlayerSpec = g.object(
     joinDay: Day,
     tournaments: g.optional(exact(0, 1, "Chance of entering, or agreeing to partner in, a tournament they could play in. Default 0.2.")),
     loyalty: g.optional(exact(0, 1, "How much they stick with one tournament partner. Default 0.6.")),
+    tournamentTravel: g.optional(exact(0, 1, "Chance of considering another club's tournament. Default 0.5.")),
     partner: g.optional(g.string({ pattern: "^[a-z0-9][a-z0-9-]{0,31}$", description: "Another hand-made player's id: always asked first, and they never break up." })),
     inactive: g.optional(g.array(g.tuple([Day, Day]), { maxItems: 8, description: "[start, end) day ranges away from play." })),
     startingRating: g.tagged("source", {
@@ -213,6 +215,9 @@ export const EventSeries = g.refine(
     id: Id,
     label: Label,
     club: Id,
+    tournament: g.optional(
+      g.string({ minLength: 1, maxLength: 60, description: "Tournament divisions with the same club and tournament name are one tournament. Display only." }),
+    ),
     onlyFrom: g.optional(
       g.array(Id, {
         maxItems: RECIPE_V2_LIMITS.maxClubs,

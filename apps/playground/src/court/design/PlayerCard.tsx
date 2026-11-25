@@ -2,7 +2,7 @@
 import { Button } from "@glassrank/design";
 import type { PlayerSpec, SimulationRecipeV2 } from "@glassrank/sim";
 import { Trash2 } from "lucide-react";
-import { APPETITE_STOPS, ATTENDANCE_STOPS, LOYALTY_STOPS, TOURNAMENT_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
+import { APPETITE_STOPS, ATTENDANCE_STOPS, LOYALTY_STOPS, TOURNAMENT_STOPS, TOURNAMENT_TRAVEL_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
 import { PRESETS, startOf } from "./defaults";
 import { CardDisclosure, More, NumberField, ScaleSlider, SelectField, TextField } from "./fields";
 import { SkillEditor } from "./SkillEditor";
@@ -74,9 +74,15 @@ export function PlayerCard(props: {
 
       <More>
         <div className="design__grid">
-          <ScaleSlider label="Travel" stops={TRAVEL_STOPS} value={p.travel} onChange={(travel) => set({ travel })} />
+          <ScaleSlider label="Travel for leagues" stops={TRAVEL_STOPS} value={p.travel} onChange={(travel) => set({ travel })} />
           <ScaleSlider label="Plays" stops={ATTENDANCE_STOPS} value={p.attendance} onChange={(attendance) => set({ attendance })} />
           <ScaleSlider label="Tournaments" stops={TOURNAMENT_STOPS} value={p.tournaments ?? 0.2} onChange={(tournaments) => set({ tournaments })} />
+          <ScaleSlider
+            label="Travel for tournaments"
+            stops={TOURNAMENT_TRAVEL_STOPS}
+            value={p.tournamentTravel ?? 0.5}
+            onChange={(tournamentTravel) => set({ tournamentTravel })}
+          />
           <ScaleSlider label="Partner loyalty" stops={LOYALTY_STOPS} value={p.loyalty ?? 0.6} onChange={(loyalty) => set({ loyalty })} />
           <SelectField
             label="Fixed tournament partner"

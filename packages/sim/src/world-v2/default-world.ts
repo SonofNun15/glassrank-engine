@@ -115,8 +115,9 @@ export const DEFAULT_RECIPE_V2: SimulationRecipeV2 = {
       ["45", "4.5+", { min: 4.5 }],
     ] as const).map(([id, name, range]) => ({
       id: `south-weekend-${id}`,
-      label: `Weekend tournament: ${name}`,
+      label: `Monthly tournament: ${name}`,
       club: "south",
+      tournament: "Monthly tournament",
       schedule: { kind: "weekly" as const, weekday: 6, hour: 9, everyWeeks: 4 },
       range,
       capacity: 16,

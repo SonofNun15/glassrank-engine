@@ -26,6 +26,8 @@ export interface WorldPlayer {
   readonly tournaments: number;
   /** How much they stick with one tournament partner. */
   readonly loyalty: number;
+  /** Chance of considering another club's tournament (their home club's is always an option). */
+  readonly tournamentTravel: number;
   /** A fixed tournament partner's player id (hand-made players only), or null. */
   readonly partner: string | null;
   readonly seed: Seed;
@@ -34,6 +36,8 @@ export interface WorldPlayer {
 /** Defaults for recipes that don't set tournament behavior. */
 export const DEFAULT_TOURNAMENTS: readonly [number, number] = [0.05, 0.4];
 export const DEFAULT_LOYALTY: readonly [number, number] = [0.3, 0.9];
+export const DEFAULT_TOURNAMENT_TRAVEL: readonly [number, number] = [0.3, 0.8];
+const DEFAULT_PLAYER_TOURNAMENT_TRAVEL = 0.5;
 const DEFAULT_PLAYER_TOURNAMENTS = 0.2;
 const DEFAULT_PLAYER_LOYALTY = 0.6;
 
@@ -97,6 +101,7 @@ function groupPlayers(group: PlayerGroup, recipe: SimulationRecipeV2, root: Rng,
     // Drawn after everything above, so adding them changed no earlier draw.
     const tournaments = draw(r, group.tournaments ?? DEFAULT_TOURNAMENTS);
     const loyalty = draw(r, group.loyalty ?? DEFAULT_LOYALTY);
+    const tournamentTravel = draw(r, group.tournamentTravel ?? DEFAULT_TOURNAMENT_TRAVEL);
     const recordedAt = formatTimestamp(epochMs + joinDay * MS_PER_DAY);
     const seed = generatedSeed(
       id,
@@ -119,6 +124,7 @@ function groupPlayers(group: PlayerGroup, recipe: SimulationRecipeV2, root: Rng,
       attendance,
       tournaments,
       loyalty,
+      tournamentTravel,
       partner: null,
       seed,
     });
@@ -148,6 +154,7 @@ function handMade(p: PlayerSpec, epochMs: number): WorldPlayer {
     attendance: p.attendance,
     tournaments: p.tournaments ?? DEFAULT_PLAYER_TOURNAMENTS,
     loyalty: p.loyalty ?? DEFAULT_PLAYER_LOYALTY,
+    tournamentTravel: p.tournamentTravel ?? DEFAULT_PLAYER_TOURNAMENT_TRAVEL,
     partner: p.partner === undefined ? null : `p.${p.partner}`,
     seed,
   };

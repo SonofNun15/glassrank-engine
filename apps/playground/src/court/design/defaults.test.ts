@@ -9,7 +9,11 @@ import {
   addClub,
   newEvent,
   newGroup,
-  newWeekendTournament,
+  newTournament,
+  newDivision,
+  divisionName,
+  renameTournament,
+  tournamentOf,
   newPlayer,
   presetGroupSkill,
   presetSkill,
@@ -46,12 +50,14 @@ describe("design edits", () => {
     }
   });
 
-  it("adds a club with an event and players, and every group template is valid", () => {
+  it("adds a club with four leagues and a mix of players, and every group template is valid", () => {
     const r = addClub(DEFAULT_RECIPE_V2);
     expect(r.clubs).toHaveLength(4);
     const id = r.clubs[3]!.id;
-    expect(r.events.some((e) => e.club === id)).toBe(true);
-    expect(totalPlayers(r)).toBe(totalPlayers(DEFAULT_RECIPE_V2) + 20);
+    expect(r.events.filter((e) => e.club === id).map((e) => e.label)).toEqual(["3.0 and under", "3.0–3.5", "3.5–4.0", "4.0 and up"]);
+    expect(r.groups.filter((g) => g.home === id).map((g) => g.count)).toEqual([20, 8, 6, 4, 3]);
+    expect(totalPlayers(r)).toBe(totalPlayers(DEFAULT_RECIPE_V2) + 41);
+    expect(valid(r)).toBe(true);
     let withGroups = r;
     for (const t of GROUP_TEMPLATES) withGroups = { ...withGroups, groups: [...withGroups.groups, newGroup(withGroups, id, t)] };
     expect(valid(withGroups)).toBe(true);
@@ -105,15 +111,19 @@ describe("design edits", () => {
     expect(valid({ ...DEFAULT_RECIPE_V2, events })).toBe(true);
   });
 
-  it("adds a valid weekend tournament in four divisions", () => {
-    const divisions = newWeekendTournament(DEFAULT_RECIPE_V2, "north");
-    expect(divisions.map((d) => d.label)).toEqual(["Weekend tournament: 3.0", "Weekend tournament: 3.5", "Weekend tournament: 4.0", "Weekend tournament: 4.5+"]);
+  it("adds a valid monthly tournament in four divisions", () => {
+    const divisions = newTournament(DEFAULT_RECIPE_V2, "north");
+    expect(divisions.map((d) => d.label)).toEqual(["Monthly tournament: 3.0", "Monthly tournament: 3.5", "Monthly tournament: 4.0", "Monthly tournament: 4.5+"]);
+    expect(divisions.map(divisionName)).toEqual(["3.0", "3.5", "4.0", "4.5+"]);
+    expect(new Set(divisions.map(tournamentOf))).toEqual(new Set(["Monthly tournament"]));
+    expect(divisions[0]!.schedule).toMatchObject({ everyWeeks: 4 });
     expect(divisions[1]!.range).toEqual({ max: 3.99 });
     expect(valid({ ...DEFAULT_RECIPE_V2, events: [...DEFAULT_RECIPE_V2.events, ...divisions] })).toBe(true);
     // A second one at the same club goes on the other weekend day, with its own ids.
     const once = { ...DEFAULT_RECIPE_V2, events: [...DEFAULT_RECIPE_V2.events, ...divisions] };
-    const again = newWeekendTournament(once, "north");
+    const again = newTournament(once, "north");
     expect(again[0]!.schedule).toMatchObject({ weekday: 6 });
+    expect(tournamentOf(again[0]!)).toBe("Monthly tournament 2");
     expect(valid({ ...once, events: [...once.events, ...again] })).toBe(true);
   });
 
@@ -129,5 +139,17 @@ describe("design edits", () => {
     expect(ac.map((p) => p.partner)).toEqual(["c", undefined, "a"]);
     expect(pairPlayers(ac, "c", null).map((p) => p.partner)).toEqual([undefined, undefined, undefined]);
     expect(valid({ ...DEFAULT_RECIPE_V2, players: ac })).toBe(true);
+  });
+
+  it("renames a tournament's divisions together, and adds divisions that share its schedule", () => {
+    const divisions = newTournament(DEFAULT_RECIPE_V2, "north");
+    const r = { ...DEFAULT_RECIPE_V2, events: [...DEFAULT_RECIPE_V2.events, ...divisions] };
+    const renamed = renameTournament(r, "north", "Monthly tournament", "Spring open");
+    const mine = renamed.events.filter((e) => e.club === "north" && tournamentOf(e) === "Spring open");
+    expect(mine.map((e) => e.label)).toEqual(["Spring open: 3.0", "Spring open: 3.5", "Spring open: 4.0", "Spring open: 4.5+"]);
+    const extra = newDivision(renamed, mine);
+    expect(extra.schedule).toEqual(mine[0]!.schedule);
+    expect(tournamentOf(extra)).toBe("Spring open");
+    expect(valid({ ...renamed, events: [...renamed.events, extra] })).toBe(true);
   });
 });

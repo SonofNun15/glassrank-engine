@@ -10,9 +10,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 
 .page { max-width: 1120px; margin: 0 auto; padding-left: max(var(--space-4), env(safe-area-inset-left, 0px)); padding-right: max(var(--space-4), env(safe-area-inset-right, 0px)); }
 .page-body { padding-block: var(--space-12) var(--space-16); }
-.stack { display: grid; gap: var(--space-8); }
-.stack-sm { display: grid; gap: var(--space-4); align-content: start; }
-.stack-xs { display: grid; gap: var(--space-1); }
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-8); }
+.stack-sm { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); align-content: start; }
+.stack-xs { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
 .section-head { display: grid; gap: var(--space-3); max-width: 70ch; }
 .eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: var(--space-2); }
 .lede { color: var(--ink-2); max-width: 65ch; }
@@ -89,7 +89,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 
 /* Test court */
 .court { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-6); align-items: start; }
-@media (max-width: 900px) { .court { grid-template-columns: 1fr; } }
+/* minmax(0, 1fr): a plain 1fr won't shrink below its widest content, so scrollable tables would stretch the page. */
+@media (max-width: 900px) { .court { grid-template-columns: minmax(0, 1fr); } }
 .court__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
 .court__plans { margin-top: var(--space-2); }
 .court__feedback { display: grid; gap: var(--space-3); align-content: start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-6); }
@@ -292,3 +293,18 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .fit__value { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 32px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .fit figcaption { display: flex; align-items: center; gap: var(--space-2); }
 .court__coming-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+/* Phones: cards and panes pad space-4 (design system), and nested editors a little less. */
+@media (max-width: 480px) {
+  .court .gr-pane, .court__feedback { padding: var(--space-4); }
+  .design__disclosure > summary, .design__disclosure-body { padding: var(--space-3); }
+  .design__row > summary, .design__row-body { padding: var(--space-2); }
+  .design__grid { grid-template-columns: minmax(0, 1fr); }
+  .court__modes { width: 100%; }
+  .court__mode { flex: 1; justify-content: center; padding: 0 var(--space-2); }
+  .fit th, .fit td { padding: var(--space-1); }
+  .fit__value { font-size: 22px; line-height: 28px; }
+}
+/* Inputs and selects fit their field: a select is otherwise as wide as its longest option. */
+.gr-field { min-width: 0; }
+.gr-field > .gr-input, .court__picker .gr-input { width: 100%; min-width: 0; max-width: 100%; }

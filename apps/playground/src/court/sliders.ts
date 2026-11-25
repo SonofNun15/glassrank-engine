@@ -85,3 +85,10 @@ export const LOYALTY_STOPS: readonly Stop[] = [
   { position: 50, value: 0.5, label: "Sometimes the same", meaning: "Sticks with a partner for a while, then moves on." },
   { position: 100, value: 0.95, label: "Same partner every time", meaning: "Keeps a partner for event after event, unless a rough day splits them up." },
 ];
+
+/** Tournament travel: chance of considering another club's tournament. */
+export const TOURNAMENT_TRAVEL_STOPS: readonly Stop[] = [
+  { position: 0, value: 0, label: "Home club only", meaning: "Only plays tournaments at their own club." },
+  { position: 50, value: 0.4, label: "Sometimes travels", meaning: "Goes to another club's tournament now and then." },
+  { position: 100, value: 0.9, label: "Goes anywhere", meaning: "Happy to travel for almost any tournament." },
+];

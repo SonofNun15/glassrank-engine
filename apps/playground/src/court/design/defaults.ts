@@ -132,20 +132,42 @@ export function newPlayer(recipe: SimulationRecipeV2): PlayerSpec {
   };
 }
 
-/** A new club with an all-levels league and a group of steady players, so someone plays there. */
+/** What a new club starts with: a ladder of leagues and a mix of players, ready to trim or edit. */
+export const NEW_CLUB = {
+  leagues: [
+    { range: { max: 3.0 }, weekday: 0 },
+    { range: { min: 3.0, max: 3.5 }, weekday: 1 },
+    { range: { min: 3.5, max: 4.0 }, weekday: 2 },
+    { range: { min: 4.0 }, weekday: 3 },
+  ] as const,
+  /** Players per group template (steady, improvers, newcomers, decliners, back from a break). */
+  groupCounts: [20, 8, 6, 4, 3] as const,
+} as const;
+
+export const newClubPlayers = () => NEW_CLUB.groupCounts.reduce((n, c) => n + c, 0);
+
+/** A new club with four leagues and about 40 players of every kind, so it's ready to play. */
 export function addClub(recipe: SimulationRecipeV2): SimulationRecipeV2 {
   const n = recipe.clubs.length + 1;
   const id = uniqueId(`club-${n}`, recipe.clubs.map((c) => c.id));
-  const event: EventSeries = {
-    id: uniqueId(`${id}-all`, recipe.events.map((e) => e.id)),
-    label: "All levels",
-    club: id,
-    schedule: { kind: "weekly", weekday: 4 },
-    capacity: 24,
-    format: { type: "league" },
-  };
-  const withClub = { ...recipe, clubs: [...recipe.clubs, { id, label: `New club ${n} (made up)`, tier: "verified_host" as const }] };
-  return { ...withClub, events: [...recipe.events, event], groups: [...recipe.groups, newGroup(withClub, id, GROUP_TEMPLATES[0], 20)] };
+  let next: SimulationRecipeV2 = { ...recipe, clubs: [...recipe.clubs, { id, label: `New club ${n} (made up)`, tier: "verified_host" as const }] };
+  for (const league of NEW_CLUB.leagues) {
+    const label = rangeName(league.range);
+    const event: EventSeries = {
+      id: uniqueId(`${id}-${label}`, next.events.map((e) => e.id)),
+      label,
+      club: id,
+      schedule: { kind: "weekly", weekday: league.weekday },
+      range: league.range,
+      capacity: 24,
+      format: { type: "league" },
+    };
+    next = { ...next, events: [...next.events, event] };
+  }
+  NEW_CLUB.groupCounts.forEach((count, i) => {
+    next = { ...next, groups: [...next.groups, newGroup(next, id, GROUP_TEMPLATES[i], count)] };
+  });
+  return next;
 }
 
 /**
@@ -233,8 +255,33 @@ export const STRUCTURES = [
   { value: "double_elimination", label: "Double elimination", help: "A main draw; losing once drops a team to the back draw, losing twice ends its day." },
 ] as const;
 
+/** A tournament's name: its divisions share it (club + name is one tournament). */
+export function tournamentOf(e: EventSeries): string | null {
+  return e.format.type === "tournament" ? (e.tournament ?? e.label ?? e.id) : null;
+}
+
+/** A division's own name, without its tournament's prefix ("3.5" for "Monthly tournament: 3.5"). */
+export function divisionName(e: EventSeries): string {
+  const t = tournamentOf(e);
+  const label = e.label ?? e.id;
+  return t !== null && label.startsWith(`${t}: `) ? label.slice(t.length + 2) : label;
+}
+
+/** Rename a tournament: every division's name and label prefix follow. */
+export function renameTournament(recipe: SimulationRecipeV2, club: string, from: string, to: string): SimulationRecipeV2 {
+  return {
+    ...recipe,
+    events: recipe.events.map((e) =>
+      e.club === club && tournamentOf(e) === from ? { ...e, tournament: to, label: `${to}: ${divisionName(e)}` } : e,
+    ),
+  };
+}
+
 /** The usual monthly weekend tournament: 3.0, 3.5, 4.0, and 4.5+ divisions (a 4.0 can't play the 3.5 division, but anyone may play up). */
-export function newWeekendTournament(recipe: SimulationRecipeV2, club: string): EventSeries[] {
+export function newTournament(recipe: SimulationRecipeV2, club: string): EventSeries[] {
+  const names = new Set(recipe.events.filter((e) => e.club === club).map(tournamentOf));
+  let name = "Monthly tournament";
+  for (let n = 2; names.has(name); n++) name = `Monthly tournament ${n}`;
   const busySaturday = recipe.events.some((e) => e.club === club && e.format.type === "tournament" && e.schedule.kind === "weekly" && e.schedule.weekday === 5);
   const weekday = busySaturday ? 6 : 5;
   const divisions: readonly (readonly [string, string, EventSeries["range"]])[] = [
@@ -244,17 +291,35 @@ export function newWeekendTournament(recipe: SimulationRecipeV2, club: string): 
     ["4-5", "4.5+", { min: 4.5 }],
   ];
   const taken = recipe.events.map((e) => e.id);
-  return divisions.map(([id, name, range]) => {
-    const eventId = uniqueId(`${club}-weekend-${id}`, taken);
+  return divisions.map(([id, division, range]) => {
+    const eventId = uniqueId(`${club}-${name}-${id}`, taken);
     taken.push(eventId);
     return {
       id: eventId,
-      label: `Weekend tournament: ${name}`,
+      label: `${name}: ${division}`,
       club,
+      tournament: name,
       schedule: { kind: "weekly", weekday, hour: 9, everyWeeks: 4 },
       ...(range === undefined ? {} : { range }),
       capacity: 16,
       format: { type: "tournament", structure: "pools_then_bracket" },
     };
   });
+}
+
+/** Another division for a tournament, sharing its schedule and entry rules. */
+export function newDivision(recipe: SimulationRecipeV2, divisions: readonly EventSeries[]): EventSeries {
+  const first = divisions[0];
+  if (first === undefined) throw new RangeError("a tournament has at least one division");
+  const name = tournamentOf(first) ?? "Tournament";
+  return {
+    id: uniqueId(`${first.club}-${name}-division`, recipe.events.map((e) => e.id)),
+    label: `${name}: All levels`,
+    club: first.club,
+    tournament: name,
+    schedule: first.schedule,
+    ...(first.onlyFrom === undefined ? {} : { onlyFrom: first.onlyFrom }),
+    capacity: 16,
+    format: first.format.type === "tournament" ? { type: "tournament", structure: first.format.structure } : { type: "tournament", structure: "pools_then_bracket" },
+  };
 }

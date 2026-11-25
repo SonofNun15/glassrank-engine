@@ -3,10 +3,10 @@ import { Button } from "@glassrank/design";
 import { isEligible, type EventSeries, type SimulationRecipeV2 } from "@glassrank/sim";
 import { Trash2, Users } from "lucide-react";
 import { useId } from "react";
-import { STRUCTURES, rangeName } from "./defaults";
+import { STRUCTURES, divisionName, rangeName, tournamentOf } from "./defaults";
 import { More, NumberField, OptionalNumberField, RowDisclosure, SelectField, TextField } from "./fields";
+import { ExtentFields, ScheduleFields, describeSchedule } from "./schedule";
 
-const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const small = { className: "gr-icon", width: 16, height: 16, strokeWidth: 1.75, "aria-hidden": true } as const;
 
 /** Set an optional field, or remove it when `value` is undefined. */
@@ -17,7 +17,6 @@ function withField<T extends object, K extends keyof T>(obj: T, key: K, value: T
   return next;
 }
 
-type Often = "1" | "2" | "4" | "13" | "once";
 const SCORING = [
   { value: "1-11", label: "One game to 11" },
   { value: "1-15", label: "One game to 15" },
@@ -27,7 +26,7 @@ const SCORING = [
 ] as const;
 type ScoringKey = (typeof SCORING)[number]["value"];
 
-function Checkbox(props: { readonly label: string; readonly checked: boolean; readonly help?: string; readonly onChange: (v: boolean) => void }) {
+export function Checkbox(props: { readonly label: string; readonly checked: boolean; readonly help?: string; readonly onChange: (v: boolean) => void }) {
   const id = useId();
   return (
     <div className="gr-field design__check">
@@ -46,19 +45,18 @@ export function EventEditor(props: {
   readonly onChange: (e: EventSeries) => void;
   readonly onRemove: () => void;
   readonly defaultOpen?: boolean;
+  /** A tournament division: its tournament owns the schedule and who may enter. */
+  readonly inTournament?: boolean;
   /** Every player's starting rating, to count who could enter. */
   readonly starts: readonly { readonly home: string; readonly rating: number }[];
 }) {
   const { event: e, recipe, onChange } = props;
   const set = <K extends keyof EventSeries>(key: K, value: EventSeries[K] | undefined) => onChange(withField(e, key, value));
-  const weeks = Math.ceil(recipe.durationDays / 7);
   const s = e.schedule;
-  const weekday = s.kind === "weekly" ? s.weekday : s.day % 7;
-  const often: Often = s.kind === "once" ? "once" : (String(s.everyWeeks ?? 1) as Often);
   const scoring = e.scoring ?? { games: 1, to: 11, winBy: 2 };
   const scoringKey = `${scoring.games}-${scoring.to}`;
   const otherClubs = recipe.clubs.filter((c) => c.id !== e.club);
-  // League-only settings. Tournament events get their own editor next.
+  // League-only and tournament-only settings.
   const league = e.format.type === "league" ? e.format : null;
   const tournament = e.format.type === "tournament" ? e.format : null;
   const setTournament = (next: NonNullable<typeof tournament>) => onChange({ ...e, format: next });
@@ -91,33 +89,16 @@ export function EventEditor(props: {
   };
   const closed = e.onlyFrom !== undefined && e.onlyFrom.length === 0;
 
-  const setSchedule = (next: { often?: Often; weekday?: number; week?: number }) => {
-    const o = next.often ?? often;
-    const d = next.weekday ?? weekday;
-    if (o === "once") {
-      const week = next.week ?? (s.kind === "once" ? Math.floor(s.day / 7) + 1 : 1);
-      onChange({ ...e, schedule: { kind: "once", day: Math.min(recipe.durationDays - 1, (week - 1) * 7 + d) } });
-      return;
-    }
-    const base = s.kind === "weekly" ? s : { kind: "weekly" as const, weekday: d };
-    const every = Number(o);
-    let schedule: EventSeries["schedule"] = { ...base, weekday: d };
-    schedule = every === 1 ? withField(schedule, "everyWeeks", undefined) : { ...schedule, everyWeeks: every };
-    onChange({ ...e, schedule });
-  };
-
-  const when =
-    s.kind === "once"
-      ? `once, week ${Math.floor(s.day / 7) + 1}`
-      : `${(s.everyWeeks ?? 1) === 1 ? "" : (s.everyWeeks === 2 ? "every other " : `every ${s.everyWeeks} weeks on `)}${WEEKDAYS[s.weekday]}${(s.everyWeeks ?? 1) === 1 ? "s" : ""}`;
+  const inTournament = props.inTournament === true;
+  const prefix = inTournament ? `${tournamentOf(e) ?? ""}: ` : "";
   const meta = [
-    tournament === null ? "Round-robin league" : `Tournament (${STRUCTURES.find((x) => x.value === tournament.structure)?.label.toLowerCase()})`,
+    tournament === null ? "Round-robin league" : (STRUCTURES.find((x) => x.value === tournament.structure)?.label ?? ""),
     e.label === rangeName(e.range) ? null : rangeName(e.range),
-    when,
+    inTournament ? null : describeSchedule(s),
     `up to ${e.capacity}${tournament === null ? "" : " teams"}`,
     closed ? `${fit.home} fit here` : `${fit.home} fit here · ${fit.away} from other clubs`,
     season === undefined ? null : `seasons of ${season.weeks} weeks`,
-    e.onlyFrom === undefined ? null : e.onlyFrom.length === 0 ? "home club only" : "some clubs only",
+    inTournament || e.onlyFrom === undefined ? null : e.onlyFrom.length === 0 ? "home club only" : "some clubs only",
     e.rated === false ? "not rated" : null,
   ]
     .filter((x) => x !== null)
@@ -125,27 +106,24 @@ export function EventEditor(props: {
 
   return (
     <li>
-      <RowDisclosure title={<strong>{e.label ?? e.id}</strong>} meta={meta} {...(props.defaultOpen === undefined ? {} : { defaultOpen: props.defaultOpen })}>
+      <RowDisclosure title={<strong>{inTournament ? divisionName(e) : (e.label ?? e.id)}</strong>} meta={meta} {...(props.defaultOpen === undefined ? {} : { defaultOpen: props.defaultOpen })}>
       <div className="design__grid">
-        <SelectField
-          label="Format"
-          value={e.format.type}
-          options={[
-            { value: "league", label: "Round-robin league" },
-            { value: "tournament", label: "Tournament division" },
-          ]}
-          help={
-            tournament === null
-              ? "Courts of four (or five), everyone partners everyone on their court, and players move up or down a court each week."
-              : "Teams of two who sign up together. Each division is its own event: give a tournament's divisions the same day."
-          }
-          onChange={(type) => {
-            if (type === e.format.type) return;
-            const base = withField(withField(e, "scoring", undefined), "capacity", type === "tournament" ? 16 : 24);
-            onChange({ ...base, format: type === "tournament" ? { type, structure: "pools_then_bracket" } : { type } });
-          }}
-        />
-        <TextField label="Event name" value={e.label ?? ""} maxLength={60} onChange={(label) => set("label", label)} />
+        {inTournament ? null : (
+          <div className="gr-field">
+            <span className="gr-field__label">Format</span>
+            <span className="design__format">{tournament === null ? "Round-robin league" : "Tournament"}</span>
+            <span className="gr-field__help">
+              {tournament === null
+                ? "Courts of four (or five), everyone partners everyone on their court, and players move up or down a court each week."
+                : "Teams of two who sign up together."}
+            </span>
+          </div>
+        )}
+        {inTournament ? (
+          <TextField label="Division name" value={divisionName(e)} maxLength={40} help="For example 3.5, or 4.5+." onChange={(name) => set("label", `${prefix}${name}`)} />
+        ) : (
+          <TextField label="Event name" value={e.label ?? ""} maxLength={60} onChange={(label) => set("label", label)} />
+        )}
         <OptionalNumberField
           label="Lowest rating"
           value={e.range?.min}
@@ -196,7 +174,11 @@ export function EventEditor(props: {
             <tr>
               <th scope="row">
                 Other clubs
-                <span>{closed ? "not open to them" : `in weeks they travel, ${welcomed.length} players`}</span>
+                <span>
+                  {closed
+                    ? "not open to them"
+                    : `${tournament === null ? "in weeks they travel" : "if they travel for tournaments"}, ${welcomed.length} players`}
+                </span>
               </th>
               <td className="fit__value">{closed ? "–" : fit.away}</td>
               <td className="fit__value">{closed ? "–" : fit.awayCan}</td>
@@ -208,27 +190,7 @@ export function EventEditor(props: {
         </figcaption>
       </figure>
       <div className="design__grid">
-        <SelectField
-          label="Day"
-          value={String(weekday)}
-          options={WEEKDAYS.map((d, i) => ({ value: String(i), label: d }))}
-          onChange={(d) => setSchedule({ weekday: Number(d) })}
-        />
-        <SelectField<Often>
-          label="How often"
-          value={often}
-          options={[
-            { value: "1", label: "Every week" },
-            { value: "2", label: "Every other week" },
-            { value: "4", label: "Every four weeks" },
-            { value: "13", label: "Every 13 weeks (quarterly)" },
-            { value: "once", label: "Once" },
-          ]}
-          onChange={(o) => setSchedule({ often: o })}
-        />
-        {s.kind === "once" ? (
-          <NumberField label="In week" value={Math.floor(s.day / 7) + 1} min={1} max={weeks} step={1} onChange={(week) => setSchedule({ week: Math.round(week) })} />
-        ) : null}
+        {inTournament ? null : <ScheduleFields schedule={s} durationDays={recipe.durationDays} onChange={(schedule) => onChange({ ...e, schedule })} />}
         <NumberField
           label={tournament === null ? "Most players" : "Most teams"}
           value={e.capacity}
@@ -351,27 +313,7 @@ export function EventEditor(props: {
               onChange={(m) => setLeague(withField(league, "movesPerCourt", m === "1" ? undefined : Number(m)))}
             />
           ) : null}
-          {s.kind === "weekly" ? (
-            <>
-              <NumberField
-                label="Starts in week"
-                value={(s.firstWeek ?? 0) + 1}
-                min={1}
-                max={weeks}
-                step={1}
-                onChange={(w) => onChange({ ...e, schedule: withField(s, "firstWeek", w <= 1 ? undefined : Math.round(w) - 1) })}
-              />
-              <NumberField
-                label="Ends after week"
-                value={(s.lastWeek ?? weeks - 1) + 1}
-                min={1}
-                max={weeks}
-                step={1}
-                help="Set it to the last week to run to the end."
-                onChange={(w) => onChange({ ...e, schedule: withField(s, "lastWeek", w >= weeks ? undefined : Math.round(w) - 1) })}
-              />
-            </>
-          ) : null}
+          {inTournament ? null : <ExtentFields schedule={s} durationDays={recipe.durationDays} onChange={(schedule) => onChange({ ...e, schedule })} />}
         </div>
         <div className="design__grid">
           {league !== null ? (
@@ -399,7 +341,7 @@ export function EventEditor(props: {
             onChange={(on) => set("rated", on ? undefined : false)}
           />
         </div>
-        {otherClubs.length > 0 ? (
+        {!inTournament && otherClubs.length > 0 ? (
           <fieldset className="design__invites">
             <legend className="gr-field__label">Players from other clubs</legend>
             <Checkbox
@@ -429,7 +371,7 @@ export function EventEditor(props: {
       </More>
       <div>
         <Button variant="ghost" size="sm" onClick={props.onRemove} icon={<Trash2 {...small} />}>
-          Remove {e.label ?? "event"}
+          {inTournament ? `Remove the ${divisionName(e)} division` : `Remove ${e.label ?? "event"}`}
         </Button>
       </div>
       </RowDisclosure>

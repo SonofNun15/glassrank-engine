@@ -21,6 +21,8 @@ function withTournaments(durationDays = 364, extra: Partial<SimulationRecipeV2> 
   });
   return {
     ...DEFAULT_RECIPE_V2,
+    // Keen tournament players who travel, so every division fills.
+    groups: DEFAULT_RECIPE_V2.groups.map((g) => ({ ...g, tournaments: [0.3, 0.7] as const, tournamentTravel: [0.8, 1] as const })),
     durationDays,
     events: [
       // The default world's leagues only: its own tournament would share these weeks.
@@ -134,5 +136,17 @@ describe("tournaments in a world", () => {
     const before = (events: typeof run.events) => events.filter((e) => day(e.occurredAt) < cutoff);
     expect(before(run.events).some((e) => e.format === "tournament")).toBe(true);
     expect(hashCanonical(before(short.events))).toBe(hashCanonical(before(run.events)));
+  });
+
+  it("only the host club's players enter when nobody travels for tournaments", () => {
+    const homebodies = withTournaments(364, {
+      groups: DEFAULT_RECIPE_V2.groups.map((g) => ({ ...g, tournaments: [0.3, 0.7] as const, tournamentTravel: [0, 0] as const })),
+      players: recipe.players.map((p) => ({ ...p, tournamentTravel: 0 })),
+    });
+    const r = runWorldV2(homebodies, schedule);
+    const home = new Map(r.players.map((p) => [p.id, p.home]));
+    const entrants = r.events.filter((e) => e.format === "tournament").flatMap((e) => e.matches.flatMap((m) => m.teams.flat()));
+    expect(entrants.length).toBeGreaterThan(0);
+    for (const id of entrants) expect(home.get(id)).toBe("east");
   });
 });

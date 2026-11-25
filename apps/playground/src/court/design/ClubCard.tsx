@@ -3,8 +3,9 @@ import { Button } from "@glassrank/design";
 import type { Club, EventSeries, PlayerGroup, SimulationRecipeV2 } from "@glassrank/sim";
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { APPETITE_STOPS, ATTENDANCE_STOPS, LOYALTY_STOPS, TOURNAMENT_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
-import { GROUP_TEMPLATES, PRESETS, groupStart, newEvent, newGroup, newWeekendTournament, presetGroupSkill, type Preset } from "./defaults";
+import { APPETITE_STOPS, ATTENDANCE_STOPS, LOYALTY_STOPS, TOURNAMENT_STOPS, TOURNAMENT_TRAVEL_STOPS, TRAVEL_STOPS, VOLATILITY_STOPS } from "../sliders";
+import { GROUP_TEMPLATES, PRESETS, groupStart, newEvent, newGroup, newTournament, presetGroupSkill, tournamentOf, type Preset } from "./defaults";
+import { TournamentEditor } from "./TournamentEditor";
 import { EventEditor } from "./EventEditor";
 import { CardDisclosure, More, NumberField, RangeField, RowDisclosure, SelectField, TextField } from "./fields";
 
@@ -115,7 +116,8 @@ function GroupEditor(props: {
           />
           {scaleRange("Volatility", VOLATILITY_STOPS, g.volatility, 0, 1, (volatility) => set({ volatility }))}
           {scaleRange("Appetite", APPETITE_STOPS, g.appetite, -1, 1, (appetite) => set({ appetite }))}
-          {scaleRange("Travel", TRAVEL_STOPS, g.travel, 0, 1, (travel) => set({ travel }))}
+          {scaleRange("Travel for leagues", TRAVEL_STOPS, g.travel, 0, 1, (travel) => set({ travel }))}
+          {scaleRange("Travel for tournaments", TOURNAMENT_TRAVEL_STOPS, g.tournamentTravel ?? [0.3, 0.8], 0, 1, (tournamentTravel) => set({ tournamentTravel }))}
           {scaleRange("Plays", ATTENDANCE_STOPS, g.attendance, 0, 1, (attendance) => set({ attendance }))}
           {scaleRange("Tournaments", TOURNAMENT_STOPS, g.tournaments ?? [0.05, 0.4], 0, 1, (tournaments) => set({ tournaments }))}
           {scaleRange("Partner loyalty", LOYALTY_STOPS, g.loyalty ?? [0.3, 0.9], 0, 1, (loyalty) => set({ loyalty }))}
@@ -159,8 +161,8 @@ export function ClubCard(props: {
     onChange({ ...recipe, events: [...recipe.events, e] });
   };
   const addTournament = () => {
-    const divisions = newWeekendTournament(recipe, c.id);
-    setAdded((s) => new Set([...s, ...divisions.map((d) => `event:${d.id}`)]));
+    const divisions = newTournament(recipe, c.id);
+    setAdded((s) => new Set([...s, `tournament:${divisions[0]?.id}`]));
     onChange({ ...recipe, events: [...recipe.events, ...divisions] });
   };
   const addGroup = () => {
@@ -170,9 +172,21 @@ export function ClubCard(props: {
   };
   const groups = recipe.groups.filter((g) => g.home === c.id);
   const events = recipe.events.filter((e) => e.club === c.id);
+  const leagues = events.filter((e) => e.format.type === "league");
+  const tournaments = new Map<string, EventSeries[]>();
+  for (const e of events) {
+    const t = tournamentOf(e);
+    if (t !== null) tournaments.set(t, [...(tournaments.get(t) ?? []), e]);
+  }
   const count = groups.reduce((n, g) => n + g.count, 0);
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-  const meta = `${c.tier === "verified_host" ? "Verified" : "Provisional"} · ${events.length} event${events.length === 1 ? "" : "s"} · ${count} player${count === 1 ? "" : "s"} in ${groups.length} group${groups.length === 1 ? "" : "s"}`;
+  const meta = [
+    c.tier === "verified_host" ? "Verified" : "Provisional",
+    plural(leagues.length, "league"),
+    ...(tournaments.size > 0 ? [plural(tournaments.size, "tournament")] : []),
+    `${plural(count, "player")} in ${plural(groups.length, "group")}`,
+  ].join(" · ");
 
   return (
     <li>
@@ -193,11 +207,14 @@ export function ClubCard(props: {
 
       <div className="stack-xs">
         <span className="gr-field__label">
-          Events <span className="muted">({events.length})</span>
+          Events{" "}
+          <span className="muted">
+            ({plural(leagues.length, "league")}, {plural(tournaments.size, "tournament")})
+          </span>
         </span>
         {events.length === 0 ? <p className="t-small muted">No events. This club's players only play when they travel.</p> : null}
         <ul className="design__groups">
-          {events.map((e) => (
+          {leagues.map((e) => (
             <EventEditor
               key={e.id}
               event={e}
@@ -208,13 +225,26 @@ export function ClubCard(props: {
               onRemove={() => removeEvent(e.id)}
             />
           ))}
+          {[...tournaments].map(([name, divisions]) => (
+            <TournamentEditor
+              key={divisions[0]?.id ?? name}
+              name={name}
+              club={c}
+              divisions={divisions}
+              recipe={recipe}
+              starts={props.starts}
+              canAddDivision={props.canAddEvent}
+              defaultOpen={added.has(`tournament:${divisions[0]?.id}`)}
+              onChange={onChange}
+            />
+          ))}
         </ul>
         <div className="actions">
           <Button variant="secondary" size="sm" disabled={!props.canAddEvent} onClick={addEvent} icon={<Plus {...small} />}>
             Add a round-robin league
           </Button>
           <Button variant="secondary" size="sm" disabled={!props.canAddTournament} onClick={addTournament} icon={<Plus {...small} />}>
-            Add a weekend tournament
+            Add a monthly tournament (4 divisions)
           </Button>
         </div>
       </div>

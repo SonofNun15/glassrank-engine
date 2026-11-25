@@ -92,9 +92,11 @@ export function enterTournaments(args: {
     const wants = tr.chance(p.tournaments);
     const solo = tr.chance(settings.soloEntry);
     const noise = tr.normal(0, args.appetiteSpread);
+    // Many more players travel for a tournament than for a league night; their home club's is always an option.
+    const travels = tr.chance(p.tournamentTravel);
     if (!wants) continue;
     const v = view(p.id);
-    const open = slots.filter((s) => isActive(p, s.day) && opensTo(s.series, p.home) && isEligible(v, s.series));
+    const open = slots.filter((s) => isActive(p, s.day) && (s.series.club === p.home || travels) && opensTo(s.series, p.home) && isEligible(v, s.series));
     if (open.length === 0) continue;
     const target = targetLevel(v.rating, p.appetite, noise);
     initiators.push({ p, options: rankCandidates(open, target, v.rating, p.home), solo, target });
@@ -112,25 +114,33 @@ export function enterTournaments(args: {
       const q = args.byPlayer.get(c);
       return q !== undefined && c !== p.id && !entered.has(c) && isActive(q, slot.day) && opensTo(slot.series, q.home) && teamEligible(view(p.id), view(c), slot.series);
     };
+    /** Whether `c` says yes: they want to play, and will travel if it's not at their home club. */
+    const agrees = (c: string, slot: TournamentSlot) => {
+      const q = args.byPlayer.get(c) as WorldPlayer;
+      const r = ask(c);
+      const yes = r.chance(q.tournaments);
+      const goes = r.chance(q.tournamentTravel);
+      return yes && (slot.series.club === q.home || goes);
+    };
     const enter = (slot: TournamentSlot, partner: string) => {
       entered.add(p.id);
       entered.add(partner);
       (teams.get(slot) as Team[]).push(makeTeam(p.id, partner));
     };
+    // A fixed pair only ever plays together: if the partner can't come, they skip this tournament.
+    if (p.partner !== null) {
+      const together = options.find((s) => !full(s) && available(p.partner as string, s));
+      if (together !== undefined) enter(together, p.partner);
+      continue;
+    }
     if (!solo) {
-      // An established team picks a division they can both play: a fixed partner always, the current one by loyalty.
+      // An established team picks a division they can both play: the current partner, by loyalty.
       const current = partnerships.current.get(p.id);
-      const loyal = current !== undefined && current !== p.partner && root.fork(STREAM.ask, week, idKey(p.id), 0).chance(p.loyalty);
-      if (p.partner !== null) {
-        const together = options.find((s) => !full(s) && available(p.partner as string, s));
-        if (together !== undefined) {
-          enter(together, p.partner);
-          continue;
-        }
-      }
-      if (loyal) {
+      const currentIsFree = current !== undefined && (args.byPlayer.get(current) as WorldPlayer).partner === null;
+      const loyal = currentIsFree && root.fork(STREAM.ask, week, idKey(p.id), 0).chance(p.loyalty);
+      if (loyal && current !== undefined) {
         const together = options.find((s) => !full(s) && available(current, s));
-        if (together !== undefined && ask(current).chance((args.byPlayer.get(current) as WorldPlayer).tournaments)) {
+        if (together !== undefined && agrees(current, together)) {
           enter(together, current);
           continue;
         }
@@ -161,7 +171,7 @@ export function enterTournaments(args: {
     for (const { c } of candidates) {
       if (asked >= MAX_ASKS) break;
       asked++;
-      if (ask(c).chance((args.byPlayer.get(c) as WorldPlayer).tournaments)) {
+      if (agrees(c, slot)) {
         partner = c;
         break;
       }

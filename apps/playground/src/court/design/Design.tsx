@@ -9,7 +9,7 @@ import { parse } from "@glassrank/schema";
 import { CircleAlert, Play, Plus, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ClubCard } from "./ClubCard";
-import { addClub, newPlayer, removeClub, totalPlayers } from "./defaults";
+import { NEW_CLUB, addClub, newClubPlayers, newPlayer, removeClub, totalPlayers } from "./defaults";
 import { PlayerCard } from "./PlayerCard";
 
 const icon = { className: "gr-icon", width: 16, height: 16, strokeWidth: 1.75, "aria-hidden": true } as const;
@@ -69,9 +69,9 @@ export function Design(props: {
   const canAddPlayer = draft.players.length < RECIPE_V2_LIMITS.maxHandMadePlayers && total < RECIPE_V2_LIMITS.maxPlayers;
   const canAddClub =
     draft.clubs.length < RECIPE_V2_LIMITS.maxClubs &&
-    draft.events.length < RECIPE_V2_LIMITS.maxEvents &&
-    draft.groups.length < RECIPE_V2_LIMITS.maxGroups &&
-    total + 20 <= RECIPE_V2_LIMITS.maxPlayers;
+    draft.events.length + NEW_CLUB.leagues.length <= RECIPE_V2_LIMITS.maxEvents &&
+    draft.groups.length + NEW_CLUB.groupCounts.length <= RECIPE_V2_LIMITS.maxGroups &&
+    total + newClubPlayers() <= RECIPE_V2_LIMITS.maxPlayers;
   const canAddGroup = draft.groups.length < RECIPE_V2_LIMITS.maxGroups && total + 10 <= RECIPE_V2_LIMITS.maxPlayers;
 
   return (
@@ -165,7 +165,7 @@ export function Design(props: {
             </h3>
             <p className="t-small muted">
               {draft.clubs.length} of {RECIPE_V2_LIMITS.maxClubs} clubs · {draft.events.length} of {RECIPE_V2_LIMITS.maxEvents} events ·{" "}
-              {total} of {RECIPE_V2_LIMITS.maxPlayers} players in all. A new club starts with an all-levels league and 20 steady players.
+              {total} of {RECIPE_V2_LIMITS.maxPlayers} players in all. A new club starts with four leagues and about 40 players of every kind.
             </p>
           </div>
           <Button variant="secondary" size="sm" disabled={!canAddClub} onClick={() => {

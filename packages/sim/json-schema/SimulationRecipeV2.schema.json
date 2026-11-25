@@ -349,6 +349,12 @@
             "x-glassrank-rules": [
               "games is odd"
             ]
+          },
+          "tournament": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Tournament divisions with the same club and tournament name are one tournament. Display only."
           }
         },
         "required": [
@@ -1113,6 +1119,28 @@
               "mix sums to 1"
             ]
           },
+          "tournamentTravel": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Chance of considering another club's tournament. Default 0.3–0.8.",
+            "x-glassrank-rules": [
+              "low <= high"
+            ]
+          },
           "tournaments": {
             "type": "array",
             "prefixItems": [
@@ -1580,6 +1608,12 @@
                 "additionalProperties": false
               }
             ]
+          },
+          "tournamentTravel": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Chance of considering another club's tournament. Default 0.5."
           },
           "tournaments": {
             "type": "number",
