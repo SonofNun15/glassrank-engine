@@ -6,21 +6,33 @@
  */
 import { DeltaChip, formatDelta, formatRating } from "@glassrank/design";
 import type { RatingPoint } from "@glassrank/sim";
-import { type KeyboardEvent, type PointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, type PointerEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 const HEIGHT = 280;
 const M = { top: 12, right: 16, bottom: 32, left: 48 };
 
 export const weekOf = (day: number) => Math.floor(day / 7) + 1;
 
+/** Narrowest a chart draws; small phones leave about 250 px inside a panel. */
+const MIN_WIDTH = 240;
+
+/**
+ * The width of the element `ref` points at, measured before the first paint
+ * (so a chart never flashes at `fallback` width) and kept current as it resizes.
+ */
 export function useWidth<T extends HTMLElement>(fallback: number) {
   const ref = useRef<T>(null);
   const [width, setWidth] = useState(fallback);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current;
-    if (el === null || typeof ResizeObserver === "undefined") return;
+    if (el === null) return;
+    const measure = (w: number) => {
+      if (w > 0) setWidth(Math.max(MIN_WIDTH, Math.round(w)));
+    };
+    measure(el.clientWidth);
+    if (typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(([entry]) => {
-      if (entry !== undefined) setWidth(Math.max(280, Math.round(entry.contentRect.width)));
+      if (entry !== undefined) measure(entry.contentRect.width);
     });
     ro.observe(el);
     return () => ro.disconnect();

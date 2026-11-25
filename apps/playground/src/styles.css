@@ -135,7 +135,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
 
 /* Rating chart */
-.chart { margin: 0; display: grid; gap: var(--space-3); min-width: 0; }
+.chart { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); min-width: 0; }
 .chart__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-2) var(--space-4); }
 .chart__legend { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); font-size: 14px; line-height: 20px; color: var(--ink-2); }
 .chart__legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
@@ -213,7 +213,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .gr-input[aria-invalid="true"] { border-color: var(--loss); }
 
 /* Keyframe editor */
-.keys { display: grid; gap: var(--space-2); min-width: 0; }
+.keys { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); min-width: 0; }
 .keys__plot { position: relative; min-width: 0; }
 .keys__plot svg { display: block; max-width: 100%; overflow: visible; touch-action: none; }
 .keys__hit { fill: transparent; cursor: copy; }
@@ -260,7 +260,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .why__fact.is-highlight { border-color: var(--line-strong); }
 .why__event-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--space-3); }
 .why__nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-.why__select { min-height: 36px; max-width: 280px; font-size: 14px; }
+.why__select { min-height: 36px; max-width: 280px; min-width: 0; font-size: 14px; }
 .why__event-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); }
 .why__cell { white-space: normal !important; }
 .why__person { display: grid; }
@@ -304,6 +304,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
   .court__mode { flex: 1; justify-content: center; padding: 0 var(--space-2); }
   .fit th, .fit td { padding: var(--space-1); }
   .fit__value { font-size: 22px; line-height: 28px; }
+  /* The event picker gets its own full-width line; Previous and Next sit below it. */
+  .why__nav { width: 100%; }
+  .why__select { order: -1; flex: 1 1 100%; max-width: none; }
 }
 /* Inputs and selects fit their field: a select is otherwise as wide as its longest option. */
 .gr-field { min-width: 0; }
