@@ -160,10 +160,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .chart__tip-row .mono { color: var(--ink); margin-left: auto; }
 .chart__table summary { cursor: pointer; color: var(--forest); font-weight: 500; font-size: 14px; }
 .chart__scroll { max-height: 320px; overflow: auto; margin-top: var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-md); }
-.chart__table table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
-.chart__table th, .chart__table td { padding: var(--space-1) var(--space-3); text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.chart__table th { position: sticky; top: 0; background: var(--surface-sunken); color: var(--ink-2); font-weight: 600; }
-.chart__table td.mono { text-align: right; }
+.chart__table table, .drift__table table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.chart__table th, .chart__table td, .drift__table th, .drift__table td { padding: var(--space-1) var(--space-3); text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.chart__table th, .drift__table th { position: sticky; top: 0; background: var(--surface-sunken); color: var(--ink-2); font-weight: 600; }
+.chart__table td.mono, .drift__table td.mono { text-align: right; }
+.drift__table { background: var(--surface); }
 
 /* Test court: modes */
 .court__modes { display: inline-flex; gap: var(--space-1); padding: var(--space-1); background: var(--surface-sunken); border: 1px solid var(--line); border-radius: var(--radius-md); }
@@ -230,3 +231,18 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 @media (prefers-reduced-motion: reduce) { .design__chevron { transition: none; } }
 .design__disclosure-body { padding: var(--space-4); }
 .design__cards, .design__clubs { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+
+/* Test court: drift across the board */
+.court__drift { padding-top: var(--space-6); border-top: 1px solid var(--line); }
+.court__drift .court__stat { align-content: start; }
+.chart__key--bar { height: 10px; border: 0; border-radius: 2px; background: var(--series-1); }
+.chart__key--zone { height: 10px; border: 0; border-radius: 2px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.drift__zone { fill: color-mix(in srgb, var(--ink) 6%, transparent); }
+.drift__bar { fill: var(--series-1); }
+.drift__bar.is-active { fill: color-mix(in srgb, var(--series-1) 80%, var(--ink)); }
+.drift__zero { stroke: var(--ink-2); stroke-width: 1.5; }
+.drift__table { max-height: 360px; }
+.drift__table td .gr-btn { min-height: 32px; }
+.drift__table--open { max-height: none; }
+.drift__table td.drift__who { white-space: normal; }
+.drift__who { display: grid; }

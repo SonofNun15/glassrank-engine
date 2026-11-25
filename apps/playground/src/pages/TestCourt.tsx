@@ -3,6 +3,7 @@ import { DEFAULT_RECIPE_V2, type PlayerHistory, type SimulationRecipeV2, type Si
 import { ChartLine, Download, LoaderCircle, MessageSquareText, Play, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Design } from "../court/design/Design";
+import { DriftSection } from "../court/DriftSection";
 import { RatingChart, weekOf } from "../court/RatingChart";
 import { useSimulation } from "../sim/useSimulation";
 
@@ -242,6 +243,17 @@ function Results(props: { readonly recipe: SimulationRecipeV2; readonly result: 
 
       {player !== null ? <PlayerView player={player} recipe={recipe} labels={labels} /> : null}
       </section>
+
+      <DriftSection
+        players={result.players}
+        name={(p) => playerName(p, labels)}
+        club={labels.club}
+        clubOrder={recipe.clubs.map((c) => c.id)}
+        onFollow={(id) => {
+          setSelected(id);
+          document.getElementById("follow-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      />
 
       <p className="t-small muted court__note">
         <Play {...small} />
