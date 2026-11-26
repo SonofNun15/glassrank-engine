@@ -18,8 +18,8 @@ export function Footer() {
         </div>
         <ul className="site-footer__links" aria-label="Footer">
           <li>
-            <Link to="/waitlist">
-              <strong>Join the waitlist</strong>
+            <Link to="/updates">
+              <strong>Get updates</strong>
             </Link>
           </li>
           {NAV.map((item) => (

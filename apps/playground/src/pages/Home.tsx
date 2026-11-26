@@ -216,8 +216,8 @@ export function Home() {
             <Button href={href("/test-court")} onClick={go("/test-court")} icon={<Play {...icon} />}>
               Open the Test court
             </Button>
-            <Button variant="secondary" href={href("/waitlist")} onClick={go("/waitlist")} icon={<Mail {...icon} />}>
-              Join the waitlist
+            <Button variant="secondary" href={href("/updates")} onClick={go("/updates")} icon={<Mail {...icon} />}>
+              Get updates
             </Button>
           </div>
           <p className="t-small muted">

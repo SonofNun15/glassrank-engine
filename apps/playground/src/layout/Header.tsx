@@ -39,9 +39,9 @@ export function Header() {
               </a>
             </li>
             <li className="site-nav__cta">
-              <Link to="/waitlist" className="gr-btn gr-btn--primary gr-btn--sm">
+              <Link to="/updates" className="gr-btn gr-btn--primary gr-btn--sm">
                 <Mail className="gr-icon" width={16} height={16} strokeWidth={1.75} aria-hidden="true" />
-                Join the waitlist
+                Get updates
               </Link>
             </li>
           </ul>

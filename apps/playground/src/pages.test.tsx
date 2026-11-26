@@ -5,7 +5,7 @@ import { Home } from "./pages/Home";
 import { HowItWorks } from "./pages/HowItWorks";
 import { NotFound } from "./pages/NotFound";
 import { TestCourt } from "./pages/TestCourt";
-import { Waitlist } from "./pages/Waitlist";
+import { Updates } from "./pages/Updates";
 
 describe("pages render", () => {
   it("home: the pitch, a live receipt, evidence, and calls to action", () => {
@@ -15,7 +15,7 @@ describe("pages render", () => {
       "Put GlassRank to the test",
       "Try to break it",
       "Open the Test court",
-      "Join the waitlist",
+      "Get updates",
       "Beat 1 higher-rated team.",
       "Why ratings feel broken",
       "What GlassRank does differently",
@@ -37,7 +37,7 @@ describe("pages render", () => {
   it.each([
     ["how it works", HowItWorks, "Two layers, one receipt"],
     ["test court", TestCourt, "Put GlassRank to the test"],
-    ["waitlist", Waitlist, "Join the waitlist"],
+    ["updates", Updates, "Get updates"],
     ["not found", NotFound, "Page not found"],
   ])("%s", (_name, Page, heading) => {
     expect(renderToString(<Page />)).toContain(heading);
@@ -66,9 +66,13 @@ describe("pages render", () => {
     expect(html).toContain("Share link");
   });
 
-  it("offers the waitlist in the header and footer on every page", () => {
+  it("signs people up for updates with the Google Form", () => {
+    expect(renderToString(<Updates />)).toContain('href="https://docs.google.com/forms/');
+  });
+
+  it("offers updates in the header and footer on every page", () => {
     const html = renderToString(<App />);
-    expect(html.match(/href="\/waitlist"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(html.match(/href="\/updates"/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
   it("home has exactly one top-level heading", () => {

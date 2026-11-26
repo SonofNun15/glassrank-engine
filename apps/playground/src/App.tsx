@@ -5,18 +5,18 @@ import { Home } from "./pages/Home";
 import { HowItWorks } from "./pages/HowItWorks";
 import { NotFound } from "./pages/NotFound";
 import { TestCourt } from "./pages/TestCourt";
-import { Waitlist } from "./pages/Waitlist";
+import { Updates } from "./pages/Updates";
 import { usePath } from "./router";
 
 const ROUTES: Record<string, { readonly title: string; readonly Page: () => JSX.Element }> = {
   "/": { title: "GlassRank: pickleball ratings you can see through", Page: Home },
   "/how-it-works": { title: "How it works · GlassRank", Page: HowItWorks },
   "/test-court": { title: "Test court · GlassRank", Page: TestCourt },
-  "/waitlist": { title: "Join the waitlist · GlassRank", Page: Waitlist },
+  "/updates": { title: "Get updates · GlassRank", Page: Updates },
 };
 
 /** Earlier paths that now live elsewhere. */
-const ALIASES: Record<string, string> = { "/example": "/test-court", "/sandbox": "/test-court" };
+const ALIASES: Record<string, string> = { "/example": "/test-court", "/sandbox": "/test-court", "/waitlist": "/updates" };
 
 export function App() {
   const raw = usePath();
