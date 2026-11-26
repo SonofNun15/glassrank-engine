@@ -6,10 +6,11 @@
 import { Button } from "@glassrank/design";
 import { GLASSRANK, RECIPE_V2_LIMITS, SimulationRecipeV2, startingRatings, type PlayerSpec } from "@glassrank/sim";
 import { parse } from "@glassrank/schema";
-import { CircleAlert, Play, Plus, RotateCcw } from "lucide-react";
+import { CircleAlert, Play, Plus, RotateCcw, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ClubCard } from "./ClubCard";
 import { NEW_CLUB, addClub, newClubPlayers, newPlayer, removeClub, totalPlayers } from "./defaults";
+import { GeneratePanel } from "./GeneratePanel";
 import { PlayerCard } from "./PlayerCard";
 
 const icon = { className: "gr-icon", width: 16, height: 16, strokeWidth: 1.75, "aria-hidden": true } as const;
@@ -63,6 +64,7 @@ export function Design(props: {
   const starts = useMemo(() => (problems.length > 0 ? [] : startingRatings(draft, GLASSRANK.seeding.defaultRating)), [draft, problems]);
   // Players and clubs added in this session open by default; the rest start collapsed.
   const [added, setAdded] = useState<ReadonlySet<string>>(new Set());
+  const [generating, setGenerating] = useState(false);
   const markAdded = (id: string | undefined) => id !== undefined && setAdded((s) => new Set([...s, id]));
   const weeks = Math.round(draft.durationDays / 7);
   const total = totalPlayers(draft);
@@ -85,6 +87,9 @@ export function Design(props: {
               : "Change something, then run the simulation again."}
         </p>
         <div className="actions">
+          <Button variant="secondary" size="sm" onClick={() => setGenerating((g) => !g)} aria-expanded={generating} icon={<Sparkles {...icon} />}>
+            Generate a world
+          </Button>
           <Button variant="secondary" size="sm" onClick={props.onReset} icon={<RotateCcw {...icon} />}>
             Reset to the example
           </Button>
@@ -93,6 +98,16 @@ export function Design(props: {
           </Button>
         </div>
       </div>
+
+      {generating ? (
+        <GeneratePanel
+          onGenerate={(recipe) => {
+            onChange(recipe);
+            setAdded(new Set());
+          }}
+          onClose={() => setGenerating(false)}
+        />
+      ) : null}
 
       {problems.length > 0 ? (
         <div className="design__problems" role="alert">

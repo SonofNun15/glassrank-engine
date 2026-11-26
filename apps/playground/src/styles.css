@@ -319,3 +319,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline
 .court__notice { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); }
 .court__notice p { flex: 1 1 240px; margin: 0; color: var(--ink-2); }
 .court__notice[role="alert"] { border-color: var(--loss); color: var(--ink); }
+.design__generate { position: relative; padding: var(--space-4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.design__generate-close { position: absolute; top: var(--space-2); right: var(--space-2); padding-inline: var(--space-2); }
+.design__generate #generate-title { padding-right: var(--space-8); }
