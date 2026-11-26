@@ -70,6 +70,12 @@ describe("pages render", () => {
     expect(renderToString(<Updates />)).toContain('href="https://docs.google.com/forms/');
   });
 
+  it("discloses visit counting in the footer on every page", () => {
+    const html = renderToString(<App />);
+    expect(html).toContain("We count visits with");
+    expect(html).toContain("GoatCounter");
+  });
+
   it("offers updates in the header and footer on every page", () => {
     const html = renderToString(<App />);
     expect(html.match(/href="\/updates"/g)?.length).toBeGreaterThanOrEqual(2);

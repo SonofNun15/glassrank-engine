@@ -6,7 +6,8 @@ import { HowItWorks } from "./pages/HowItWorks";
 import { NotFound } from "./pages/NotFound";
 import { TestCourt } from "./pages/TestCourt";
 import { Updates } from "./pages/Updates";
-import { usePath } from "./router";
+import { countPage } from "./analytics";
+import { href, usePath } from "./router";
 
 const ROUTES: Record<string, { readonly title: string; readonly Page: () => JSX.Element }> = {
   "/": { title: "GlassRank: pickleball ratings you can see through", Page: Home },
@@ -24,7 +25,8 @@ export function App() {
   const route = ROUTES[path] ?? { title: "Page not found · GlassRank", Page: NotFound };
   useEffect(() => {
     document.title = route.title;
-  }, [route.title]);
+    countPage(href(path), route.title);
+  }, [path, route.title]);
   return (
     <>
       <a className="skip-link" href="#main">

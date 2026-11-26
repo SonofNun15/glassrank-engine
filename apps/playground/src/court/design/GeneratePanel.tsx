@@ -3,6 +3,7 @@ import { Button } from "@glassrank/design";
 import type { SimulationRecipeV2 } from "@glassrank/sim";
 import { Shuffle, X } from "lucide-react";
 import { useState } from "react";
+import { countAction } from "../../analytics";
 import { Checkbox } from "./EventEditor";
 import { SelectField } from "./fields";
 import { DEFAULT_OPTIONS, generateWorld, type ClubSize, type GenerateOptions, type Level, type TournamentCulture, type Travel } from "./generate";
@@ -100,6 +101,7 @@ export function GeneratePanel(props: { readonly onGenerate: (recipe: SimulationR
           variant="secondary"
           size="sm"
           onClick={() => {
+            countAction("generate-world");
             props.onGenerate(generateWorld({ ...dials, seed: newSeed() }));
             setMade((n) => n + 1);
           }}

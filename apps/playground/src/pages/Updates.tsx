@@ -1,5 +1,6 @@
 import { Button, GlassPanel } from "@glassrank/design";
 import { ExternalLink } from "lucide-react";
+import { countAction } from "../analytics";
 
 /** The "GlassRank updates" Google Form. */
 export const UPDATES_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSddsrPm9gBC4IwQ3EclK1mjOAM9z4Jemqp0qS1967-QeEFnXg/viewform";
@@ -25,7 +26,7 @@ export function Updates() {
             <li>How involved you'd like to be: keep posted, try it at your club or events, give feedback on the rules, or help build it</li>
           </ul>
           <div>
-            <Button href={UPDATES_FORM} target="_blank" rel="noreferrer" icon={<ExternalLink className="gr-icon" width={16} height={16} strokeWidth={1.75} aria-hidden="true" />}>
+            <Button href={UPDATES_FORM} target="_blank" rel="noreferrer" onClick={() => countAction("sign-up")} icon={<ExternalLink className="gr-icon" width={16} height={16} strokeWidth={1.75} aria-hidden="true" />}>
               Sign up
             </Button>
           </div>

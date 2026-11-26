@@ -15,6 +15,14 @@ export function Footer() {
           <p className="site-footer__note">
             No clubs use GlassRank yet. Every player, club, game, and rating on this site is simulated or made up.
           </p>
+          <p className="site-footer__note">
+            We count visits with{" "}
+            <a href="https://www.goatcounter.com" target="_blank" rel="noreferrer">
+              GoatCounter
+            </a>
+            : which pages are viewed and a few actions, like running a simulation. No cookies and no personal data, and never the
+            simulations in share links.
+          </p>
         </div>
         <ul className="site-footer__links" aria-label="Footer">
           <li>

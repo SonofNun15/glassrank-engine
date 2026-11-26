@@ -2,6 +2,7 @@ import { Button, GlassPanel, RatingBadge, Tag, formatRating } from "@glassrank/d
 import { DEFAULT_RECIPE_V2, type PlayerHistory, type SimulationRecipeV2, type SimulationResultV2 } from "@glassrank/sim";
 import { Check, ChartLine, Download, Link2, LoaderCircle, MessageSquareText, Play, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { countAction } from "../analytics";
 import { Design } from "../court/design/Design";
 import { DriftSection } from "../court/DriftSection";
 import { EventDetail, WhyPanel, type Namer } from "../court/PlayerWhy";
@@ -127,6 +128,7 @@ export function TestCourt() {
 
   /** After the form opens: if the link didn't fit in the form's address, hand it over to paste. */
   const afterOpen = async (f: Feedback) => {
+    countAction("send-feedback");
     setFeedbackChoice(false);
     if (f.linkIncluded) return;
     try {
@@ -142,6 +144,7 @@ export function TestCourt() {
     // Open the tab during the click so popup blockers allow it, then point it at the form.
     const tab = window.open("", "_blank");
     if (tab !== null) tab.opener = null;
+    countAction("run-simulation");
     const recipe = draft;
     // Keep following the same player if the changes kept them; otherwise the one Explore shows first
     // (players come back sorted by id, and Explore starts on the first featured one).
@@ -193,6 +196,7 @@ export function TestCourt() {
 
   /** Share `recipe`, which is what Explore shows (the last run, or changes just run for this). */
   const shareLink = async (recipe: SimulationRecipeV2, ranChanges: boolean) => {
+    countAction("share-link");
     const fragment = await encodeShare(recipe, player);
     const url = `${pageAddress()}#${fragment}`;
     window.history.replaceState(null, "", `#${fragment}`);
@@ -255,6 +259,7 @@ export function TestCourt() {
                   <Button
                     size="sm"
                     onClick={() => {
+                      countAction("run-simulation");
                       runRecipe(draft);
                       setMode("explore");
                       void shareLink(draft, true);
@@ -328,6 +333,7 @@ export function TestCourt() {
               changed={changed}
               onReset={() => setDraft(DEFAULT_RECIPE_V2)}
               onRun={() => {
+                countAction("run-simulation");
                 runRecipe(draft);
                 setMode("explore");
               }}
