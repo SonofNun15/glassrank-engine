@@ -110,6 +110,10 @@ function Histogram({ bins }: { readonly bins: readonly Bin[] }) {
   );
 }
 
+/** A mean gap smaller than this is no lean either way. */
+const LEAN = 0.02;
+const leanWord = (gap: number) => (Math.abs(gap) < LEAN ? "even" : gap < 0 ? "low" : "high");
+
 export function DriftSection(props: {
   readonly players: readonly PlayerHistory[];
   readonly name: (p: PlayerHistory) => string;
@@ -121,7 +125,7 @@ export function DriftSection(props: {
   const [showAll, setShowAll] = useState(false);
   const outliers = showAll ? drift.outliers : drift.outliers.slice(0, SHOWN_OUTLIERS);
   const clubs = [...drift.clubs].sort((a, b) => props.clubOrder.indexOf(a.club) - props.clubOrder.indexOf(b.club));
-  const lean = Math.abs(drift.meanGap) < 0.02 ? "No overall lean" : drift.meanGap < 0 ? "Rated low overall" : "Rated high overall";
+  const lean = Math.abs(drift.meanGap) < LEAN ? "No overall lean" : drift.meanGap < 0 ? "Rated low overall" : "Rated high overall";
   const pct = (x: number) => `${Math.round(x * 100)}%`;
 
   const tiles = [
@@ -157,15 +161,19 @@ export function DriftSection(props: {
 
       <div className="stack-xs">
         <h3 className="t-title">By club</h3>
-        <p className="t-small muted">Clubs drifting in different directions is what players who travel between clubs help correct.</p>
+        <p className="t-small muted">
+          <strong>Leans</strong> is the club's average gap, with direction: above zero, its ratings run high; below, low.{" "}
+          <strong>Typical miss</strong> is how far half its players ended from true skill, in either direction. Clubs leaning in
+          different directions is what players who travel between clubs help correct.
+        </p>
         <div className="chart__scroll drift__table">
           <table>
             <thead>
               <tr>
                 <th scope="col">Club</th>
                 <th scope="col">Players</th>
-                <th scope="col">Average gap</th>
-                <th scope="col">Typical gap</th>
+                <th scope="col">Leans</th>
+                <th scope="col">Typical miss</th>
               </tr>
             </thead>
             <tbody>
@@ -173,7 +181,9 @@ export function DriftSection(props: {
                 <tr key={c.club}>
                   <td>{props.club(c.club)}</td>
                   <td className="mono">{c.players}</td>
-                  <td className="mono">{formatDelta(c.meanGap)}</td>
+                  <td>
+                    <span className="mono">{formatDelta(c.meanGap)}</span> <span className="muted">{leanWord(c.meanGap)}</span>
+                  </td>
                   <td className="mono">{formatRating(c.medianAbsGap)}</td>
                 </tr>
               ))}
