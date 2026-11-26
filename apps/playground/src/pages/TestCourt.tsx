@@ -6,6 +6,7 @@ import { Design } from "../court/design/Design";
 import { DriftSection } from "../court/DriftSection";
 import { EventDetail, WhyPanel, type Namer } from "../court/PlayerWhy";
 import { RatingChart, weekOf } from "../court/RatingChart";
+import { FEEDBACK_FORM, feedbackLink, playerLabel, type FeedbackLink } from "../sim/feedback";
 import { decodeShare, encodeShare, hasShare } from "../sim/share";
 import { useFollow, useSimulation } from "../sim/useSimulation";
 
@@ -80,6 +81,16 @@ type ShareState =
   | { readonly kind: "copied"; readonly ranChanges: boolean }
   | { readonly kind: "manual"; readonly url: string; readonly ranChanges: boolean };
 
+type Feedback = FeedbackLink & { readonly shareUrl: string };
+
+/** The feedback form for a simulation: its share link, and the followed player's name if they're in it. */
+async function prepareFeedback(recipe: SimulationRecipeV2, player: string | null): Promise<Feedback> {
+  const name = player === null ? null : playerLabel(recipe, player);
+  const fragment = await encodeShare(recipe, name === null ? null : player);
+  const shareUrl = `${pageAddress()}#${fragment}`;
+  return { ...feedbackLink(shareUrl, name), shareUrl };
+}
+
 const pageHash = () => (typeof window === "undefined" ? "" : window.location.hash);
 /** The address without its fragment: the page a share link points at. */
 const pageAddress = () => `${window.location.origin}${window.location.pathname}`;
@@ -93,7 +104,57 @@ export function TestCourt() {
   const [shared, setShared] = useState<{ readonly otherVersion: boolean } | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [share, setShare] = useState<ShareState>({ kind: "idle" });
+  /** The feedback form, pre-filled for what Explore shows. */
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  /** Design has changes that haven't been run: ask which simulation the feedback is about. */
+  const [feedbackChoice, setFeedbackChoice] = useState(false);
+  /** A share link too long to pre-fill, which the visitor pastes in by hand. */
+  const [pasteLink, setPasteLink] = useState<{ readonly kind: "copied" | "manual"; readonly shareUrl: string } | null>(null);
   const changed = ran !== null && draft !== ran;
+
+  // With nothing unrun, the feedback button is a real link to the form, rebuilt for whatever Explore shows.
+  useEffect(() => {
+    setFeedback(null);
+    if (ran === null) return;
+    let current = true;
+    void prepareFeedback(ran, player).then((f) => {
+      if (current) setFeedback(f);
+    });
+    return () => {
+      current = false;
+    };
+  }, [ran, player]);
+
+  /** After the form opens: if the link didn't fit in the form's address, hand it over to paste. */
+  const afterOpen = async (f: Feedback) => {
+    setFeedbackChoice(false);
+    if (f.linkIncluded) return;
+    try {
+      await navigator.clipboard.writeText(f.shareUrl);
+      setPasteLink({ kind: "copied", shareUrl: f.shareUrl });
+    } catch {
+      setPasteLink({ kind: "manual", shareUrl: f.shareUrl });
+    }
+  };
+
+  /** Run the Design changes, then open the form with their link. The run needn't finish: the link carries the recipe. */
+  const runAndSendFeedback = async () => {
+    // Open the tab during the click so popup blockers allow it, then point it at the form.
+    const tab = window.open("", "_blank");
+    if (tab !== null) tab.opener = null;
+    const recipe = draft;
+    // Keep following the same player if the changes kept them; otherwise the one Explore shows first
+    // (players come back sorted by id, and Explore starts on the first featured one).
+    const first = recipe.players.map((p) => `p.${p.id}`).sort()[0] ?? null;
+    const who = player !== null && playerLabel(recipe, player) !== null ? player : first;
+    runRecipe(recipe);
+    setPlayer(who);
+    setMode("explore");
+    const f = await prepareFeedback(recipe, who);
+    if (tab !== null) tab.location.href = f.url;
+    else window.open(f.url, "_blank", "noopener");
+    await afterOpen(f);
+  };
 
   useEffect(() => {
     let current = true;
@@ -282,10 +343,59 @@ export function TestCourt() {
             Found something that looks wrong, or right? Your feedback is sent together with the exact simulation on your screen, so
             we can rebuild what you saw and check it.
           </p>
-          <Button disabled icon={<MessageSquareText {...icon} />}>
-            Send feedback
-          </Button>
-          <p className="t-small muted">Feedback opens soon. Nothing is collected on this site yet.</p>
+          {changed ? (
+            <Button onClick={() => setFeedbackChoice(true)} aria-expanded={feedbackChoice} icon={<MessageSquareText {...icon} />}>
+              Send feedback
+            </Button>
+          ) : (
+            <Button
+              href={feedback?.url ?? FEEDBACK_FORM.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => feedback !== null && void afterOpen(feedback)}
+              icon={<MessageSquareText {...icon} />}
+            >
+              Send feedback
+            </Button>
+          )}
+          {changed && feedbackChoice ? (
+            <div className="court__notice court__feedback-choice" role="group" aria-labelledby="feedback-choice">
+              <p id="feedback-choice" className="t-small">
+                <strong>Your Design changes haven't been run.</strong> Which simulation is your feedback about?
+              </p>
+              <div className="actions">
+                <Button size="sm" onClick={() => void runAndSendFeedback()} icon={<Play {...small} />}>
+                  Run my changes first
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  href={feedback?.url ?? FEEDBACK_FORM.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => (feedback !== null ? void afterOpen(feedback) : setFeedbackChoice(false))}
+                >
+                  The last run
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setFeedbackChoice(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : null}
+          <p className="t-small muted">Opens a Google Form in a new tab with this simulation's link filled in. Name and email are optional.</p>
+          {pasteLink !== null && pasteLink.shareUrl === feedback?.shareUrl ? (
+            pasteLink.kind === "copied" ? (
+              <p className="t-small" role="status">
+                <Check {...small} /> This simulation's link is too long to fill in for you, so we copied it. Paste it into the form's first box.
+              </p>
+            ) : (
+              <label className="gr-field court__share-manual">
+                <span className="gr-field__label">This simulation's link is too long to fill in for you. Copy it into the form's first box.</span>
+                <input className="gr-input" readOnly value={pasteLink.shareUrl} onFocus={(e) => e.currentTarget.select()} />
+              </label>
+            )
+          ) : null}
         </aside>
       </div>
 
@@ -334,6 +444,11 @@ function Results(props: {
   const selected = props.player !== null && result.players.some((p) => p.id === props.player) ? props.player : fallback;
   const setSelected = props.onPlayer;
   const player = result.players.find((p) => p.id === selected) ?? null;
+  // Tell the page who is shown when it's the default pick, so feedback and share links name them.
+  const { onPlayer } = props;
+  useEffect(() => {
+    if (selected !== "" && selected !== props.player) onPlayer(selected);
+  }, [selected, props.player, onPlayer]);
 
   const byClub = useMemo(() => {
     const out = new Map<string, PlayerHistory[]>();

@@ -53,7 +53,8 @@ describe("pages render", () => {
   it("puts feedback inside the Test court, with the simulation", () => {
     const html = renderToString(<TestCourt />);
     expect(html).toContain("Send feedback with this simulation");
-    expect(html).toContain("Nothing is collected on this site yet");
+    expect(html).toContain("Opens a Google Form in a new tab");
+    expect(html).toContain('href="https://docs.google.com/forms/');
   });
 
   it("test court has explore and design modes", () => {
